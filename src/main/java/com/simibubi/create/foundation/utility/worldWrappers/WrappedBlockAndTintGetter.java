@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import com.simibubi.create.foundation.model.data.ModelData;
 
 public class WrappedBlockAndTintGetter implements BlockAndTintGetter {
 	protected final BlockAndTintGetter wrapped;

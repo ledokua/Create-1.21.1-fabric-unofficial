@@ -52,7 +52,7 @@ import net.minecraft.world.phys.Vec3;
 
 import com.simibubi.create.foundation.transfer.capability.Capabilities;
 import com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import com.simibubi.create.foundation.model.data.ModelData;
 import com.simibubi.create.foundation.transfer.item.IItemHandler;
 
 public class BeltBlockEntity extends KineticBlockEntity implements Clearable {

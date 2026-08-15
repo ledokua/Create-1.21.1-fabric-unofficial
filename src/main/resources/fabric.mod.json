@@ -26,7 +26,11 @@
       "net/minecraft/class_2586": ["com/simibubi/create/foundation/mixin/extension/BlockEntityExtension"],
       "net/minecraft/class_465": ["com/simibubi/create/foundation/mixin/extension/AbstractContainerScreenExtension"],
       "net/minecraft/class_1799": ["com/simibubi/create/foundation/mixin/extension/ItemStackExtension"],
-      "net/minecraft/class_304": ["com/simibubi/create/foundation/mixin/extension/KeyMappingExtension"]
+      "net/minecraft/class_304": ["com/simibubi/create/foundation/mixin/extension/KeyMappingExtension"],
+      "net/minecraft/class_1792": ["com/simibubi/create/foundation/mixin/extension/ItemExtension"],
+      "net/minecraft/class_2248": ["com/simibubi/create/foundation/mixin/extension/BlockExtension"],
+      "net/minecraft/class_1920": ["com/simibubi/create/foundation/mixin/extension/BlockAndTintGetterExtension"],
+      "net/minecraft/class_1087": ["com/simibubi/create/foundation/mixin/extension/BakedModelExtension"]
     }
   },
   "depends": {

@@ -17,9 +17,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import com.simibubi.create.foundation.model.BakedModelWrapper;
+import com.simibubi.create.foundation.model.data.ModelData;
+import com.simibubi.create.foundation.model.data.ModelProperty;
 
 public class BracketedKineticBlockModel extends BakedModelWrapper<BakedModel> {
 

@@ -42,7 +42,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import com.simibubi.create.foundation.tags.Tags;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;

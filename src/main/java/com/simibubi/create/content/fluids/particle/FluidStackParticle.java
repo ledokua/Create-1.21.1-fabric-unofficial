@@ -15,7 +15,7 @@ import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 
 public class FluidStackParticle extends TextureSheetParticle {

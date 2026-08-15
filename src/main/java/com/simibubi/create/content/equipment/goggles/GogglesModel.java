@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
+import com.simibubi.create.foundation.model.BakedModelWrapper;
 
 public class GogglesModel extends BakedModelWrapper<BakedModel> {
 

@@ -2,7 +2,7 @@ package com.simibubi.create.content.fluids.pipes;
 
 import java.util.function.Consumer;
 
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 
 import net.neoforged.neoforge.fluids.FluidType;

@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.Fluid;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 

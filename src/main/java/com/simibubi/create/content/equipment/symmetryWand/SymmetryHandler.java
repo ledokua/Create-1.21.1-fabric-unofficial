@@ -36,7 +36,7 @@ import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.event.client.ClientTickEvent;
 import com.simibubi.create.foundation.event.client.RenderLevelStageEvent;
 import com.simibubi.create.foundation.event.client.RenderLevelStageEvent.Stage;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import com.simibubi.create.foundation.model.data.ModelData;
 import com.simibubi.create.foundation.event.level.BlockEvent.BreakEvent;
 import com.simibubi.create.foundation.event.level.BlockEvent.EntityPlaceEvent;
 

@@ -46,7 +46,7 @@ import com.simibubi.create.foundation.event.bus.EventPriority;
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.event.client.InputEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientItemExtensions;
 import com.simibubi.create.foundation.event.entity.living.LivingIncomingDamageEvent;
 import com.simibubi.create.foundation.event.entity.living.LivingKnockBackEvent;
 import com.simibubi.create.foundation.event.entity.player.AttackEntityEvent;

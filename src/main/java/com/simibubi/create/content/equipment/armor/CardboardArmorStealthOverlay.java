@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientItemExtensions;
 
 public class CardboardArmorStealthOverlay extends Gui implements IClientItemExtensions {
 

@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 
 import net.neoforged.neoforge.client.ClientHooks;
 import com.simibubi.create.foundation.event.client.RenderTooltipEvent;
-import net.neoforged.neoforge.client.extensions.IGuiGraphicsExtension;
+import com.simibubi.create.foundation.client.extensions.IGuiGraphicsExtension;
 
 public class RemovedGuiUtils {
 	@NotNull

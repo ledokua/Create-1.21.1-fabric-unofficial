@@ -160,7 +160,7 @@ stubs are only used for datagen (Phase 0b decision).
 ## >>> RESUME HERE (Phase 1 in progress, build red by design) <<<
 
 State at the last checkpoint: whole upstream tree vendored (1,900 files); `./gradlew compileJava` shows
-**~1,460 errors** (started at 6,242). Everything is committed. Progress metric = that error count. To see the
+**~1,140 errors** (started at 6,242). Everything is committed. Progress metric = that error count. To see the
 current buckets:
 ```
 ./gradlew compileJava --console=plain 2>&1 | awk '/^FAILURE/{exit}{print}' > /tmp/c.log
@@ -174,11 +174,19 @@ access widener; event bridge **classes** (`foundation/event/**`: bus, ~70 event 
 `EventHooks`, `BlockSnapshot`) — **not yet wired to Fabric hooks** (that's `CreateEventHooks`, next); datagen
 DSL shell (`foundation/data/modelgen` + `com.tterrag.registrate.providers`); real `Create`/`CreateClient`.
 
+Done since: **client model data** — `foundation/model/{data/ModelData,data/ModelProperty,BakedModelWrapper,
+IDynamicBakedModel,FabricModelBridge,ChunkRenderTypeSet,QuadTransformers}` (FRAPI `emitBlockQuads` calls the
+NeoForge-shaped 5-arg `getQuads`; block-entity `getModelData()` exposed as Fabric render data by
+`BlockEntityExtensionMixin`; `BakedModelExtension` interface-injected onto `BakedModel`), and
+`foundation/client/extensions/{IClientItemExtensions,IClientBlockExtensions,IClientFluidTypeExtensions,
+IGuiGraphicsExtension,ClientExtensionsManager}` (`Item/Block#initializeClient` interface-injected; fluid one
+adapts Fabric's `FluidRenderHandlerRegistry`). **Still TODO in that bucket:** `ClientHooks` (2 sites),
+walking Create's items/blocks at client init to call `initializeClient` into `ClientExtensionsManager`, and
+the Phase 3 consumers (BuiltinItemRendererRegistry for `getCustomRenderer()`, arm pose / armor / break-particle
+mixins).
+
 Next steps, in order of error yield:
-1. **Client model data**: `ModelData`/`ModelProperty` (Create-owned typed map, ~85 errors),
-   `BakedModelWrapper`/`IDynamicBakedModel` → FRAPI-backed base, `IClientItemExtensions`/
-   `IClientBlockExtensions`/`IClientFluidTypeExtensions` (Create-owned interfaces; hookups Phase 3),
-   `ChunkRenderTypeSet`, `QuadTransformers`, `IGuiGraphicsExtension`, `ClientHooks`.
+1. (client model data — done, see above; leftover `ClientHooks` is in the long tail)
 2. **Registries**: `DeferredRegister`/`DeferredHolder` sites (~35; → `Registry.register` / Registrate
    `simple()`), `NeoForgeRegistries`, `RegisterEvent`, `RegistryBuilder`/`GameData`/`DataPackRegistryEvent`
    (Create's custom registries: `CreateRegistries`/`CreateBuiltInRegistries` — Fabric `FabricRegistryBuilder`),

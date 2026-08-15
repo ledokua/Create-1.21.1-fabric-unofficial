@@ -40,7 +40,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 
-import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientBlockExtensions;
 
 public class WaterWheelStructuralBlock extends DirectionalBlock implements IWrenchable, IProxyHoveringInformation {
 

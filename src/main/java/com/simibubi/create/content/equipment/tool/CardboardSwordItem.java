@@ -33,7 +33,7 @@ import com.simibubi.create.foundation.event.bus.EventPriority;
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientItemExtensions;
 import com.simibubi.create.foundation.event.entity.player.AttackEntityEvent;
 import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent;
 

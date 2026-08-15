@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientItemExtensions;
 import com.simibubi.create.foundation.event.entity.player.AttackEntityEvent;
 
 public class WrenchItem extends Item {

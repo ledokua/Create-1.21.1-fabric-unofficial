@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientBlockExtensions;
 
 public class ReducedDestroyEffects implements IClientBlockExtensions {
 

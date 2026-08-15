@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.BlockDestructionProgress;
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import com.simibubi.create.foundation.client.extensions.IClientBlockExtensions;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {

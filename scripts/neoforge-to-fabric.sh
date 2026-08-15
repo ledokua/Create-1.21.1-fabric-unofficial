@@ -58,3 +58,11 @@ find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
 find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
   -e 's/net\.neoforged\.neoforge\.client\.model\.generators\./com.simibubi.create.foundation.data.modelgen./g' \
   -e 's/net\.neoforged\.neoforge\.common\.data\.ExistingFileHelper\b/com.simibubi.create.foundation.data.modelgen.ExistingFileHelper/g'
+
+# ---- client model data / extensions -> Create-owned FRAPI-bridged classes ----
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.client\.model\.data\./com.simibubi.create.foundation.model.data./g' \
+  -e 's/net\.neoforged\.neoforge\.client\.model\.(BakedModelWrapper|IDynamicBakedModel|QuadTransformers)\b/com.simibubi.create.foundation.model.\1/g' \
+  -e 's/net\.neoforged\.neoforge\.client\.ChunkRenderTypeSet\b/com.simibubi.create.foundation.model.ChunkRenderTypeSet/g' \
+  -e 's/net\.neoforged\.neoforge\.client\.extensions\.common\./com.simibubi.create.foundation.client.extensions./g' \
+  -e 's/net\.neoforged\.neoforge\.client\.extensions\.IGuiGraphicsExtension\b/com.simibubi.create.foundation.client.extensions.IGuiGraphicsExtension/g'
