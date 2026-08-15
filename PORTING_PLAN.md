@@ -57,11 +57,77 @@ re-discovering it.
       free from the `Ponder-Fabric` dependency already in `build.gradle` — no extra vendoring needed for
       that coupling. **To pull upstream Catnip updates later:** diff against a fresh clone of that repo's
       `mc1.21.1/dev` branch, same two directories.
-- [ ] **Phase 0b — Registration layer (blocking).** Decide + build: fork & upgrade Registrate-Refabricated
-      to 1.21.1, *or* write a purpose-built Fabric registration helper covering only the builder surface
-      `CreateRegistrate`/`AllXxx` classes actually use (`block()`, `item()`, `fluid()`, `blockEntity()`,
-      `entity()`, `recipe()`, `tag()`, default creative tab, tooltip modifier hooks). ~30+ `AllXxx.java`
-      registry classes depend on this — nothing in Phase 2+ compiles without it.
+- [x] **Phase 0b — Registration layer.** Purpose-built Fabric-native reimplementation of
+      `com.tterrag.registrate` (40 files, ~1.6k lines, under `src/main/java/com/tterrag/registrate`), same
+      package/class names and public signatures as upstream so ported Create code needs zero import changes.
+      Not a fork of Registrate-Refabricated (depends on `Porting-Lib` for datagen) and not a mechanical port of
+      upstream (bound end-to-end to NeoForge's `DeferredHolder`/`RegisterEvent`).
+      **Verified at runtime** on a dedicated server via a throwaway smoke test (since deleted): block +
+      nested `.item()` + block entity declared *before* its block with a lazy `validBlock` reference +
+      extended-data menu; `onRegister`/`onRegisterAfter(ITEM)` fired in the right order; client-only hooks
+      correctly skipped server-side; no dangling-callback warnings.
+
+      **Design, decided from a 3-way research pass (upstream Registrate's `1.21.1/dev` branch,
+      Registrate-Refabricated's `fabric/1.19` branch, and a grep-survey of every Registrate call site in
+      Create's own source):**
+      - *Still two-phase, but flushed by an explicit ordered pass instead of an event bus.* Builders file a
+        `Registration` on `.register()`; nothing is constructed until `AbstractRegistrate.register()` runs the
+        flush in a fixed registry order (SOUND_EVENT, FLUID, BLOCK, ATTRIBUTE, ENTITY_TYPE, ITEM,
+        BLOCK_ENTITY_TYPE, MENU, CREATIVE_MODE_TAB, then anything else first-touched order) — the same order
+        NeoForge fires `RegisterEvent` in. This is what keeps upstream's call-order-independent code working
+        (a `BlockBuilder.item()` factory referencing its block, a BE type listing blocks declared later, …).
+        Upstream never used `DeferredRegister`, only `DeferredHolder`+`RegisterEvent`, so nothing of that
+        shape needed replacing — Fabric registries are simply open during `onInitialize()`.
+        **`Create.onInitialize()` must call `REGISTRATE.register()` once, after all `AllXxx.register()`
+        static-inits have run** — that's the flush trigger (upstream gets it for free from the event bus).
+      - *`RegistryEntry<R, T>` keeps upstream 1.21's two-type-parameter shape* (Create spells it out at ~50
+        sites) but does NOT extend NeoForge's `DeferredHolder`; it's created unresolved and filled in by the
+        flush via `resolve(T)`. `RegistryEntry#getKey()`/`#asHolder()` cover the DeferredHolder-isms Create
+        uses.
+      - *Client hookups are real, not stubbed*: `.renderer()` (BE + entity), `.color()` (block + item),
+        `.addLayer()`, menu screens go through `com.tterrag.registrate.fabric.RegistrateClientHooks` (Fabric
+        API's `EntityRendererRegistry`/`ColorProviderRegistry`/`BlockRenderLayerMap`, vanilla
+        `BlockEntityRenderers`/`MenuScreens`) behind an env check (`RegistrateEnv.runOnClient`), same
+        Supplier<Runnable> trick as NeoForge's DistExecutor so servers never load client classes.
+        `.attributes()` uses `FabricDefaultAttributeRegistry`.
+      - *Extended-data menus* (all 13 of Create's, via upstream's `ForgeMenuFactory` shape) map onto Fabric's
+        `ExtendedScreenHandlerType` carrying an opaque `RegistrateMenuData` byte blob, so the client factory
+        still receives a `RegistryFriendlyByteBuf` unchanged. **Phase 1 TODO:** Create's server-side
+        `player.openMenu(provider, buf -> …)` call sites need a small `MenuProvider` shim implementing
+        Fabric's `ExtendedScreenHandlerFactory<RegistrateMenuData>` using `RegistrateMenuData.write(...)`.
+      - *No-ops with matching signatures* (accepted-and-dropped, so ported chains compile): `.tag()`,
+        `.lang()`/`defaultLang()`, `.blockstate()`/`.model()`/`.loot()`/`.recipe()` and their `default*`
+        variants, `addDataGenerator()`, `addLang()`, `defaultCreativeTab()`, `ItemBuilder.tab()`,
+        `.burnTime()`/`.compostable()` (NeoForge data maps — need Fabric's fuel/compost registries directly at
+        the AllItems call sites in Phase 2). Rationale for the datagen ones is below.
+      - *Deferred to Phase 2 with concrete content:* `FluidBuilder` is a bare shell (upstream's is 100%
+        NeoForge `FluidType`; Create has only 4 fluids, all via `CreateRegistrate.standardFluid`/
+        `virtualFluid` — design the Fabric fluid against those). `EntityBuilder.spawnPlacement()`/spawn eggs
+        omitted (unused by Create).
+      - *Datagen-hook builder methods (`.blockstate()`, `.model()`, `.loot()`, `.recipe()`, `.lang()` — 322
+        call sites total across Create) are signature-compatible no-ops*: upstream Create's repo already
+        ships **pre-generated** JSON under `src/generated/resources/`, which Phase 2 vendors directly as
+        static resources — nothing needs to actually run datagen yet. **Caveat discovered on inspection: the
+        lambda *bodies* at those call sites still have to compile**, and they call ~30 distinct methods on
+        the provider objects (`p.simpleBlock`, `p.models().cubeAll`, `p.modLoc`, `p.horizontalBlock`,
+        `p.getVariantBuilder`, `p.stonecutting`, `p.dropOther`, …). So the provider classes under
+        `com.tterrag.registrate.providers` (currently empty placeholders) will grow no-op-bodied methods
+        with upstream's signatures, compile-error-driven, as Phase 2 files land — a loose skeleton Phase 11
+        then fills in for real. Don't pre-build NeoForge's whole model-generator DSL speculatively.
+      - Coverage prioritized by call-site frequency in Create: `block()`/`item()`/`blockEntity()` (194/50/9
+        entry-point sites; `.register()`/`.transform()`/`.properties()`/`.tag()` used 200-400+ times each)
+        are fully implemented. `entity()`/`menu()` (2/1 sites) functional. `fluid()` deferred (above).
+        Unused upstream surface (enchantment/particle/biome builders, `.removeTag()`, spawn eggs, etc.)
+        skipped entirely.
+      - Create's own additions on top of base Registrate — `CreateRegistrate` (custom creative-tab lookup,
+        tooltip-modifier hook; overrides `accept(...)` and `blockEntity`/`entity` via the protected
+        `entry(name, callback -> …)` seam, both kept upstream-shaped for exactly this), `CreateBlockEntityBuilder`/
+        `CreateEntityBuilder` (`.visual()` for Flywheel visualizer registration — implement for real via
+        `RegistrateEnv.runOnClient`, Flywheel is a live dependency), `SimpleBuilder` (Create's custom-registry
+        mechanism for `displaySource`/`displayTarget`/`mountedItemStorage`) — ported in Phase 1
+        (`foundation/data`), not as part of Registrate itself. Note `CreateRegistrate` types its creative-tab
+        field as NeoForge `DeferredHolder<CreativeModeTab, CreativeModeTab>` — becomes `RegistryEntry` /
+        `ResourceKey<CreativeModeTab>` in the port.
 - [ ] **Phase 1 — Core infra.** `foundation/data`, `foundation/utility`, `foundation/block`,
       `foundation/blockEntity` base classes; config system (NeoForge config → Fabric equivalent);
       networking (`AllPackets`, NeoForge channels → Fabric Networking API payloads); attachments (NeoForge
