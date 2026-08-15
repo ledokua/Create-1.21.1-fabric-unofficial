@@ -11,6 +11,9 @@ base {
 }
 
 loom {
+    // Translated from upstream's META-INF/accesstransformer.cfg — see the file's header comment.
+    accessWidenerPath = file("src/main/resources/create.accesswidener")
+
     // Deliberately NOT using splitEnvironmentSourceSets(): upstream Create is a single source set that
     // gates client-only code with @OnlyIn(Dist.CLIENT)/@Environment(EnvType.CLIENT) and relies on the JVM
     // never loading a class until something actually references it. Physically sorting a 275k-line,
@@ -27,6 +30,8 @@ loom {
 repositories {
     maven { url = "https://maven.createmod.net" } // Flywheel, Catnip, Ponder (official Fabric builds)
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven" } // Forge Config API Port
+    maven { url = "https://maven.blamejared.com" } // JEI
+    maven { url = "https://maven.squiddev.cc" } // CC: Tweaked
 }
 
 dependencies {
@@ -59,8 +64,14 @@ dependencies {
     // Porting-Lib into the whole project and pin flywheel to that old fork, defeating the native-port
     // strategy. Catnip needs to be ported natively from source instead — see PORTING_PLAN.md Phase 0a.
 
-    // TODO(Phase 0b): Registrate has no Fabric build for 1.21 — see PORTING_PLAN.md.
-    // Everything under com.simibubi.create.foundation.data / the AllXxx registry classes is blocked on this.
+    // Registrate: reimplemented natively under src/main/java/com/tterrag/registrate — see PORTING_PLAN.md Phase 0b.
+
+    // Optional-mod compat APIs (compile-time only, same as upstream; both projects publish Fabric API jars).
+    // Upstream references these directly from ~10 core block-entity/recipe classes, so keeping the deps is
+    // far less invasive than gutting the code.
+    modCompileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
+    modCompileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-fabric-api:${project.cc_tweaked_version}"
+    modCompileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-core-api:${project.cc_tweaked_version}"
 }
 
 processResources {
@@ -83,6 +94,7 @@ tasks.withType(JavaCompile).configureEach {
     // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
     // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
+    it.options.compilerArgs.addAll(["-Xmaxerrs", "10000", "-Xmaxwarns", "10"])
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         it.options.release.set(targetJavaVersion)
     }

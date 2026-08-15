@@ -16,12 +16,9 @@
       "com.simibubi.create.Create"
     ]
   },
+  "accessWidener": "create.accesswidener",
   "mixins": [
-    "create.mixins.json",
-    {
-      "config": "create.client.mixins.json",
-      "environment": "client"
-    }
+    "create.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

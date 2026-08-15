@@ -128,10 +128,42 @@ re-discovering it.
         (`foundation/data`), not as part of Registrate itself. Note `CreateRegistrate` types its creative-tab
         field as NeoForge `DeferredHolder<CreativeModeTab, CreativeModeTab>` — becomes `RegistryEntry` /
         `ResourceKey<CreativeModeTab>` in the port.
-- [ ] **Phase 1 — Core infra.** `foundation/data`, `foundation/utility`, `foundation/block`,
-      `foundation/blockEntity` base classes; config system (NeoForge config → Fabric equivalent);
-      networking (`AllPackets`, NeoForge channels → Fabric Networking API payloads); attachments (NeoForge
-      `AttachmentType` has no Fabric equivalent — needs a custom or library solution).
+## NeoForge → Fabric translation strategy (decided at the start of Phase 1)
+
+Measured on upstream: 701 of ~2,016 files import NeoForge, from only **217 distinct classes**, clustering
+into a few buckets. Rule of thumb throughout: **keep upstream's code shape** (so future syncs stay diffs)
+and swap the *implementation* underneath, the same way Catnip and Registrate were handled.
+
+| Bucket | ~sites | Translation |
+|---|---|---|
+| `@OnlyIn(Dist.CLIENT)` / `Dist` | 440 | Mechanical rewrite to `@Environment(EnvType.CLIENT)` (`scripts/` sed pass, re-runnable on sync). |
+| **Item/fluid handler API** — `IItemHandler`, `IItemHandlerModifiable`, `ItemStackHandler`, `ItemHandlerHelper`, `SlotItemHandler`, `RecipeWrapper`, `CombinedInvWrapper`, `FluidStack`, `IFluidHandler(Item)`, `FluidTank`, `FluidAction`, `SizedFluidIngredient`… | ~450 | **Create owns these abstractions** — port them as Create classes (upstream shape/semantics, no `net.neoforged` package; e.g. `com.simibubi.create.foundation.item.handler.*`, `…fluid.*`) and mechanically rewrite imports. Only ~55–72 files do actual capability *lookups* (`level.getCapability(Capabilities.ItemHandler.BLOCK, …)`); those go through a Create-owned `BlockApiLookup<IItemHandler, Direction>` (Fabric API's real lookup mechanism) with two-way adapters to Fabric Transfer API (`ItemStorage.SIDED`/`FluidStorage.SIDED` ⇄ `IItemHandler`/`IFluidHandler`) so vanilla containers and other Fabric mods interoperate. **This is the single biggest fork from upstream and the only viable one** — rewriting ~450 sites onto Transfer API's transaction/variant model directly is a multi-year effort that would also permanently diverge from upstream. |
+| Events — `@EventBusSubscriber`/`@SubscribeEvent`, `PlayerInteractEvent`, `NeoForge.EVENT_BUS`, `InputEvent`, `EventHooks`… (65 distinct event types, 120 handler methods in 55 files, concentrated in `foundation/events/ClientEvents`+`CommonEvents` and `ExtendoGripItem`) | ~250 | **Create-owned event bridge** (`com.simibubi.create.foundation.event.*`, mirroring NeoForge's event package tree so it's a prefix sed): a minimal event bus, event classes exposing exactly the members Create's handlers use, fired from Fabric callbacks (`UseBlockCallback`, `ServerTickEvents`, `HudRenderCallback`, …) or small mixins where Fabric has no hook. `@SubscribeEvent`/`@EventBusSubscriber` stay as Create-owned marker annotations; registration is reflective over an *explicit* list of subscriber classes (no classpath scanning). Rationale: keeps all 120 handler bodies unchanged and centralizes each event's semantic mapping once, instead of re-deriving it at every site; rewriting sites into Fabric lambdas would permanently diverge from upstream. Handlers subscribed to an event type that isn't wired to a Fabric hook yet are **logged at init** — a self-maintaining worklist, never a silent no-op. Create's own API events (`com.simibubi.create.api.event.*`, which upstream builds on NeoForge's `Event`) extend the bridge's `Event`. |
+| NeoForge patch-methods on vanilla classes — `Entity/BlockEntity#getPersistentData()` (70), `BlockEntity#invalidateCapabilities()` (22), `AbstractContainerScreen#getGuiLeft/Top()` (41), `ItemStack#getCraftingRemainingItem()` (11), … | ~150 | Loom **interface injection** (`loom:injected_interfaces` in fabric.mod.json) + a mixin implementing the injected interface on the vanilla class — Fabric's own mechanism for "add a method to a vanilla class". Call sites compile unchanged. `invalidateCapabilities()` is a no-op (Fabric's `BlockApiCache` invalidates on block-entity change by itself). |
+| `Tags.Items/Blocks/Fluids` (NeoForge convention tags) | 130 | Create-owned `Tags` class with NeoForge's constant names bound to the same `c:` tag ids Fabric's `ConventionalItemTags` use on 1.21 (they agree on ids, not on constant names) — same code shape, full interop. |
+| Datagen model DSL — `net.neoforged.neoforge.client.model.generators.*` (`ModelFile`, `ConfiguredModel`, `VariantBlockStateBuilder`, `models().cubeAll(...)`, `p.modLoc(...)`, …) referenced by the ~320 datagen lambdas + `foundation/data/BlockStateGen` etc. | ~450 | No-op-bodied shell classes with upstream's signatures (Create-owned, `com.simibubi.create.foundation.data.modelgen.*` + the `com.tterrag.registrate.providers.*` placeholders), built compile-error-driven. Bodies never run (Phase 0b decision: vendored pre-generated JSON); Phase 11 replaces the shell with real Fabric datagen. |
+| Client model data / model gen — `ModelData`, `ModelProperty`, `IDynamicBakedModel`, `IClientItemExtensions`, `IClientBlockExtensions`; `ModelFile` etc. | ~90 | Runtime ones → FRAPI (`FabricBakedModel.emitBlockQuads`, render-data attachments) in Phase 3. Datagen ones (`ModelFile`, `ExistingFileHelper`) → no-op provider stubs (Phase 0b decision). |
+| `Tags.Items/Blocks/Fluids` (NeoForge convention tags) | 26 | `net.fabricmc.fabric.api.tag.convention.v2.Conventional*Tags` — both use the `c:` namespace on 1.21 so ids mostly match. |
+| `FakePlayer` | 19 | `net.fabricmc.fabric.api.entity.FakePlayer` (Fabric API). |
+| `AttachmentType`/data attachments | ~10 | `fabric-data-attachment-api-v1` — near 1:1. |
+| `DeferredRegister`/`DeferredHolder` (`AllRecipeTypes`, `AllCreativeModeTabs`, …) | 24 | Direct `Registry.register` or `REGISTRATE.simple(...)`. |
+| Config — `ModConfigSpec`, `ModConfig`, `ModConfigEvent` | ~20 | `forgeconfigapiport-fabric` (already a Ponder dependency; ships these under the same package names — a real Fabric reimplementation of the config format, not a call shim; Catnip's `ConfigBase` already compiles against it here). |
+| Networking — `AllPackets` | 1 | Already routed through vendored Catnip's `CatnipPacketRegistry` (Fabric impl present). Free. |
+| Fluids — `FluidType`, `BaseFlowingFluid`, `NeoForgeMod.MILK` | ~20 | Phase 2, designed against Create's 4 actual fluids (see Phase 0b). |
+
+**Porting mechanics:** vendor whole directories from upstream in dependency-ordered waves (foundation core →
+foundation rest + api → infrastructure → content by subsystem), run the mechanical rewrites, then fix
+`compileJava` errors bucket-by-bucket (javac `-Xmaxerrs` raised so the full picture is visible). Files that
+drag in unported subsystems get their imports satisfied by porting the dependency, not by stubbing it —
+stubs are only used for datagen (Phase 0b decision).
+
+## Phases (continued)
+
+- [ ] **Phase 1 — Core infra.** `foundation/*` + `api/*` + `impl/*` (~430 files) via the wave process
+      above, plus the Create-owned item/fluid handler package described in the table. Also
+      `CreateRegistrate`/`CreateBlockEntityBuilder`/`CreateEntityBuilder`/`SimpleBuilder`, the
+      `RegistrateMenuData` server-side `openMenu` shim, and wiring `REGISTRATE.register()` into
+      `Create.onInitialize()`.
 - [ ] **Phase 2 — Registry data classes.** `AllBlocks`, `AllItems`, `AllFluids`, `AllBlockEntityTypes`,
       `AllEntityTypes`, `AllRecipeTypes`, `AllSoundEvents`, `AllParticleTypes`, `AllCreativeModeTabs`,
       `AllTags`, `AllDataComponents`, etc. Mostly mechanical once Phase 0b/1 land.
