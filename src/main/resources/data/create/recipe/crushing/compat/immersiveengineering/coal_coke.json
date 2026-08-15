@@ -1,0 +1,27 @@
+{
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "fabric:type": "fabric:any",
+      "ingredients": [
+        {
+          "item": "immersiveengineering:coal_coke"
+        }
+      ]
+    }
+  ],
+  "processing_time": 200,
+  "results": [
+    {
+      "id": "immersiveengineering:dust_coke"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "immersiveengineering"
+      ]
+    }
+  ]
+}

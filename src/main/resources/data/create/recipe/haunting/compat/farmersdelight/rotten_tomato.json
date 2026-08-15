@@ -1,0 +1,26 @@
+{
+  "type": "create:haunting",
+  "ingredients": [
+    {
+      "fabric:type": "fabric:any",
+      "ingredients": [
+        {
+          "item": "farmersdelight:tomato"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "id": "farmersdelight:rotten_tomato"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "farmersdelight"
+      ]
+    }
+  ]
+}

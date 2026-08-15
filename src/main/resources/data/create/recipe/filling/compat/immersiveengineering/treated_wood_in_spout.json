@@ -1,0 +1,26 @@
+{
+  "type": "create:filling",
+  "ingredients": [
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "type": "neoforge:tag",
+      "amount": 125,
+      "tag": "c:creosote"
+    }
+  ],
+  "results": [
+    {
+      "id": "immersiveengineering:treated_wood_horizontal"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "immersiveengineering"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    {
+      "fabric:type": "fabric:any",
+      "ingredients": [
+        {
+          "item": "betterendforge:end_mycelium"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "id": "betterendforge:end_mycelium_path"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "betterendforge"
+      ]
+    }
+  ]
+}
