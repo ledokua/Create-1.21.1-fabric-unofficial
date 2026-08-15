@@ -20,11 +20,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.api.EnvType;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import com.simibubi.create.foundation.event.bus.EventPriority;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
+import com.simibubi.create.foundation.event.client.RenderPlayerEvent;
+import com.simibubi.create.foundation.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(value = EnvType.CLIENT)
 public class CardboardArmorHandlerClient {

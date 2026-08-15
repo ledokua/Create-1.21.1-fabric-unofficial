@@ -78,30 +78,30 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.gui.map.RegisterMapDecorationRenderersEvent;
-import net.neoforged.neoforge.event.AddPackFindersEvent;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.EntityEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
-import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import com.simibubi.create.foundation.event.AddPackFindersEvent;
+import com.simibubi.create.foundation.event.AddReloadListenerEvent;
+import com.simibubi.create.foundation.event.RegisterCommandsEvent;
+import com.simibubi.create.foundation.event.entity.EntityEvent;
+import com.simibubi.create.foundation.event.entity.EntityJoinLevelEvent;
+import com.simibubi.create.foundation.event.entity.EntityLeaveLevelEvent;
+import com.simibubi.create.foundation.event.entity.player.AttackEntityEvent;
+import com.simibubi.create.foundation.event.entity.player.PlayerEvent;
+import com.simibubi.create.foundation.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import com.simibubi.create.foundation.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
+import com.simibubi.create.foundation.event.level.ChunkEvent;
+import com.simibubi.create.foundation.event.level.LevelEvent;
+import com.simibubi.create.foundation.event.server.ServerStoppingEvent;
+import com.simibubi.create.foundation.event.tick.EntityTickEvent;
 
 @EventBusSubscriber
 public class CommonEvents {
 
 	@SubscribeEvent
-	public static void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+	public static void onServerTick(com.simibubi.create.foundation.event.tick.ServerTickEvent.Post event) {
 		Create.SCHEMATIC_RECEIVER.tick();
 		Create.LAGGER.tick();
 		ServerSpeedProvider.serverTick();
@@ -130,7 +130,7 @@ public class CommonEvents {
 	}
 
 	@SubscribeEvent
-	public static void onServerWorldTick(net.neoforged.neoforge.event.tick.LevelTickEvent.Post event) {
+	public static void onServerWorldTick(com.simibubi.create.foundation.event.tick.LevelTickEvent.Post event) {
 		Level world = event.getLevel();
 		if (world.isClientSide())
 			return;
@@ -208,11 +208,11 @@ public class CommonEvents {
 	}
 
 	@SubscribeEvent
-	public static void attachData(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
+	public static void attachData(com.simibubi.create.foundation.event.entity.EntityJoinLevelEvent event) {
 		CapabilityMinecartController.attach(event);
 	}
 
-	@net.neoforged.bus.api.SubscribeEvent
+	@com.simibubi.create.foundation.event.bus.SubscribeEvent
 	public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
 		if (!event.getEntity()
 			.isAlive())
@@ -261,12 +261,12 @@ public class CommonEvents {
 			}
 		}
 
-		@net.neoforged.bus.api.SubscribeEvent
+		@com.simibubi.create.foundation.event.bus.SubscribeEvent
 		public static void onRegisterMapDecorationRenderers(RegisterMapDecorationRenderersEvent event) {
 			event.register(AllMapDecorationTypes.STATION_MAP_DECORATION.value(), new StationMapDecorationRenderer());
 		}
 
-		@net.neoforged.bus.api.SubscribeEvent
+		@com.simibubi.create.foundation.event.bus.SubscribeEvent
 		public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 			ChuteBlockEntity.registerCapabilities(event);
 			SmartChuteBlockEntity.registerCapabilities(event);

@@ -19,8 +19,8 @@ import net.minecraft.world.item.Item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile.UncheckedModelFile;
+import com.simibubi.create.foundation.data.modelgen.ItemModelBuilder;
+import com.simibubi.create.foundation.data.modelgen.ModelFile.UncheckedModelFile;
 
 public class ClipboardOverrides {
 

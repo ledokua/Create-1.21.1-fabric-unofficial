@@ -2,7 +2,7 @@ package com.simibubi.create.api.event;
 
 import com.simibubi.create.content.trains.graph.TrackGraph;
 
-import net.neoforged.bus.api.Event;
+import com.simibubi.create.foundation.event.bus.Event;
 
 public class TrackGraphMergeEvent extends Event {
 	private final TrackGraph mergedInto;

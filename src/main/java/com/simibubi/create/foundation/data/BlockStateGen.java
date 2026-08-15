@@ -43,11 +43,11 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.RailShape;
-import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.ModelFile.ExistingModelFile;
-import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
+import com.simibubi.create.foundation.data.modelgen.BlockModelProvider;
+import com.simibubi.create.foundation.data.modelgen.ConfiguredModel;
+import com.simibubi.create.foundation.data.modelgen.ModelFile;
+import com.simibubi.create.foundation.data.modelgen.ModelFile.ExistingModelFile;
+import com.simibubi.create.foundation.data.modelgen.MultiPartBlockStateBuilder;
 
 public class BlockStateGen {
 

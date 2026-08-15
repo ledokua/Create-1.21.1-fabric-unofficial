@@ -66,7 +66,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import com.simibubi.create.foundation.transfer.capability.Capabilities;
 import com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import com.simibubi.create.foundation.transfer.item.IItemHandlerModifiable;
 import com.simibubi.create.foundation.transfer.item.ItemStackHandler;
 import com.simibubi.create.foundation.transfer.item.wrapper.RecipeWrapper;
@@ -579,7 +578,7 @@ public class DeployerBlockEntity extends KineticBlockEntity implements Clearable
 		event.addRecipe(() -> checkRecipe(AllRecipeTypes.DEPLOYING, event.getInventory(), level), 50);
 		event.addRecipe(() -> checkRecipe(AllRecipeTypes.ITEM_APPLICATION, event.getInventory(), level), 50);
 
-		NeoForge.EVENT_BUS.post(event);
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(event);
 		return event.getRecipe();
 	}
 

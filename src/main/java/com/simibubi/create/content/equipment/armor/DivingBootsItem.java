@@ -14,9 +14,9 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
+import com.simibubi.create.foundation.event.tick.EntityTickEvent;
 
 @EventBusSubscriber
 public class DivingBootsItem extends BaseArmorItem {

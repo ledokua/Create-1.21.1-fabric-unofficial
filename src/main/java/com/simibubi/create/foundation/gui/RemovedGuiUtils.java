@@ -18,9 +18,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.event.RenderTooltipEvent;
+import com.simibubi.create.foundation.event.client.RenderTooltipEvent;
 import net.neoforged.neoforge.client.extensions.IGuiGraphicsExtension;
-import net.neoforged.neoforge.common.NeoForge;
 
 public class RemovedGuiUtils {
 	@NotNull
@@ -66,7 +65,7 @@ public class RemovedGuiUtils {
 			stack.getTooltipImage(), mouseX, screenWidth, screenHeight, font);
 		RenderTooltipEvent.Pre event =
 			new RenderTooltipEvent.Pre(stack, graphics, mouseX, mouseY, screenWidth, screenHeight, font, list, null);
-		if (NeoForge.EVENT_BUS.post(event).isCanceled())
+		if (com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(event).isCanceled())
 			return;
 
 		PoseStack pStack = graphics.pose();
@@ -151,7 +150,7 @@ public class RemovedGuiUtils {
 		final int zLevel = 400;
 		RenderTooltipEvent.Color colorEvent = new RenderTooltipEvent.Color(stack, graphics, tooltipX, tooltipY,
 			font, backgroundColor, borderColorStart, borderColorEnd, list);
-		NeoForge.EVENT_BUS.post(colorEvent);
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(colorEvent);
 		backgroundColor = colorEvent.getBackgroundStart();
 		borderColorStart = colorEvent.getBorderStart();
 		borderColorEnd = colorEvent.getBorderEnd();

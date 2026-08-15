@@ -12,9 +12,9 @@ import com.simibubi.create.infrastructure.gametest.tests.TestRegressions;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
+import com.simibubi.create.foundation.event.RegisterGameTestsEvent;
 
 @EventBusSubscriber
 public class CreateGameTests {

@@ -9,7 +9,7 @@ import com.simibubi.create.content.logistics.packagePort.PackagePortTarget.Train
 
 import net.minecraft.core.Holder;
 
-import net.neoforged.bus.api.IEventBus;
+import com.simibubi.create.foundation.event.bus.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class AllPackagePortTargetTypes {

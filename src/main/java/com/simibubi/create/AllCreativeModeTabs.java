@@ -52,7 +52,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 
-import net.neoforged.bus.api.IEventBus;
+import com.simibubi.create.foundation.event.bus.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import org.jetbrains.annotations.ApiStatus.Internal;

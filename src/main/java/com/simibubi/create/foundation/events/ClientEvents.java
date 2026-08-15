@@ -95,28 +95,28 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.api.EnvType;
-import net.neoforged.bus.api.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage;
-import net.neoforged.neoforge.client.event.ViewportEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
+import com.simibubi.create.foundation.event.lifecycle.FMLLoadCompleteEvent;
+import com.simibubi.create.foundation.event.client.ClientPlayerNetworkEvent;
+import com.simibubi.create.foundation.event.client.ClientTickEvent;
+import com.simibubi.create.foundation.event.client.EntityRenderersEvent;
+import com.simibubi.create.foundation.event.client.RegisterClientCommandsEvent;
+import com.simibubi.create.foundation.event.client.RegisterClientReloadListenersEvent;
+import com.simibubi.create.foundation.event.client.RegisterGuiLayersEvent;
+import com.simibubi.create.foundation.event.client.RegisterItemDecorationsEvent;
+import com.simibubi.create.foundation.event.client.RenderFrameEvent;
+import com.simibubi.create.foundation.event.client.RenderLevelStageEvent;
+import com.simibubi.create.foundation.event.client.RenderLevelStageEvent.Stage;
+import com.simibubi.create.foundation.event.client.ViewportEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.event.entity.EntityMountEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
+import com.simibubi.create.foundation.event.entity.EntityMountEvent;
+import com.simibubi.create.foundation.event.entity.player.ItemTooltipEvent;
+import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent;
+import com.simibubi.create.foundation.event.level.LevelEvent;
 
 @EventBusSubscriber(EnvType.CLIENT)
 public class ClientEvents {

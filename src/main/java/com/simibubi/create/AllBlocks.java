@@ -318,8 +318,8 @@ import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
+import com.simibubi.create.foundation.data.modelgen.ConfiguredModel;
+import com.simibubi.create.foundation.data.modelgen.ModelFile;
 import com.simibubi.create.foundation.tags.Tags;
 import net.neoforged.neoforge.common.util.DeferredSoundType;
 

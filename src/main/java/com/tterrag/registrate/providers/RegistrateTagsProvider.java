@@ -1,18 +1,16 @@
 package com.tterrag.registrate.providers;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.TagKey;
 
-/** Placeholder for Phase 11 — see {@link RegistrateBlockstateProvider}. */
-public class RegistrateTagsProvider<T> {
+/**
+ * Shell — see {@link RegistrateBlockstateProvider}. Presents vanilla's TagsProvider surface
+ * ({@code addTag(tag).add(...)}) so upstream's bulk tag callbacks compile.
+ */
+public abstract class RegistrateTagsProvider<T> {
 
-	/** Matches upstream's bulk `addTag(TagKey)` call shape used in Create's CreateRegistrateTags. No-op for now. */
-	public RegistrateTagsProvider<T>.TagAppender tag(TagKey<T> tag) {
-		return new TagAppender();
-	}
+	public abstract TagsProvider.TagAppender<T> addTag(TagKey<T> tag);
 
-	public class TagAppender {
-		public TagAppender add(@SuppressWarnings("unchecked") T... values) {
-			return this;
-		}
-	}
+	public abstract HolderLookup.Provider getRegistries();
 }

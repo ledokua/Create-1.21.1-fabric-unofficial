@@ -30,15 +30,15 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage;
+import com.simibubi.create.foundation.event.bus.EventPriority;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
+import com.simibubi.create.foundation.event.client.ClientTickEvent;
+import com.simibubi.create.foundation.event.client.RenderLevelStageEvent;
+import com.simibubi.create.foundation.event.client.RenderLevelStageEvent.Stage;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
-import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
+import com.simibubi.create.foundation.event.level.BlockEvent.BreakEvent;
+import com.simibubi.create.foundation.event.level.BlockEvent.EntityPlaceEvent;
 
 @EventBusSubscriber
 public class SymmetryHandler {

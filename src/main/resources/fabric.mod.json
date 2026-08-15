@@ -20,6 +20,15 @@
   "mixins": [
     "create.mixins.json"
   ],
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/class_1297": ["com/simibubi/create/foundation/mixin/extension/EntityExtension"],
+      "net/minecraft/class_2586": ["com/simibubi/create/foundation/mixin/extension/BlockEntityExtension"],
+      "net/minecraft/class_465": ["com/simibubi/create/foundation/mixin/extension/AbstractContainerScreenExtension"],
+      "net/minecraft/class_1799": ["com/simibubi/create/foundation/mixin/extension/ItemStackExtension"],
+      "net/minecraft/class_304": ["com/simibubi/create/foundation/mixin/extension/KeyMappingExtension"]
+    }
+  },
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",

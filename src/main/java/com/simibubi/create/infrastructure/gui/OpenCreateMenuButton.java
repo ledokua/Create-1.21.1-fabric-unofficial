@@ -25,9 +25,9 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.api.EnvType;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ScreenEvent;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
+import com.simibubi.create.foundation.event.client.ScreenEvent;
 
 public class OpenCreateMenuButton extends Button {
 

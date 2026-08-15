@@ -3,7 +3,7 @@ package com.simibubi.create;
 import com.simibubi.create.content.trains.entity.CarriageSyncDataSerializer;
 
 import net.minecraft.network.syncher.EntityDataSerializer;
-import net.neoforged.bus.api.IEventBus;
+import com.simibubi.create.foundation.event.bus.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;

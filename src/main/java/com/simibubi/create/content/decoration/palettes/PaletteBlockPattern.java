@@ -35,7 +35,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import com.simibubi.create.foundation.data.modelgen.ConfiguredModel;
 
 public class PaletteBlockPattern {
 

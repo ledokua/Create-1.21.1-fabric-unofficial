@@ -13,10 +13,10 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
-import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.ModelFile.ExistingModelFile;
+import com.simibubi.create.foundation.data.modelgen.BlockModelProvider;
+import com.simibubi.create.foundation.data.modelgen.ItemModelBuilder;
+import com.simibubi.create.foundation.data.modelgen.ModelFile;
+import com.simibubi.create.foundation.data.modelgen.ModelFile.ExistingModelFile;
 
 public abstract class AbstractDiodeGenerator extends SpecialBlockStateGen {
 

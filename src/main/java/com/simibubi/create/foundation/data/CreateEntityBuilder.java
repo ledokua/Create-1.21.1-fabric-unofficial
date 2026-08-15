@@ -18,7 +18,7 @@ import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import com.simibubi.create.foundation.event.lifecycle.FMLClientSetupEvent;
 
 
 @ParametersAreNonnullByDefault

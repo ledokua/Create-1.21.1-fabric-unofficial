@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
-import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.ICancellableEvent;
+import com.simibubi.create.foundation.event.bus.Event;
+import com.simibubi.create.foundation.event.bus.ICancellableEvent;
 import com.simibubi.create.foundation.transfer.item.wrapper.RecipeWrapper;
 
 public class DeployerRecipeSearchEvent extends Event implements ICancellableEvent {

@@ -9,8 +9,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import com.simibubi.create.foundation.event.client.ScreenEvent;
 
 /**
  * Mobile devices have low quality graphics drivers that cause visual issues.
@@ -60,7 +59,7 @@ public class PojavChecker {
 		if (!IS_PRESENT)
 			return;
 
-		NeoForge.EVENT_BUS.addListener(PojavChecker::onScreenInit);
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener(PojavChecker::onScreenInit);
 	}
 
 	public static void onScreenInit(ScreenEvent.Init.Post event) {

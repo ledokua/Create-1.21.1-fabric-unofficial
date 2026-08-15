@@ -157,6 +157,55 @@ foundation rest + api → infrastructure → content by subsystem), run the mech
 drag in unported subsystems get their imports satisfied by porting the dependency, not by stubbing it —
 stubs are only used for datagen (Phase 0b decision).
 
+## >>> RESUME HERE (Phase 1 in progress, build red by design) <<<
+
+State at the last checkpoint: whole upstream tree vendored (1,900 files); `./gradlew compileJava` shows
+**~1,460 errors** (started at 6,242). Everything is committed. Progress metric = that error count. To see the
+current buckets:
+```
+./gradlew compileJava --console=plain 2>&1 | awk '/^FAILURE/{exit}{print}' > /tmp/c.log
+grep -c 'error:' /tmp/c.log
+grep -A3 'error: cannot find symbol' /tmp/c.log | grep -E '^\s+symbol:' | sed -E 's/.*symbol: *//' | sort | uniq -c | sort -rn | head -40
+grep -rhoE '^import (static )?net\.neoforged\.[a-zA-Z0-9_.]*;' --include=*.java src/main/java/com/simibubi/create | sort | uniq -c | sort -rn
+```
+Done so far in Phase 1 (all under the strategy table above): transfer bridge (item/fluid/capabilities);
+`Tags`; interface injection (`foundation/mixin/extension` + `loom:injected_interfaces` in fabric.mod.json);
+access widener; event bridge **classes** (`foundation/event/**`: bus, ~70 event types incl. client ones,
+`EventHooks`, `BlockSnapshot`) — **not yet wired to Fabric hooks** (that's `CreateEventHooks`, next); datagen
+DSL shell (`foundation/data/modelgen` + `com.tterrag.registrate.providers`); real `Create`/`CreateClient`.
+
+Next steps, in order of error yield:
+1. **Client model data**: `ModelData`/`ModelProperty` (Create-owned typed map, ~85 errors),
+   `BakedModelWrapper`/`IDynamicBakedModel` → FRAPI-backed base, `IClientItemExtensions`/
+   `IClientBlockExtensions`/`IClientFluidTypeExtensions` (Create-owned interfaces; hookups Phase 3),
+   `ChunkRenderTypeSet`, `QuadTransformers`, `IGuiGraphicsExtension`, `ClientHooks`.
+2. **Registries**: `DeferredRegister`/`DeferredHolder` sites (~35; → `Registry.register` / Registrate
+   `simple()`), `NeoForgeRegistries`, `RegisterEvent`, `RegistryBuilder`/`GameData`/`DataPackRegistryEvent`
+   (Create's custom registries: `CreateRegistries`/`CreateBuiltInRegistries` — Fabric `FabricRegistryBuilder`),
+   NeoForge **data maps** (`CreateDataMaps`, `NeoForgeDataMaps`, `DataMapType`, `Oxidizable`/`Waxable`) →
+   Create-owned JSON-loaded maps mirroring the `data/<ns>/data_maps/` format so vendored files load.
+3. **CC:Tweaked** `PeripheralCapability` (17) → CC Fabric API's `PeripheralLookup`.
+4. **Fluids** (Phase 2 design, but blocks compile): `FluidType`, `BaseFlowingFluid`, `NeoForgeMod.MILK/
+   LAVA_TYPE/WATER_TYPE`, `FluidInteractionRegistry` (+ its accessor mixin), `getFluidType()` sites, `FluidBucketWrapper`.
+5. **Event wiring**: write `foundation/event/CreateEventHooks` (Fabric callbacks + small mixins posting the
+   bridge events; log unwired), call `CreateEventBus.registerSubscribers()` + post lifecycle events from
+   `Create`/`CreateClient` init; fix the ~6 explicit `addListener(...)` sites to pass the event class;
+   `RegisterCapabilitiesEvent` should extend bridge `Event` and be posted after the Registrate flush.
+6. Long tail (each ≤5 sites): `ICondition`/`ConditionalRecipe`/`IngredientType`/`ICustomIngredient`/
+   `CompoundIngredient`/`BlockTagIngredient` (Fabric `CustomIngredient` + resource conditions),
+   `IEntityWithComplexSpawn` (custom spawn payload), `LogicalSide`/`EffectiveSide`, `ServerLifecycleHooks`,
+   `ModList`/`ModContainer`/`FMLPaths`/`FMLLoader`/`ModLoadingContext` (→ `FabricLoader`), `CommonHooks`,
+   `SpecialPlantable`, `ItemAbility`/`ItemAbilities`, `IBaseRailBlockExtension`/`IBlockExtension`,
+   `AuxiliaryLightManager`, `AttachmentType`/`IAttachmentSerializer` (fabric-data-attachment-api-v1),
+   `DeferredSoundType`, `KeyModifier`, `EnumArgument`, `UsernameCache`, `SoundActions`, `EffectCures`,
+   `NeoForgeConfig`, `IBrewingRecipe`/`BrewingRecipe`, `BiomeModifier`(→ Fabric BiomeModifications),
+   `NeoForgeExtraCodecs`, `IMapDecorationRenderer`/`RegisterMapDecorationRenderersEvent`,
+   `IConfigScreenFactory` (→ ModMenu, Phase 12), `compat.trainmap` (JourneyMap/Xaero, Phase 12),
+   `NeoForgeCatnipServices` → `FabricCatnipServices`, `Registrate#registerEventListeners` /
+   `OneTimeEventReceiver` in `CreateRegistrate`/`CreateBlockEntityBuilder` (drop; use `RegistrateEnv`).
+7. Then Phase 1 finishes with the server booting (`./gradlew runServer`) and Phase 2 begins: vendor
+   `src/main/resources` + `src/generated/resources` (assets/data), fix runtime issues.
+
 ## Phases (continued)
 
 - [ ] **Phase 1 — Core infra.** `foundation/*` + `api/*` + `impl/*` (~430 files) via the wave process

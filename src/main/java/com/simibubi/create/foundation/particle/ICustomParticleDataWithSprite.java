@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import com.simibubi.create.foundation.event.client.RegisterParticleProvidersEvent;
 
 import org.jetbrains.annotations.NotNull;
 

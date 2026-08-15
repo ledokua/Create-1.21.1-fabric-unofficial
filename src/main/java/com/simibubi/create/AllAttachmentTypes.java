@@ -6,7 +6,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
 
-import net.neoforged.bus.api.IEventBus;
+import com.simibubi.create.foundation.event.bus.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;

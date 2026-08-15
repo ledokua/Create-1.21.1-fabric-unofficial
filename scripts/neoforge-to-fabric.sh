@@ -36,3 +36,25 @@ find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
   -e 's/net\.neoforged\.neoforge\.common\.Tags\b/com.simibubi.create.foundation.tags.Tags/g' \
   -e 's/net\.neoforged\.neoforge\.common\.util\.FakePlayer\b/net.fabricmc.fabric.api.entity.FakePlayer/g' \
   -e 's/net\.neoforged\.neoforge\.common\.util\.TriState\b/net.fabricmc.fabric.api.util.TriState/g'
+
+# NeoForge's static DyeColor#getColor(ItemStack) patch -> Create's DyeHelper (statics can't be interface-injected)
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/\bDyeColor\.getColor\(/com.simibubi.create.foundation.utility.DyeHelper.getColor(/g'
+
+# ---- events -> Create-owned event bridge (com.simibubi.create.foundation.event.*) ----
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e '/^import net\.neoforged\.neoforge\.common\.NeoForge;$/d' \
+  -e 's/\bNeoForge\.EVENT_BUS\b/com.simibubi.create.foundation.event.bus.CreateEventBus.BUS/g' \
+  -e 's/net\.neoforged\.bus\.api\./com.simibubi.create.foundation.event.bus./g' \
+  -e 's/net\.neoforged\.fml\.common\.EventBusSubscriber/com.simibubi.create.foundation.event.bus.EventBusSubscriber/g' \
+  -e 's/net\.neoforged\.fml\.event\.lifecycle\./com.simibubi.create.foundation.event.lifecycle./g' \
+  -e 's/net\.neoforged\.fml\.event\.config\./com.simibubi.create.foundation.event.lifecycle./g' \
+  -e 's/net\.neoforged\.neoforge\.client\.event\./com.simibubi.create.foundation.event.client./g' \
+  -e 's/net\.neoforged\.neoforge\.event\./com.simibubi.create.foundation.event./g'
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.common\.util\.BlockSnapshot\b/com.simibubi.create.foundation.event.BlockSnapshot/g'
+
+# ---- datagen model DSL -> no-op shell (com.simibubi.create.foundation.data.modelgen) ----
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.client\.model\.generators\./com.simibubi.create.foundation.data.modelgen./g' \
+  -e 's/net\.neoforged\.neoforge\.common\.data\.ExistingFileHelper\b/com.simibubi.create.foundation.data.modelgen.ExistingFileHelper/g'

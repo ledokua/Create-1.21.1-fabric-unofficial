@@ -15,10 +15,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.NeoForge;
+import com.simibubi.create.foundation.event.bus.EventPriority;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 
 @EventBusSubscriber
@@ -32,7 +31,7 @@ public class FluidReactions {
 		BlockHelper.destroyBlock(level, pos, 1);
 
 		PipeCollisionEvent.Flow event = new PipeCollisionEvent.Flow(level, pos, f1, f2, null);
-		NeoForge.EVENT_BUS.post(event);
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(event);
 		if (event.getState() != null)
 			level.setBlockAndUpdate(pos, event.getState());
 	}
@@ -62,7 +61,7 @@ public class FluidReactions {
 		Fluid wf = worldFluid.getType();
 
 		PipeCollisionEvent.Spill event = new PipeCollisionEvent.Spill(level, pos, wf, pf, null);
-		NeoForge.EVENT_BUS.post(event);
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(event);
 		if (event.getState() != null) {
 			level.setBlockAndUpdate(pos, event.getState());
 		}

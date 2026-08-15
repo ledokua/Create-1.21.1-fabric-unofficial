@@ -29,13 +29,13 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventPriority;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.common.EventBusSubscriber;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import com.simibubi.create.foundation.event.entity.player.AttackEntityEvent;
+import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber
 public class CardboardSwordItem extends SwordItem {

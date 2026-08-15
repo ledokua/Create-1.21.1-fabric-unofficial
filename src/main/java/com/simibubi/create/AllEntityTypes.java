@@ -35,7 +35,7 @@ import net.minecraft.world.entity.EntityType.EntityFactory;
 import net.minecraft.world.entity.MobCategory;
 
 import com.simibubi.create.foundation.tags.Tags.EntityTypes;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import com.simibubi.create.foundation.event.entity.EntityAttributeCreationEvent;
 
 public class AllEntityTypes {
 

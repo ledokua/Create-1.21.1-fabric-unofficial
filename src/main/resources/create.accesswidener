@@ -59,3 +59,6 @@ extendable method net/minecraft/world/entity/decoration/HangingEntity recalculat
 accessible class net/minecraft/world/item/alchemy/PotionBrewing$Mix
 
 accessible class net/minecraft/data/models/ItemModelGenerators$TrimModelData
+
+# Fabric-port additions (not from upstream's AT)
+accessible class net/minecraft/client/particle/ParticleEngine$SpriteParticleRegistration

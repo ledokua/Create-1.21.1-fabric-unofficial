@@ -20,8 +20,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import com.simibubi.create.foundation.event.level.BlockEvent;
 
 public interface IWrenchable {
 
@@ -54,7 +53,7 @@ public interface IWrenchable {
 			return InteractionResult.SUCCESS;
 
 		BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, world.getBlockState(pos), player);
-		NeoForge.EVENT_BUS.post(event);
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(event);
 		if (event.isCanceled())
 			return InteractionResult.SUCCESS;
 

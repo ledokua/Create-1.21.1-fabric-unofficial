@@ -17,11 +17,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.common.EventBusSubscriber;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber
 public class LinkHandler {

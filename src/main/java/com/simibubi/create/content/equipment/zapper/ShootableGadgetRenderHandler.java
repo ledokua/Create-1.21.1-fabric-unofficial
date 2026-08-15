@@ -16,8 +16,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.RenderHandEvent;
+import com.simibubi.create.foundation.event.bus.IEventBus;
+import com.simibubi.create.foundation.event.client.RenderHandEvent;
 
 public abstract class ShootableGadgetRenderHandler {
 

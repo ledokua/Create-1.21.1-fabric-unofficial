@@ -157,7 +157,7 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 
 		boolean display =
 			stack.getItem() == Items.NAME_TAG && stack.has(DataComponents.CUSTOM_NAME) || AllBlocks.CLIPBOARD.isIn(stack);
-		DyeColor dye = DyeColor.getColor(stack);
+		DyeColor dye = com.simibubi.create.foundation.utility.DyeHelper.getColor(stack);
 
 		if (!display && dye == null)
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

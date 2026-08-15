@@ -33,15 +33,15 @@ import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import com.simibubi.create.foundation.event.bus.EventPriority;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import net.neoforged.neoforge.common.UsernameCache;
 import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.neoforged.neoforge.event.entity.EntityEvent;
-import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
+import com.simibubi.create.foundation.event.entity.EntityEvent;
+import com.simibubi.create.foundation.event.entity.living.LivingChangeTargetEvent;
+import com.simibubi.create.foundation.event.entity.living.LivingDropsEvent;
+import com.simibubi.create.foundation.event.entity.living.LivingExperienceDropEvent;
 
 @EventBusSubscriber
 public class DeployerFakePlayer extends FakePlayer {

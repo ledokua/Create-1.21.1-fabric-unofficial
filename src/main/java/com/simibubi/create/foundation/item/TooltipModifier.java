@@ -8,7 +8,7 @@ import com.simibubi.create.api.registry.SimpleRegistry;
 
 import net.minecraft.world.item.Item;
 
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import com.simibubi.create.foundation.event.entity.player.ItemTooltipEvent;
 
 @FunctionalInterface
 public interface TooltipModifier {

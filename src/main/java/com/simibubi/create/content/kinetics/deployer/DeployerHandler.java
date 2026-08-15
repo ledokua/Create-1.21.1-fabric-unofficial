@@ -73,9 +73,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.extensions.IBaseRailBlockExtension;
 import net.fabricmc.fabric.api.util.TriState;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import com.simibubi.create.foundation.event.EventHooks;
+import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent.LeftClickBlock;
+import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent.RightClickBlock;
 
 public class DeployerHandler {
 	private static final Map<BlockPos, List<ItemEntity>> CAPTURED_BLOCK_DROPS = new HashMap<>();

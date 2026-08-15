@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import com.tterrag.registrate.builders.Builder;
 
 /** Context bean passed to a {@code setData} datagen callback. Same shape as upstream, unused until Phase 11. */
-public class DataGenContext<R, T extends R> {
+public class DataGenContext<R, T extends R> implements com.tterrag.registrate.util.nullness.NonNullSupplier<T> {
 
 	public static <R, T extends R> DataGenContext<R, T> from(Builder<R, T, ?, ?> builder) {
 		return new DataGenContext<>(builder.getRegistryKey(), builder.getName(), builder);

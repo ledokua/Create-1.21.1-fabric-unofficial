@@ -1,0 +1,46 @@
+package com.simibubi.create.foundation.mixin;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.simibubi.create.foundation.mixin.extension.EntityExtension;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+
+/**
+ * Backs {@link EntityExtension#getPersistentData()}: a per-entity CompoundTag saved under
+ * {@code NeoForgeData} — the same key NeoForge uses, so worlds moved between loaders keep the data.
+ */
+@Mixin(Entity.class)
+public class EntityPersistentDataMixin implements EntityExtension {
+
+	@Unique
+	private static final String CREATE$PERSISTENT_DATA_KEY = "NeoForgeData";
+
+	@Unique
+	private CompoundTag create$persistentData;
+
+	@Override
+	public CompoundTag getPersistentData() {
+		if (create$persistentData == null)
+			create$persistentData = new CompoundTag();
+		return create$persistentData;
+	}
+
+	@Inject(method = "saveWithoutId", at = @At("RETURN"))
+	private void create$savePersistentData(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
+		if (create$persistentData != null && !create$persistentData.isEmpty())
+			tag.put(CREATE$PERSISTENT_DATA_KEY, create$persistentData.copy());
+	}
+
+	@Inject(method = "load", at = @At("HEAD"))
+	private void create$loadPersistentData(CompoundTag tag, CallbackInfo ci) {
+		if (tag.contains(CREATE$PERSISTENT_DATA_KEY, CompoundTag.TAG_COMPOUND))
+			create$persistentData = tag.getCompound(CREATE$PERSISTENT_DATA_KEY);
+	}
+}

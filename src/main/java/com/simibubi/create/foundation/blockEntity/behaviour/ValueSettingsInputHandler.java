@@ -14,12 +14,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 
-import net.neoforged.bus.api.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.common.EventBusSubscriber;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.tags.Tags.Items;
 import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber
 public class ValueSettingsInputHandler {

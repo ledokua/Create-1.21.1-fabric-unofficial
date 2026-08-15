@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import com.simibubi.create.foundation.event.lifecycle.FMLClientSetupEvent;
 
 
 public class CreateBlockEntityBuilder<T extends BlockEntity, P> extends BlockEntityBuilder<T, P> {

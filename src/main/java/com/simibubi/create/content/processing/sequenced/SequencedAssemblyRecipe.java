@@ -34,7 +34,7 @@ import net.minecraft.world.level.Level;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import com.simibubi.create.foundation.event.entity.player.ItemTooltipEvent;
 import com.simibubi.create.foundation.transfer.item.wrapper.RecipeWrapper;
 
 public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {

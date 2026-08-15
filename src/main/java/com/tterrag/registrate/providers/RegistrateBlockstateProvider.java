@@ -1,10 +1,19 @@
 package com.tterrag.registrate.providers;
 
+import com.simibubi.create.foundation.data.modelgen.BlockStateProvider;
+import com.simibubi.create.foundation.data.modelgen.ExistingFileHelper;
+
 /**
- * Placeholder for Phase 11. Ported call sites that chain {@code .blockstate((ctx, prov) -> ...)} need this
- * type to exist for the lambda to compile, but the callback is never invoked yet (see {@code ProviderType}
- * and {@code Builder.setData}) — flesh out real methods here on demand as Phase 2 content porting hits
- * specific ones, rather than speculatively reimplementing NeoForge's BlockStateProvider surface now.
+ * Shell (see {@code com.simibubi.create.foundation.data.modelgen} package docs): upstream's blockstate
+ * datagen provider surface, no-op bodies. Never instantiated in the port; exists so ported
+ * {@code .blockstate((ctx, prov) -> ...)} lambdas compile.
  */
-public class RegistrateBlockstateProvider {
+public class RegistrateBlockstateProvider extends BlockStateProvider {
+
+	public RegistrateBlockstateProvider(String modid, ExistingFileHelper exFileHelper) {
+		super(modid, exFileHelper);
+	}
+
+	@Override
+	protected void registerStatesAndModels() {}
 }

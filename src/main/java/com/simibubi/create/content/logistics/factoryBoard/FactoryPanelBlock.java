@@ -63,8 +63,7 @@ import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import com.simibubi.create.foundation.event.level.BlockEvent;
 
 public class FactoryPanelBlock extends FaceAttachedHorizontalDirectionalBlock
 	implements ProperWaterloggedBlock, IBE<FactoryPanelBlockEntity>, IWrenchable, SpecialBlockItemRequirement {
@@ -180,7 +179,7 @@ public class FactoryPanelBlock extends FaceAttachedHorizontalDirectionalBlock
 				return InteractionResult.SUCCESS;
 
 			BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(world, pos, world.getBlockState(pos), player);
-			NeoForge.EVENT_BUS.post(event);
+			com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(event);
 			if (event.isCanceled())
 				return InteractionResult.SUCCESS;
 

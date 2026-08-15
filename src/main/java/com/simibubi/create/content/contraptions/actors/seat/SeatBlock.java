@@ -133,7 +133,7 @@ public class SeatBlock extends Block implements ProperWaterloggedBlock {
 		if (player.isShiftKeyDown() || player instanceof FakePlayer)
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-		DyeColor color = DyeColor.getColor(stack);
+		DyeColor color = com.simibubi.create.foundation.utility.DyeHelper.getColor(stack);
 		if (color != null && color != this.color) {
 			if (level.isClientSide)
 				return ItemInteractionResult.SUCCESS;

@@ -5,11 +5,36 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import net.createmod.catnip.data.Couple;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 
 public class DyeHelper {
+
+	/**
+	 * Fabric port: stands in for NeoForge's {@code DyeColor#getColor(ItemStack)} (a patch onto the vanilla
+	 * enum, which can't be reproduced via interface injection since it's static). Resolves the dye colour of
+	 * a stack via the {@code c:dyes/<color>} convention tags, same as NeoForge does.
+	 */
+	@Nullable
+	public static DyeColor getColor(ItemStack stack) {
+		if (stack.isEmpty())
+			return null;
+		if (stack.getItem() instanceof DyeItem dyeItem)
+			return dyeItem.getDyeColor();
+		for (DyeColor color : DyeColor.values()) {
+			if (stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "dyes/" + color.getName()))))
+				return color;
+		}
+		return null;
+	}
 
 	public static ItemLike getWoolOfDye(DyeColor color) {
 		return WOOL_TABLE.getOrDefault(color, () -> Blocks.WHITE_WOOL).get();

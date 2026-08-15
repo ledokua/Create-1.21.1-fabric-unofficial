@@ -20,10 +20,10 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.fabricmc.api.EnvType;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import com.simibubi.create.foundation.event.bus.SubscribeEvent;
+import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.event.RenderHandEvent;
+import com.simibubi.create.foundation.event.client.RenderHandEvent;
 
 @EventBusSubscriber(value = EnvType.CLIENT)
 public class ExtendoGripRenderHandler {

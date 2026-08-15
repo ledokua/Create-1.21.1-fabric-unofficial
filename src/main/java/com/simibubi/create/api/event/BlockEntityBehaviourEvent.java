@@ -9,7 +9,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-import net.neoforged.bus.api.Event;
+import com.simibubi.create.foundation.event.bus.Event;
 
 /**
  * Event that is fired just before a SmartBlockEntity is being deserialized<br>

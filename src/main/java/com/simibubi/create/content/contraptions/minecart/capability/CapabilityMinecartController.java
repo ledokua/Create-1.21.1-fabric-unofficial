@@ -25,11 +25,11 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import com.simibubi.create.foundation.event.entity.EntityJoinLevelEvent;
+import com.simibubi.create.foundation.event.entity.EntityLeaveLevelEvent;
+import com.simibubi.create.foundation.event.entity.player.PlayerEvent;
+import com.simibubi.create.foundation.event.level.ChunkEvent;
+import com.simibubi.create.foundation.event.tick.EntityTickEvent;
 
 public class CapabilityMinecartController {
 

@@ -70,10 +70,9 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.SpecialPlantable;
-import net.neoforged.neoforge.event.level.BlockDropsEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import com.simibubi.create.foundation.event.level.BlockDropsEvent;
+import com.simibubi.create.foundation.event.level.BlockEvent;
 
 public class BlockHelper {
 	private static final List<IntegerProperty> COUNT_STATES = List.of(
@@ -221,7 +220,7 @@ public class BlockHelper {
 
 		if (player != null) {
 			BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, player);
-			NeoForge.EVENT_BUS.post(event);
+			com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(event);
 			if (event.isCanceled())
 				return;
 
@@ -235,7 +234,7 @@ public class BlockHelper {
 			List<ItemStack> drops = Block.getDrops(state, serverLevel, pos, blockEntity, player, usedTool);
 
 			BlockDropsEvent event = new BlockDropsEvent(serverLevel, pos, state, blockEntity, new ArrayList<>(), player, usedTool);
-			NeoForge.EVENT_BUS.post(event);
+			com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(event);
 			if (!event.isCanceled()) {
 				if (event.getDroppedExperience() > 0) {
 					state.getBlock().popExperience(serverLevel, pos, event.getDroppedExperience());
