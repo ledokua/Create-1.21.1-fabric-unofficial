@@ -14,7 +14,6 @@ import net.fabricmc.api.EnvType;
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.event.client.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.settings.KeyModifier;
 
 @EventBusSubscriber(EnvType.CLIENT)
 public enum AllKeys {
@@ -90,17 +89,8 @@ public enum AllKeys {
 	}
 
 	public boolean doesModifierAndCodeMatch(int code) {
-		boolean codeMatches = code == keybind.getKey().getValue();
-
-		boolean modifierMatches;
-		KeyModifier modifier = keybind.getKeyModifier();
-		if (modifier == KeyModifier.NONE) {
-			modifierMatches = true;
-		} else {
-			modifierMatches = KeyModifier.getActiveModifiers().contains(modifier);
-		}
-
-		return codeMatches && modifierMatches;
+		// Fabric port: vanilla/Fabric key mappings have no NeoForge-style modifier (ctrl/alt/shift) component
+		return code == keybind.getKey().getValue();
 	}
 
 	public static boolean isKeyDown(int key) {

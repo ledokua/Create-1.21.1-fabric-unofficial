@@ -50,7 +50,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import com.simibubi.create.foundation.model.data.ModelData;
-import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
+import com.simibubi.create.foundation.platform.AuxiliaryLightManager;
 
 public abstract class CopycatBlock extends Block implements IBE<CopycatBlockEntity>, IWrenchable {
 

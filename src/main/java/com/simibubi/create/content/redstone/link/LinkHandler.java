@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
-import net.neoforged.fml.LogicalSide;
+import com.simibubi.create.foundation.platform.LogicalSide;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent;

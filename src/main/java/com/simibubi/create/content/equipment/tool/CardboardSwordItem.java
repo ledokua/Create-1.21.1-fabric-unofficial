@@ -31,7 +31,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import com.simibubi.create.foundation.event.bus.EventPriority;
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
-import net.neoforged.fml.LogicalSide;
+import com.simibubi.create.foundation.platform.LogicalSide;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.client.extensions.IClientItemExtensions;
 import com.simibubi.create.foundation.event.entity.player.AttackEntityEvent;

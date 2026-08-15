@@ -10,7 +10,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import com.simibubi.create.foundation.platform.ServerLifecycleHooks;
 
 public final class GlobalRegistryAccess {
 	private static Supplier<@Nullable RegistryAccess> supplier;

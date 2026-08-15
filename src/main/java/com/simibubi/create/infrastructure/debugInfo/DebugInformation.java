@@ -28,8 +28,8 @@ import net.minecraft.SystemReport;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforgespi.language.IModInfo;
+import com.simibubi.create.foundation.platform.ModList;
+import com.simibubi.create.foundation.platform.IModInfo;
 
 /**
  * Allows for providing easily accessible debugging information.

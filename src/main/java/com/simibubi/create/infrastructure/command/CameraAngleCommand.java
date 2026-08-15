@@ -10,7 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 
-import net.neoforged.neoforge.server.command.EnumArgument;
+import com.simibubi.create.foundation.platform.EnumArgument;
 
 public class CameraAngleCommand {
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {

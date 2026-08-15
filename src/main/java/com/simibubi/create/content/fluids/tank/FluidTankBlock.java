@@ -52,7 +52,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.simibubi.create.foundation.transfer.capability.Capabilities;
-import net.neoforged.neoforge.common.util.DeferredSoundType;
+import com.simibubi.create.foundation.platform.DeferredSoundType;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler;
 
@@ -99,7 +99,7 @@ public class FluidTankBlock extends Block implements IWrenchable, IBE<FluidTankB
 		withBlockEntityDo(world, pos, FluidTankBlockEntity::updateConnectivity);
 
 		// updateConnectivity may have changed the in-world block state, which prevents the call to markAndNotifyBlock
-		// in net.neoforged.neoforge.common.CommonHooks#onPlaceItemIntoWorld from doing anything
+		// in com.simibubi.create.foundation.platform.CommonHooks#onPlaceItemIntoWorld from doing anything
 		BlockState newState = world.getBlockState(pos);
 		if (state != newState && newState.getBlock() == this) {
 			world.markAndNotifyBlock(pos, world.getChunkAt(pos), oldState, newState, UPDATE_ALL_IMMEDIATE, 512);

@@ -12,7 +12,7 @@ import com.simibubi.create.api.stress.BlockStressValues;
 import net.createmod.catnip.config.ConfigBase;
 
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
+import com.simibubi.create.foundation.platform.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import net.neoforged.fml.config.ModConfig;

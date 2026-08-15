@@ -321,7 +321,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import com.simibubi.create.foundation.data.modelgen.ConfiguredModel;
 import com.simibubi.create.foundation.data.modelgen.ModelFile;
 import com.simibubi.create.foundation.tags.Tags;
-import net.neoforged.neoforge.common.util.DeferredSoundType;
+import com.simibubi.create.foundation.platform.DeferredSoundType;
 
 @SuppressWarnings("removal")
 public class AllBlocks {

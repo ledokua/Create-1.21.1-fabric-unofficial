@@ -20,9 +20,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforgespi.language.IModInfo;
+import com.simibubi.create.foundation.platform.ModContainer;
+import com.simibubi.create.foundation.platform.ModList;
+import com.simibubi.create.foundation.platform.IModInfo;
 
 public record AddedByAttribute(String modId) implements ItemAttribute {
 	public static final MapCodec<AddedByAttribute> CODEC = Codec.STRING

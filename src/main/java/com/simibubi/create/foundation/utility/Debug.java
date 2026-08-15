@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.neoforged.fml.util.thread.EffectiveSide;
+import com.simibubi.create.foundation.platform.EffectiveSide;
 
 /** Deprecated so simi doensn't forget to remove debug calls **/
 @Environment(EnvType.CLIENT)

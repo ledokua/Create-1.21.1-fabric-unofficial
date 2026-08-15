@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.ApiStatus;
 
 import net.fabricmc.api.EnvType;
-import net.neoforged.fml.loading.FMLLoader;
+import com.simibubi.create.foundation.platform.FMLLoader;
 
 @ApiStatus.Internal
 @Deprecated(forRemoval = true, since = "1.21")

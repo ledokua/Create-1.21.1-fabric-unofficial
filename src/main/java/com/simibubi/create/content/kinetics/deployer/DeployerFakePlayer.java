@@ -36,7 +36,7 @@ import net.fabricmc.api.Environment;
 import com.simibubi.create.foundation.event.bus.EventPriority;
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
-import net.neoforged.neoforge.common.UsernameCache;
+import com.simibubi.create.foundation.platform.UsernameCache;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import com.simibubi.create.foundation.event.entity.EntityEvent;
 import com.simibubi.create.foundation.event.entity.living.LivingChangeTargetEvent;

@@ -29,7 +29,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import com.simibubi.create.foundation.model.data.ModelData;
-import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
+import com.simibubi.create.foundation.platform.AuxiliaryLightManager;
 
 public class CopycatBlockEntity extends SmartBlockEntity
 	implements SpecialBlockEntityItemRequirement, TransformableBlockEntity, PartialSafeNBT, Clearable {

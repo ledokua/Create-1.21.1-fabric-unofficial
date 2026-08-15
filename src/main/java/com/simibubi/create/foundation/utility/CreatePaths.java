@@ -2,7 +2,7 @@ package com.simibubi.create.foundation.utility;
 
 import java.nio.file.Path;
 
-import net.neoforged.fml.loading.FMLPaths;
+import com.simibubi.create.foundation.platform.FMLPaths;
 
 public class CreatePaths {
 	// These are all absolute, so anything that is resolved via Path#resolve on these paths will also always be absolute

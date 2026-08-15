@@ -84,3 +84,21 @@ find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
   -e 's/net\.neoforged\.neoforge\.common\.(SoundActions|SoundAction)\b/com.simibubi.create.foundation.transfer.fluid.\1/g' \
   -e 's/net\.neoforged\.neoforge\.common\.NeoForgeMod\b/com.simibubi.create.foundation.transfer.fluid.CommonFluids/g' \
   -e 's/\bNeoForgeMod\./CommonFluids./g'
+
+# ---- FML/NeoForge loader facades -> com.simibubi.create.foundation.platform ----
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.fml\.LogicalSide\b/com.simibubi.create.foundation.platform.LogicalSide/g' \
+  -e 's/net\.neoforged\.fml\.util\.thread\.EffectiveSide\b/com.simibubi.create.foundation.platform.EffectiveSide/g' \
+  -e 's/net\.neoforged\.fml\.(ModList|ModContainer)\b/com.simibubi.create.foundation.platform.\1/g' \
+  -e 's/net\.neoforged\.neoforgespi\.language\.IModInfo\b/com.simibubi.create.foundation.platform.IModInfo/g' \
+  -e 's/net\.neoforged\.fml\.loading\.(LoadingModList|FMLPaths|FMLLoader)\b/com.simibubi.create.foundation.platform.\1/g' \
+  -e 's/net\.neoforged\.neoforge\.server\.ServerLifecycleHooks\b/com.simibubi.create.foundation.platform.ServerLifecycleHooks/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.UsernameCache\b/com.simibubi.create.foundation.platform.UsernameCache/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.util\.DeferredSoundType\b/com.simibubi.create.foundation.platform.DeferredSoundType/g' \
+  -e 's/net\.neoforged\.neoforge\.server\.command\.EnumArgument\b/com.simibubi.create.foundation.platform.EnumArgument/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.CommonHooks\b/com.simibubi.create.foundation.platform.CommonHooks/g' \
+  -e 's/net\.neoforged\.neoforge\.client\.ClientHooks\b/com.simibubi.create.foundation.platform.ClientHooks/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.util\.NeoForgeExtraCodecs\b/com.simibubi.create.foundation.platform.NeoForgeExtraCodecs/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.world\.AuxiliaryLightManager\b/com.simibubi.create.foundation.platform.AuxiliaryLightManager/g' \
+  -e 's/net\.neoforged\.neoforge\.client\.gui\.VanillaGuiLayers\b/com.simibubi.create.foundation.event.client.VanillaGuiLayers/g' \
+  -e 's/net\.neoforged\.neoforge\.client\.IItemDecorator\b/com.simibubi.create.foundation.event.client.RegisterItemDecorationsEvent.IItemDecorator/g'

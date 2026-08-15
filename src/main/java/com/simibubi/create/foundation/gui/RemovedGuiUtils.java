@@ -17,7 +17,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 
-import net.neoforged.neoforge.client.ClientHooks;
+import com.simibubi.create.foundation.platform.ClientHooks;
 import com.simibubi.create.foundation.event.client.RenderTooltipEvent;
 import com.simibubi.create.foundation.client.extensions.IGuiGraphicsExtension;
 

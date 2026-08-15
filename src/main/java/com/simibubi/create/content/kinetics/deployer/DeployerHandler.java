@@ -70,7 +70,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.common.CommonHooks;
+import com.simibubi.create.foundation.platform.CommonHooks;
 import net.neoforged.neoforge.common.extensions.IBaseRailBlockExtension;
 import net.fabricmc.fabric.api.util.TriState;
 import com.simibubi.create.foundation.event.EventHooks;

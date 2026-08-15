@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import com.simibubi.create.foundation.transfer.item.IItemHandler;
 import com.simibubi.create.foundation.transfer.item.IItemHandlerModifiable;
 import com.simibubi.create.foundation.transfer.item.ItemHandlerHelper;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import com.simibubi.create.foundation.platform.ServerLifecycleHooks;
 
 public class GlobalStation extends SingleBlockEntityEdgePoint {
 

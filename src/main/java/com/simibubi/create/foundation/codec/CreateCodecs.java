@@ -12,7 +12,7 @@ import com.simibubi.create.foundation.item.ItemSlots;
 
 import net.minecraft.util.ExtraCodecs;
 
-import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import com.simibubi.create.foundation.platform.NeoForgeExtraCodecs;
 import com.simibubi.create.foundation.transfer.fluid.crafting.FluidIngredient;
 import com.simibubi.create.foundation.transfer.fluid.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.transfer.item.ItemStackHandler;

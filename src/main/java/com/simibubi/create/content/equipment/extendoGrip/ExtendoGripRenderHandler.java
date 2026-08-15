@@ -22,7 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.fabricmc.api.EnvType;
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
-import net.neoforged.neoforge.client.ClientHooks;
+import com.simibubi.create.foundation.platform.ClientHooks;
 import com.simibubi.create.foundation.event.client.RenderHandEvent;
 
 @EventBusSubscriber(value = EnvType.CLIENT)
