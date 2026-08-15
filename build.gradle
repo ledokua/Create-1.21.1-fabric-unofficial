@@ -1,0 +1,124 @@
+plugins {
+    id 'fabric-loom' version '1.17-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+loom {
+    // Deliberately NOT using splitEnvironmentSourceSets(): upstream Create is a single source set that
+    // gates client-only code with @OnlyIn(Dist.CLIENT)/@Environment(EnvType.CLIENT) and relies on the JVM
+    // never loading a class until something actually references it. Physically sorting a 275k-line,
+    // thousands-of-files codebase into client/main source sets by hand isn't tractable at this project's
+    // size, so we mirror upstream's approach instead. See PORTING_PLAN.md, "Conventions".
+    mods {
+        "create" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+
+repositories {
+    maven { url = "https://maven.createmod.net" } // Flywheel, Catnip, Ponder (official Fabric builds)
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven" } // Forge Config API Port
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // Rendering engine. flywheel-fabric-*.jar already bundles the -api classes (using both causes
+    // "duplicate input class" jar-merge failures), so this alone is enough for both API and impl.
+    modApi("dev.engine-room.flywheel:flywheel-fabric-${project.minecraft_version}:${project.flywheel_version}")
+
+    // In-world documentation engine. NOTE: pulls in fuzs' forgeconfigapiport-fabric (a real Fabric
+    // reimplementation of Forge's config format, not a NeoForge-call shim) and an older flywheel-fabric-api
+    // as a transitive dependency, which duplicates classes already in flywheel-fabric above — excluded.
+    modImplementation("net.createmod.ponder:Ponder-Fabric-${project.minecraft_version}:${project.ponder_version}") {
+        exclude group: "dev.engine-room.flywheel", module: "flywheel-fabric-api-${project.minecraft_version}"
+    }
+
+    // Catnip (vendored under src/main/java/net/createmod/catnip, see below) needs these directly since
+    // upstream's own build only declares them as non-transitive `implementation`.
+    implementation "javax.annotation:javax.annotation-api:1.3.2"
+    implementation "com.google.code.findbugs:jsr305:3.0.2"
+
+    // NOTE: Catnip-Fabric-1.21.1 (the official prebuilt) is deliberately NOT used here. It hasn't been
+    // updated since Dec 2024 and is built against io.github.fabricators_of_create:Porting-Lib (a
+    // NeoForge-API compatibility shim) plus a forked flywheel-fabric-api version — pulling it in would drag
+    // Porting-Lib into the whole project and pin flywheel to that old fork, defeating the native-port
+    // strategy. Catnip needs to be ported natively from source instead — see PORTING_PLAN.md Phase 0a.
+
+    // TODO(Phase 0b): Registrate has no Fabric build for 1.21 — see PORTING_PLAN.md.
+    // Everything under com.simibubi.create.foundation.data / the AllXxx registry classes is blocked on this.
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.loader_version
+    }
+}
+
+def targetJavaVersion = 21
+tasks.withType(JavaCompile).configureEach {
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    // If Javadoc is generated, this must be specified in that task too.
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release.set(targetJavaVersion)
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archives_base_name}" }
+    }
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
+    }
+}

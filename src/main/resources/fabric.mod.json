@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "create",
+  "version": "${version}",
+  "name": "Create",
+  "description": "Technology that empowers the player. (Unofficial Fabric port)",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.simibubi.create.CreateClient"
+    ],
+    "main": [
+      "com.simibubi.create.Create"
+    ]
+  },
+  "mixins": [
+    "create.mixins.json",
+    {
+      "config": "create.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
