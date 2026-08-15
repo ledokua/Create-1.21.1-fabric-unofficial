@@ -122,3 +122,8 @@ find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
   -e 's/net\.neoforged\.neoforge\.common\.conditions\./com.simibubi.create.foundation.platform.conditions./g'
 find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
   -e 's/net\.neoforged\.neoforge\.common\.crafting\.CompoundIngredient\b/com.simibubi.create.foundation.recipe.CompoundIngredient/g'
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.registries\.datamaps\.builtin\.NeoForgeDataMaps\b/com.simibubi.create.foundation.datamap.NeoForgeDataMaps/g' \
+  -e 's/net\.neoforged\.neoforge\.registries\.datamaps\.DataMapType\b/com.simibubi.create.foundation.datamap.DataMapType/g'
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.client\.gui\.map\./com.simibubi.create.foundation.event.client.map./g'

@@ -6,8 +6,8 @@ import com.simibubi.create.api.data.datamaps.BlazeBurnerFuel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 
-import net.neoforged.neoforge.registries.datamaps.DataMapType;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import com.simibubi.create.foundation.datamap.DataMapType;
+import com.simibubi.create.foundation.datamap.NeoForgeDataMaps;
 
 /**
  * @see DataMapType

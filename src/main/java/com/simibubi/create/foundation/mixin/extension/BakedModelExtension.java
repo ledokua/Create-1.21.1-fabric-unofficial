@@ -45,8 +45,8 @@ public interface BakedModelExtension {
 		return self().getParticleIcon();
 	}
 
-	default boolean useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
-		return self().useAmbientOcclusion();
+	default net.fabricmc.fabric.api.util.TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
+		return net.fabricmc.fabric.api.util.TriState.DEFAULT;
 	}
 
 	default @NotNull ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {

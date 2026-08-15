@@ -81,7 +81,7 @@ import net.minecraft.world.level.LevelAccessor;
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.client.gui.map.RegisterMapDecorationRenderersEvent;
+import com.simibubi.create.foundation.event.client.map.RegisterMapDecorationRenderersEvent;
 import com.simibubi.create.foundation.event.AddPackFindersEvent;
 import com.simibubi.create.foundation.event.AddReloadListenerEvent;
 import com.simibubi.create.foundation.event.RegisterCommandsEvent;

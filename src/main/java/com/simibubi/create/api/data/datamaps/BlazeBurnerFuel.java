@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.ExtraCodecs;
 
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import com.simibubi.create.foundation.datamap.NeoForgeDataMaps;
 
 /**
  * Data map value for {@linkplain NeoForgeDataMaps#FURNACE_FUELS furnace fuels}.

@@ -14,6 +14,7 @@ public final class CreateEventSubscribers {
 	public static final List<String> CLASSES = List.of(
 		// GENERATED-BEGIN (scripts/list-event-subscribers.sh)
 		"com.simibubi.create.AllKeys",
+		"com.simibubi.create.compat.trainmap.TrainMapEvents",
 		"com.simibubi.create.content.contraptions.ContraptionHandlerClient",
 		"com.simibubi.create.content.contraptions.glue.SuperGlueHandler",
 		"com.simibubi.create.content.contraptions.glue.SuperGlueItem",
@@ -62,7 +63,6 @@ public final class CreateEventSubscribers {
 		"com.simibubi.create.foundation.events.CommonEvents$ModBusEvents",
 		"com.simibubi.create.foundation.events.InputEvents",
 		"com.simibubi.create.foundation.render.RenderTypes$Shaders",
-		"com.simibubi.create.impl.registry.CreateDataMapsImpl",
 		"com.simibubi.create.impl.registry.CreateRegistriesImpl",
 		"com.simibubi.create.infrastructure.RemapHelper",
 		"com.simibubi.create.infrastructure.config.AllConfigs",

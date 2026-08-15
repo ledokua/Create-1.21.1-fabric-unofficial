@@ -75,6 +75,21 @@ public interface IClientFluidTypeExtensions {
 		return null;
 	}
 
+	@Nullable
+	default ResourceLocation getRenderOverlayTexture(net.minecraft.client.Minecraft mc) {
+		return null;
+	}
+
+	default void renderOverlay(net.minecraft.client.Minecraft mc, com.mojang.blaze3d.vertex.PoseStack poseStack) {}
+
+	/** Fog colour while the camera is in this fluid; return the input to keep vanilla's. Wired by a FogRenderer mixin (Phase 3). */
+	default org.joml.Vector3f modifyFogColor(net.minecraft.client.Camera camera, float partialTick, net.minecraft.client.multiplayer.ClientLevel level, int renderDistance, float darkenWorldAmount, org.joml.Vector3f fluidFogColor) {
+		return fluidFogColor;
+	}
+
+	/** Fog shape/distances while the camera is in this fluid. Wired by a FogRenderer mixin (Phase 3). */
+	default void modifyFogRender(net.minecraft.client.Camera camera, net.minecraft.client.renderer.FogRenderer.FogMode mode, float renderDistance, float partialTick, float nearDistance, float farDistance, com.mojang.blaze3d.shaders.FogShape shape) {}
+
 	/** Adapts a Fabric fluid render handler (sprites + colour) to this interface. */
 	final class FabricAdapter implements IClientFluidTypeExtensions {
 		private final Fluid fluid;

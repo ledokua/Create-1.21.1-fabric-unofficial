@@ -23,4 +23,22 @@ public interface BlockEntityExtension {
 	default net.minecraft.nbt.CompoundTag getPersistentData() {
 		throw new AbstractMethodError("BlockEntityExtension#getPersistentData not implemented by mixin");
 	}
+
+	/** Client: a block entity data packet arrived (NeoForge hook; vanilla loads the tag directly). Wired by mixin. */
+	default void onDataPacket(net.minecraft.network.Connection net, net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket pkt, net.minecraft.core.HolderLookup.Provider registries) {
+		net.minecraft.nbt.CompoundTag tag = pkt.getTag();
+		if (tag != null)
+			handleUpdateTag(tag, registries);
+	}
+
+	/** Client: chunk-load update tag arrived (NeoForge hook). Wired by mixin. */
+	default void handleUpdateTag(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+		((net.minecraft.world.level.block.entity.BlockEntity) this).loadWithComponents(tag, registries);
+	}
+
+	/** Called once after the block entity's level is set and it is added to the level. Wired by mixin. */
+	default void onLoad() {}
+
+	/** Called when the chunk holding this block entity unloads. Wired by mixin. */
+	default void onChunkUnloaded() {}
 }

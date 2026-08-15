@@ -139,4 +139,12 @@ public interface IBlockStateExtension {
 	default boolean hasDynamicLightEmission() {
 		return block().hasDynamicLightEmission(self());
 	}
+
+	default boolean shouldCheckWeakPower(net.minecraft.world.level.SignalGetter level, BlockPos pos, Direction side) {
+		return block().shouldCheckWeakPower(self(), level, pos, side);
+	}
+
+	default boolean shouldDisplayFluidOverlay(net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, FluidState fluidState) {
+		return block().shouldDisplayFluidOverlay(self(), level, pos, fluidState);
+	}
 }

@@ -35,7 +35,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import com.simibubi.create.foundation.datamap.NeoForgeDataMaps;
 
 public class AllTags {
 	@ScheduledForRemoval(inVersion = "1.21.1+ Port")

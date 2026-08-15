@@ -40,4 +40,28 @@ public interface IAttachmentHolder {
 		Object previous = target().removeAttached(type.fabric());
 		return type.unwrapIfBound(previous);
 	}
+
+	// Supplier overloads (upstream declares its attachment types as Supplier<AttachmentType<T>>)
+
+	default boolean hasData(java.util.function.Supplier<? extends AttachmentType<?>> type) {
+		return hasData(type.get());
+	}
+
+	default <T> T getData(java.util.function.Supplier<AttachmentType<T>> type) {
+		return getData(type.get());
+	}
+
+	default <T> Optional<T> getExistingData(java.util.function.Supplier<AttachmentType<T>> type) {
+		return getExistingData(type.get());
+	}
+
+	@Nullable
+	default <T> T setData(java.util.function.Supplier<AttachmentType<T>> type, T data) {
+		return setData(type.get(), data);
+	}
+
+	@Nullable
+	default <T> T removeData(java.util.function.Supplier<AttachmentType<T>> type) {
+		return removeData(type.get());
+	}
 }

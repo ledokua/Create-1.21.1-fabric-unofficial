@@ -57,10 +57,8 @@ public class BakedModelWrapper<T extends BakedModel> implements IDynamicBakedMod
 	}
 
 	@Override
-	public boolean useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
-		if (originalModel instanceof IDynamicBakedModel dyn)
-			return dyn.useAmbientOcclusion(state, data, renderType);
-		return originalModel.useAmbientOcclusion();
+	public net.fabricmc.fabric.api.util.TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
+		return originalModel.useAmbientOcclusion(state, data, renderType);
 	}
 
 	@Override

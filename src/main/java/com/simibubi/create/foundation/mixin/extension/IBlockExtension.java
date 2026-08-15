@@ -146,4 +146,19 @@ public interface IBlockExtension {
 			return false;
 		return isStickyBlock(state) || isStickyBlock(other);
 	}
+
+	/** Whether redstone should also read weak power through this block (vanilla: solid blocks do). */
+	default boolean shouldCheckWeakPower(BlockState state, net.minecraft.world.level.SignalGetter level, BlockPos pos, Direction side) {
+		return state.isRedstoneConductor(level, pos);
+	}
+
+	/** NeoForge lets blocks decide push reaction per state; null = use the state's configured reaction. TODO(Phase 3): route vanilla's BlockStateBase#getPistonPushReaction through this. */
+	@Nullable
+	default net.minecraft.world.level.material.PushReaction getPistonPushReaction(BlockState state) {
+		return null;
+	}
+
+	default boolean shouldDisplayFluidOverlay(BlockState state, net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, net.minecraft.world.level.material.FluidState fluidState) {
+		return self() instanceof net.minecraft.world.level.block.HalfTransparentBlock || self() instanceof net.minecraft.world.level.block.LeavesBlock;
+	}
 }

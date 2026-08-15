@@ -104,13 +104,13 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 		return currentTab;
 	}
 
-	@Override
+	/** Fabric port: no event bus to subscribe to (registration is an explicit flush, see PORTING_PLAN.md); kept for call-site parity. */
 	public CreateRegistrate registerEventListeners(IEventBus bus) {
-		return super.registerEventListeners(bus);
+		return self();
 	}
 
 	@Override
-	protected <R, T extends R> RegistryEntry<R, T> accept(String name, ResourceKey<? extends Registry<R>> type, Builder<R, T, ?, ?> builder, NonNullSupplier<? extends T> creator, NonNullFunction<DeferredHolder<R, T>, ? extends RegistryEntry<R, T>> entryFactory) {
+	protected <R, T extends R> RegistryEntry<R, T> accept(String name, ResourceKey<? extends Registry<R>> type, Builder<R, T, ?, ?> builder, NonNullSupplier<? extends T> creator, NonNullFunction<ResourceLocation, ? extends RegistryEntry<R, T>> entryFactory) {
 		RegistryEntry<R, T> entry = super.accept(name, type, builder, creator, entryFactory);
 		if (type.equals(Registries.ITEM) && currentTooltipModifierFactory != null) {
 			// grab the factory here for the lambda, it can change between now and registration

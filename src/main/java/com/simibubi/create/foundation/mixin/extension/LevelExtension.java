@@ -39,4 +39,9 @@ public interface LevelExtension {
 		}
 		level.onBlockStateChange(pos, oldState, newState);
 	}
+
+	/** NeoForge's {@code Level#isAreaLoaded(center, range)}. */
+	default boolean isAreaLoaded(BlockPos center, int range) {
+		return ((net.minecraft.world.level.LevelReader) this).hasChunksAt(center.offset(-range, -range, -range), center.offset(range, range, range));
+	}
 }

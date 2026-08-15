@@ -38,4 +38,14 @@ public interface EntityExtension {
 	default boolean isEyeInFluidType(com.simibubi.create.foundation.transfer.fluid.FluidType type) {
 		return getEyeInFluidType() == type;
 	}
+
+	/** The item shown when middle-clicking this entity. */
+	default net.minecraft.world.item.ItemStack getPickedResult(net.minecraft.world.phys.HitResult target) {
+		net.minecraft.world.entity.Entity self = (net.minecraft.world.entity.Entity) this;
+		net.minecraft.world.item.ItemStack result = self.getPickResult();
+		return result == null ? net.minecraft.world.item.ItemStack.EMPTY : result;
+	}
+
+	/** Called when the entity is removed from its level (both sides). Wired by an Entity mixin. */
+	default void onRemovedFromLevel() {}
 }
