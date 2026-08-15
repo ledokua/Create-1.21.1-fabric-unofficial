@@ -157,62 +157,54 @@ foundation rest + api → infrastructure → content by subsystem), run the mech
 drag in unported subsystems get their imports satisfied by porting the dependency, not by stubbing it —
 stubs are only used for datagen (Phase 0b decision).
 
-## >>> RESUME HERE (Phase 1 in progress, build red by design) <<<
+## >>> RESUME HERE (Phase 1 compiles; Phase 2 = boot + resources next) <<<
 
-State at the last checkpoint: whole upstream tree vendored (1,900 files); `./gradlew compileJava` shows
-**~1,140 errors** (started at 6,242). Everything is committed. Progress metric = that error count. To see the
-current buckets:
+State at the last checkpoint: **`./gradlew compileJava` is green** (6,242 → 0 errors). Everything is committed.
+Nothing has been *run* yet — the next milestone is a booting dedicated server, then client.
+
+Next steps, in order:
+1. **Vendor resources**: copy upstream `src/main/resources/{assets,data}` and `src/generated/resources/**` into
+   `src/main/resources` (keep our `fabric.mod.json`, `create.mixins.json`, `create.accesswidener`; drop
+   `META-INF/neoforge.mods.toml`, `pack.mcmeta` → Fabric doesn't need one). Convert `data/create/data_maps/**`
+   as needed by `foundation/datamap/DataMapLoader` (already reads NeoForge layout). Recipe JSON that uses
+   `neoforge:*` ingredient/condition types: `FluidIngredient` already accepts `neoforge:*` aliases; item
+   `CompoundIngredient` too; conditions (`neoforge:mod_loaded`…) → map onto Fabric resource conditions in
+   `foundation/platform/conditions` (or strip at load via a `RecipeManager` mixin).
+2. **Event wiring**: write `foundation/event/CreateEventHooks` (Fabric callbacks + small mixins posting the
+   bridge events; log the ones left unwired), call `CreateEventBus.registerSubscribers()` from `Create#onInitialize`
+   and post `FMLCommonSetupEvent`/`FMLClientSetupEvent`/`FMLLoadCompleteEvent`/`RegisterCapabilitiesEvent`
+   after the Registrate flush. `OneTimeEventReceiver` (Registrate) already listens on `CreateEventBus.BUS` for
+   `FMLClientSetupEvent` — so that post is required for BE/entity visualizers.
+3. `./gradlew runServer` → fix boot-time crashes (registry order, `CreateBuiltInRegistries.runBakeCallbacks()` must
+   be called from `Create#init`, attachment types, data maps, `AllConfigs` via Forge Config API Port).
+4. `./gradlew runClient` → render/model issues (Phase 3 items: FRAPI model data consumers, `getCustomRenderer()`
+   via `BuiltinItemRendererRegistry`, `ClientExtensionsManager` walk of items/blocks calling `initializeClient`,
+   armor/arm-pose/break-particle mixins, `ShapedRecipePatternMixin` for 9x9 mechanical crafting).
+
+Things stubbed during Phase 1 that must be revisited (grep the marker comments):
+- `SchematicProcessor#processEntity` no longer overrides anything (NeoForge-only hook) — needs a call from Create's
+  schematic entity placement path or a `StructureTemplate` mixin.
+- `PotionMixingRecipes`: modded `IBrewingRecipe` loop removed (vanilla `PotionBrewing.Mix` only).
+- `AllRecipeTypes`: `ShapedRecipePattern.setCraftingSize(9, 9)` dropped → mixin.
+- `AllEntityTypes`: no per-type "send velocity updates" flag on Fabric.
+- `MilkEffectHandler`: `removeEffectsCuredBy(EffectCures.MILK)` → `removeAllEffects()`.
+- `ItemEntity.lifespan` assignments commented (vanilla default is 6000 anyway).
+- `FarmersDelightCompat` stub returns true; `ClientEvents` config screen → ModMenu entrypoint (Phase 12).
+- `ProcessingRecipeBuilder`/`SequencedAssemblyRecipeBuilder`: recipe conditions dropped from `RecipeOutput.accept`.
+- `RuntimeDataGenerator`: `Recipe.CONDITIONAL_CODEC` → `Recipe.CODEC`.
+- `TagGen.getOrCreateRawBuilder` returns a detached `TagBuilder` (datagen shell).
+- `AllCreativeModeTabs`: `withTabsBefore` dropped (tab ordering).
+- `BlockSnapshot.isRestoring(level)` replaces `Level#restoringBlockSnapshots` (only true inside our own restores).
+- `EntityExtension#isAddedToLevel` approximated via `level.getEntity(id) == this`.
+- `MinecartController`: `isActivatorRail()` → `is(Blocks.ACTIVATOR_RAIL)`.
+- Loom cache gotcha: a stale remapped flywheel jar (`.gradle/loom-cache/remapped_mods/remapped/dev/engine-room`)
+  produced bogus "incompatible parameter types in lambda" errors; deleting it fixed it.
+
+Useful commands:
 ```
-./gradlew compileJava --console=plain 2>&1 | awk '/^FAILURE/{exit}{print}' > /tmp/c.log
-grep -c 'error:' /tmp/c.log
-grep -A3 'error: cannot find symbol' /tmp/c.log | grep -E '^\s+symbol:' | sed -E 's/.*symbol: *//' | sort | uniq -c | sort -rn | head -40
-grep -rhoE '^import (static )?net\.neoforged\.[a-zA-Z0-9_.]*;' --include=*.java src/main/java/com/simibubi/create | sort | uniq -c | sort -rn
+./gradlew compileJava --console=plain 2>&1 | awk '/^FAILURE/{exit}{print}' > /tmp/c.log; grep -c 'error:' /tmp/c.log
+scripts/list-event-subscribers.sh   # regenerate CreateEventSubscribers.CLASSES after adding/removing @EventBusSubscriber classes
 ```
-Done so far in Phase 1 (all under the strategy table above): transfer bridge (item/fluid/capabilities);
-`Tags`; interface injection (`foundation/mixin/extension` + `loom:injected_interfaces` in fabric.mod.json);
-access widener; event bridge **classes** (`foundation/event/**`: bus, ~70 event types incl. client ones,
-`EventHooks`, `BlockSnapshot`) — **not yet wired to Fabric hooks** (that's `CreateEventHooks`, next); datagen
-DSL shell (`foundation/data/modelgen` + `com.tterrag.registrate.providers`); real `Create`/`CreateClient`.
-
-Done since: **client model data** — `foundation/model/{data/ModelData,data/ModelProperty,BakedModelWrapper,
-IDynamicBakedModel,FabricModelBridge,ChunkRenderTypeSet,QuadTransformers}` (FRAPI `emitBlockQuads` calls the
-NeoForge-shaped 5-arg `getQuads`; block-entity `getModelData()` exposed as Fabric render data by
-`BlockEntityExtensionMixin`; `BakedModelExtension` interface-injected onto `BakedModel`), and
-`foundation/client/extensions/{IClientItemExtensions,IClientBlockExtensions,IClientFluidTypeExtensions,
-IGuiGraphicsExtension,ClientExtensionsManager}` (`Item/Block#initializeClient` interface-injected; fluid one
-adapts Fabric's `FluidRenderHandlerRegistry`). **Still TODO in that bucket:** `ClientHooks` (2 sites),
-walking Create's items/blocks at client init to call `initializeClient` into `ClientExtensionsManager`, and
-the Phase 3 consumers (BuiltinItemRendererRegistry for `getCustomRenderer()`, arm pose / armor / break-particle
-mixins).
-
-Next steps, in order of error yield:
-1. (client model data — done, see above; leftover `ClientHooks` is in the long tail)
-2. **Registries**: `DeferredRegister`/`DeferredHolder` sites (~35; → `Registry.register` / Registrate
-   `simple()`), `NeoForgeRegistries`, `RegisterEvent`, `RegistryBuilder`/`GameData`/`DataPackRegistryEvent`
-   (Create's custom registries: `CreateRegistries`/`CreateBuiltInRegistries` — Fabric `FabricRegistryBuilder`),
-   NeoForge **data maps** (`CreateDataMaps`, `NeoForgeDataMaps`, `DataMapType`, `Oxidizable`/`Waxable`) →
-   Create-owned JSON-loaded maps mirroring the `data/<ns>/data_maps/` format so vendored files load.
-3. **CC:Tweaked** `PeripheralCapability` (17) → CC Fabric API's `PeripheralLookup`.
-4. **Fluids** (Phase 2 design, but blocks compile): `FluidType`, `BaseFlowingFluid`, `NeoForgeMod.MILK/
-   LAVA_TYPE/WATER_TYPE`, `FluidInteractionRegistry` (+ its accessor mixin), `getFluidType()` sites, `FluidBucketWrapper`.
-5. **Event wiring**: write `foundation/event/CreateEventHooks` (Fabric callbacks + small mixins posting the
-   bridge events; log unwired), call `CreateEventBus.registerSubscribers()` + post lifecycle events from
-   `Create`/`CreateClient` init; fix the ~6 explicit `addListener(...)` sites to pass the event class;
-   `RegisterCapabilitiesEvent` should extend bridge `Event` and be posted after the Registrate flush.
-6. Long tail (each ≤5 sites): `ICondition`/`ConditionalRecipe`/`IngredientType`/`ICustomIngredient`/
-   `CompoundIngredient`/`BlockTagIngredient` (Fabric `CustomIngredient` + resource conditions),
-   `IEntityWithComplexSpawn` (custom spawn payload), `LogicalSide`/`EffectiveSide`, `ServerLifecycleHooks`,
-   `ModList`/`ModContainer`/`FMLPaths`/`FMLLoader`/`ModLoadingContext` (→ `FabricLoader`), `CommonHooks`,
-   `SpecialPlantable`, `ItemAbility`/`ItemAbilities`, `IBaseRailBlockExtension`/`IBlockExtension`,
-   `AuxiliaryLightManager`, `AttachmentType`/`IAttachmentSerializer` (fabric-data-attachment-api-v1),
-   `DeferredSoundType`, `KeyModifier`, `EnumArgument`, `UsernameCache`, `SoundActions`, `EffectCures`,
-   `NeoForgeConfig`, `IBrewingRecipe`/`BrewingRecipe`, `BiomeModifier`(→ Fabric BiomeModifications),
-   `NeoForgeExtraCodecs`, `IMapDecorationRenderer`/`RegisterMapDecorationRenderersEvent`,
-   `IConfigScreenFactory` (→ ModMenu, Phase 12), `compat.trainmap` (JourneyMap/Xaero, Phase 12),
-   `NeoForgeCatnipServices` → `FabricCatnipServices`, `Registrate#registerEventListeners` /
-   `OneTimeEventReceiver` in `CreateRegistrate`/`CreateBlockEntityBuilder` (drop; use `RegistrateEnv`).
-7. Then Phase 1 finishes with the server booting (`./gradlew runServer`) and Phase 2 begins: vendor
-   `src/main/resources` + `src/generated/resources` (assets/data), fix runtime issues.
 
 ## Phases (continued)
 
