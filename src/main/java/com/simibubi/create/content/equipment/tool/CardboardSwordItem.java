@@ -46,14 +46,14 @@ public class CardboardSwordItem extends SwordItem {
 
 	@Override
 	public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
-		return enchantment.getKey() == Enchantments.KNOCKBACK;
+		return enchantment.is(Enchantments.KNOCKBACK);
 	}
 
 	@Override
 	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
 		ItemEnchantments enchants = book.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
 		for (Holder<Enchantment> enchantment : enchants.keySet()) {
-			if (enchantment.getKey() != Enchantments.KNOCKBACK)
+			if (!enchantment.is(Enchantments.KNOCKBACK))
 				return false;
 		}
 		return true;

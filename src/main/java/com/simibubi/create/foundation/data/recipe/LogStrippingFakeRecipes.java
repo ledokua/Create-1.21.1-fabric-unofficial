@@ -21,6 +21,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -47,7 +48,8 @@ public class LogStrippingFakeRecipes {
 			return;
 		BlockState state = blockItem.getBlock()
 			.defaultBlockState();
-		BlockState strippedState = AxeItem.getAxeStrippingState(state);
+		Block strippedBlock = AxeItem.STRIPPABLES.get(state.getBlock());
+		BlockState strippedState = strippedBlock == null ? null : strippedBlock.withPropertiesOf(state);
 		if (strippedState == null)
 			return;
 		Item resultItem = strippedState.getBlock()

@@ -149,7 +149,7 @@ public class RenderTypes extends RenderStateShard {
 		@SubscribeEvent
 		public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
 			ResourceProvider resourceProvider = event.getResourceProvider();
-			event.registerShader(new ShaderInstance(resourceProvider, Create.asResource("glowing_shader"),
+			event.registerShader(new ShaderInstance(resourceProvider, Create.asResource("glowing_shader").toString(),
 				DefaultVertexFormat.NEW_ENTITY), shader -> glowingShader = shader);
 		}
 	}

@@ -95,8 +95,7 @@ public abstract class FlowSource {
 							}
 						));
 					} else if (level instanceof PonderLevel) {
-						fluidHandlerCache = ICapabilityProvider.of(() -> level.getCapability(
-							Capabilities.FluidHandler.BLOCK,
+						fluidHandlerCache = ICapabilityProvider.of(() -> Capabilities.FluidHandler.BLOCK.find(level,
 							blockEntity.getBlockPos(),
 							location.getOppositeFace()
 						));

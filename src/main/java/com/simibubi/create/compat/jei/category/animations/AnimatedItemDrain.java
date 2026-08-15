@@ -1,5 +1,7 @@
 package com.simibubi.create.compat.jei.category.animations;
 
+import com.simibubi.create.foundation.fluid.FluidRenderer;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.simibubi.create.AllBlocks;
@@ -37,7 +39,7 @@ public class AnimatedItemDrain extends AnimatedKinetics {
 		matrixStack.scale(scale, scale, scale);
 		float from = 2 / 16f;
 		float to = 1f - from;
-		FabricCatnipServices.FLUID_RENDERER.renderFluidBox(fluid, from, from, from, to, 3 / 4f, to, graphics.bufferSource(), matrixStack, LightTexture.FULL_BRIGHT, false, true);
+		FluidRenderer.renderFluidBox(fluid, from, from, from, to, 3 / 4f, to, graphics.bufferSource(), matrixStack, LightTexture.FULL_BRIGHT, false, true);
 		graphics.flush();
 
 		matrixStack.popPose();

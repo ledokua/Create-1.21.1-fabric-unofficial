@@ -71,14 +71,16 @@ public class CreateClient implements ClientModInitializer {
 
 	/** Upstream's client constructor body. */
 	public static void onCtorClient() {
-		AllParticleTypes.registerFactories();
+		// Fabric has no RegisterParticleProvidersEvent; ParticleFactoryRegistry accepts registrations any time.
+		AllParticleTypes.registerFactories(new com.simibubi.create.foundation.event.client.RegisterParticleProvidersEvent());
 
 		AllInstanceTypes.init();
 
-		MODEL_SWAPPER.registerListeners();
+		com.simibubi.create.foundation.event.bus.IEventBus modEventBus = com.simibubi.create.foundation.event.bus.CreateEventBus.BUS;
+		MODEL_SWAPPER.registerListeners(modEventBus);
 
-		ZAPPER_RENDER_HANDLER.registerListeners();
-		POTATO_CANNON_RENDER_HANDLER.registerListeners();
+		ZAPPER_RENDER_HANDLER.registerListeners(modEventBus);
+		POTATO_CANNON_RENDER_HANDLER.registerListeners(modEventBus);
 
 		// TODO(Phase 12): Mods.FTBLIBRARY -> FTBIntegration.init, Mods.SODIUM -> SodiumCompat.init
 		PojavChecker.init();

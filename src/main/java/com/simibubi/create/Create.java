@@ -138,6 +138,7 @@ public class Create implements ModInitializer {
 		AllDataComponents.register(modEventBus);
 		AllMapDecorationTypes.register(modEventBus);
 		AllMountedStorageTypes.register();
+		com.simibubi.create.impl.registry.CreateRegistriesImpl.registerDatapackRegistries();
 		com.simibubi.create.impl.registry.CreateDataMapsImpl.registerDataMaps();
 		com.simibubi.create.foundation.datamap.DataMapLoader.register();
 

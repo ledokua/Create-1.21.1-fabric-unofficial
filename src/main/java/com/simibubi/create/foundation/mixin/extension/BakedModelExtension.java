@@ -61,4 +61,9 @@ public interface BakedModelExtension {
 		self().getTransforms().getTransform(transformType).apply(applyLeftHandTransform, poseStack);
 		return self();
 	}
+
+	/** NeoForge's multi-pass item rendering; vanilla renders a single pass. */
+	default List<net.minecraft.client.resources.model.BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
+		return List.of((net.minecraft.client.resources.model.BakedModel) this);
+	}
 }

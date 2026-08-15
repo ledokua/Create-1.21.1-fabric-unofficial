@@ -144,7 +144,7 @@ public abstract class CapManipulationBehaviourBase<T, S extends CapManipulationB
 		if (!filter.test(invBE))
 			return;
 		BlockCapability<T, Direction> capability = capability();
-		targetCapability = world.getCapability(capability, pos, bypassSided ? null : targetBlockFace.getFace());
+		targetCapability = capability.find(world, pos, bypassSided ? null : targetBlockFace.getFace());
 	}
 
 	@FunctionalInterface

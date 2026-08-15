@@ -95,9 +95,9 @@ public class AllEntityTypes {
 		String id = Lang.asId(name);
 		return (CreateEntityBuilder<T, ?>) Create.registrate()
 			.entity(id, factory, group)
-			.properties(b -> b.setTrackingRange(range)
-				.setUpdateInterval(updateFrequency)
-				.setShouldReceiveVelocityUpdates(sendVelocity))
+			.properties(b -> b.clientTrackingRange(range)
+				.updateInterval(updateFrequency))
+			// (Fabric: no per-type 'send velocity updates' toggle; vanilla always sends for non-players)
 			.properties(propertyBuilder)
 			.properties(b -> {
 				if (immuneToFire)

@@ -105,6 +105,6 @@ public class SequencedAssemblyRecipeBuilder {
 		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(holder.id().getNamespace(),
 				AllRecipeTypes.SEQUENCED_ASSEMBLY.getId().getPath() + "/" + holder.id().getPath());
 
-		consumer.accept(id, holder.value(), null, recipeConditions.toArray(new ICondition[0]));
+		consumer.accept(id, holder.value(), null); // (conditions: NeoForge datagen-only; dropped on Fabric)
 	}
 }

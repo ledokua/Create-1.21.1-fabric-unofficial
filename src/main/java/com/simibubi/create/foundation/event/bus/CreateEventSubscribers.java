@@ -63,7 +63,6 @@ public final class CreateEventSubscribers {
 		"com.simibubi.create.foundation.events.CommonEvents$ModBusEvents",
 		"com.simibubi.create.foundation.events.InputEvents",
 		"com.simibubi.create.foundation.render.RenderTypes$Shaders",
-		"com.simibubi.create.impl.registry.CreateRegistriesImpl",
 		"com.simibubi.create.infrastructure.RemapHelper",
 		"com.simibubi.create.infrastructure.config.AllConfigs",
 		"com.simibubi.create.infrastructure.gametest.CreateGameTests",

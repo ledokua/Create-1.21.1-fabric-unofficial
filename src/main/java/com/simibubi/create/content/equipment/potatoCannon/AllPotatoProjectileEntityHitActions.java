@@ -197,7 +197,7 @@ public class AllPotatoProjectileEntityHitActions {
 		private static final GameProfile ZOMBIE_CONVERTER_NAME =
 			new GameProfile(UUID.fromString("be12d3dc-27d3-4992-8c97-66be53fd49c5"), "Converter");
 		private static final WorldAttached<FakePlayer> ZOMBIE_CONVERTERS =
-			new WorldAttached<>(w -> new FakePlayer((ServerLevel) w, ZOMBIE_CONVERTER_NAME));
+			new WorldAttached<>(w -> FakePlayer.get((ServerLevel) w, ZOMBIE_CONVERTER_NAME));
 
 		public static final MapCodec<CureZombieVillager> CODEC = MapCodec.unit(INSTANCE);
 

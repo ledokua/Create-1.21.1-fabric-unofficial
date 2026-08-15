@@ -79,6 +79,12 @@ public class ItemBuilder<T extends Item, P> extends AbstractBuilder<Item, T, P, 
 		return this;
 	}
 
+	/** Client extension registration (custom renderer/armor overlay etc.); stored in ClientExtensionsManager after the item resolves. */
+	public ItemBuilder<T, P> clientExtension(NonNullSupplier<Supplier<com.simibubi.create.foundation.client.extensions.IClientItemExtensions>> clientExtension) {
+		return onRegister(item -> RegistrateEnv.runOnClient(() -> () ->
+			com.simibubi.create.foundation.client.extensions.ClientExtensionsManager.register(item, clientExtension.get().get())));
+	}
+
 	// ---- datagen hooks: accepted and dropped for now, see PORTING_PLAN.md Phase 0b/11 ----
 
 	public ItemBuilder<T, P> defaultModel() {

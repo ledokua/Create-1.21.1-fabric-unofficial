@@ -1,5 +1,7 @@
 package com.simibubi.create.content.fluids.tank;
 
+import com.simibubi.create.foundation.fluid.FluidRenderer;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.AllPartialModels;
@@ -74,7 +76,7 @@ public class FluidTankRenderer extends SafeBlockEntityRenderer<FluidTankBlockEnt
 
 		ms.pushPose();
 		ms.translate(0, clampedLevel - totalHeight, 0);
-		FabricCatnipServices.FLUID_RENDERER.renderFluidBox(fluidStack, xMin, yMin, zMin, xMax, yMax, zMax, buffer,
+		FluidRenderer.renderFluidBox(fluidStack, xMin, yMin, zMin, xMax, yMax, zMax, buffer,
 			ms, light, false, true);
 		ms.popPose();
 	}

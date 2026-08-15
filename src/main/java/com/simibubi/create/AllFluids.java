@@ -166,7 +166,7 @@ public class AllFluids {
 				DispensibleContainerItem dispensibleContainerItem = (DispensibleContainerItem) pStack.getItem();
 				BlockPos pos = pSource.pos().relative(pSource.state().getValue(DispenserBlock.FACING));
 				Level level = pSource.level();
-				if (dispensibleContainerItem.emptyContents(null, level, pos, null, pStack)) {
+				if (dispensibleContainerItem.emptyContents(null, level, pos, null)) {
 					return new ItemStack(Items.BUCKET);
 				}
 				return DEFAULT.dispense(pSource, pStack);

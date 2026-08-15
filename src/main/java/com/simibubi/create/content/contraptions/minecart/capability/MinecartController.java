@@ -132,8 +132,7 @@ public class MinecartController implements INBTSerializable<CompoundTag> {
 		BlockState blockstate = world.getBlockState(blockpos);
 		if (cart.canUseRail() && blockstate.is(BlockTags.RAILS)
 			&& blockstate.getBlock() instanceof PoweredRailBlock
-			&& ((PoweredRailBlock) blockstate.getBlock())
-			.isActivatorRail()) {
+			&& blockstate.is(net.minecraft.world.level.block.Blocks.ACTIVATOR_RAIL)) {
 			if (cart.isVehicle()) {
 				cart.ejectPassengers();
 			}

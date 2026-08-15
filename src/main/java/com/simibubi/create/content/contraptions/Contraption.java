@@ -129,7 +129,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import net.neoforged.neoforge.registries.GameData;
 
 public abstract class Contraption {
 
@@ -905,7 +904,7 @@ public abstract class Contraption {
 
 	private CompoundTag writeBlocksCompound(boolean spawnPacket) {
 		CompoundTag compound = new CompoundTag();
-		HashMapPalette<BlockState> palette = new HashMapPalette<>(GameData.getBlockStateIDMap(), 16, (i, s) -> {
+		HashMapPalette<BlockState> palette = new HashMapPalette<>(Block.BLOCK_STATE_REGISTRY, 16, (i, s) -> {
 			throw new IllegalStateException("Palette Map index exceeded maximum");
 		});
 		ListTag blockList = new ListTag();
@@ -961,7 +960,7 @@ public abstract class Contraption {
 		ListTag blockList;
 		if (usePalettedDeserialization) {
 			CompoundTag c = ((CompoundTag) compound);
-			palette = new HashMapPalette<>(GameData.getBlockStateIDMap(), 16, (i, s) -> {
+			palette = new HashMapPalette<>(Block.BLOCK_STATE_REGISTRY, 16, (i, s) -> {
 				throw new IllegalStateException("Palette Map index exceeded maximum");
 			});
 

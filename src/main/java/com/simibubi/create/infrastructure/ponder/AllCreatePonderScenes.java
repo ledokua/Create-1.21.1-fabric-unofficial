@@ -390,12 +390,9 @@ public class AllCreatePonderScenes {
 		// Trains
 		HELPER.forComponents(TrackMaterial.allBlocks()
 				.stream()
-				.map((trackSupplier) -> new BlockEntry<TrackBlock>(
-					// note: these blocks probably WON'T be in the Create Registrate, but a simple
-					// code trace reveals the Entry's registrate isn't used
-					Create.registrate(),
-					DeferredHolder.create(Registries.BLOCK, BuiltInRegistries.BLOCK.getKey(trackSupplier.get()))
-				))
+				// note: these blocks probably WON'T be in the Create Registrate, but a simple
+				// code trace reveals the Entry's registrate isn't used
+				.map((trackSupplier) -> BlockEntry.of(trackSupplier.get()))
 				.toArray(BlockEntry[]::new))
 			.addStoryBoard("train_track/placement", TrackScenes::placement)
 			.addStoryBoard("train_track/portal", TrackScenes::portal)

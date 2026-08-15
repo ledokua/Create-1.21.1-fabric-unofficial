@@ -48,8 +48,7 @@ public class ReducedDestroyEffects implements IClientBlockExtensions {
 						double y = pos.getY() + d5 * h + y1;
 						double z = pos.getZ() + d6 * l + z1;
 
-						manager.add(new TerrainParticle(world, x, y, z, d4 - 0.5D, d5 - 0.5D, d6 - 0.5D, state, pos)
-							.updateSprite(state, pos));
+						manager.add(new TerrainParticle(world, x, y, z, d4 - 0.5D, d5 - 0.5D, d6 - 0.5D, state, pos));
 					}
 				}
 			}

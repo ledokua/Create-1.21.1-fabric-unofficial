@@ -98,8 +98,9 @@ public record ShulkerFillLevelAttribute(ShulkerLevels levels) implements ItemAtt
 				return requiredSize.test(0);
 			if (testStack.has(DataComponents.CONTAINER_LOOT))
 				return false;
-			if (contents.getSlots() > 0) {
-				int rawSize = contents.getSlots();
+			int slots = (int) contents.stream().count();
+			if (slots > 0) {
+				int rawSize = slots;
 				if (rawSize < 27)
 					return requiredSize.test(rawSize);
 

@@ -17,7 +17,7 @@ public class DistExecutor {
 	 */
 	@ApiStatus.Internal
 	@Deprecated(forRemoval = true, since = "1.21")
-	public static <T> T unsafeCallWhenOn(Dist dist, Supplier<Callable<T>> toRun) {
+	public static <T> T unsafeCallWhenOn(EnvType dist, Supplier<Callable<T>> toRun) {
 		if (FMLLoader.getDist() == dist) {
 			try {
 				return toRun.get().call();

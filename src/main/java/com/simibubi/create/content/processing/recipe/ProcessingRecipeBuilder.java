@@ -115,7 +115,7 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 			errors.add(recipe.getClass().getSimpleName() + "with id " + id + " failed validation:");
 			Create.LOGGER.warn(Joiner.on('\n').join(errors));
 		}
-		consumer.accept(id, recipe, null, recipeConditions.toArray(new ICondition[0]));
+		consumer.accept(id, recipe, null); // (conditions: NeoForge datagen-only; dropped on Fabric)
 	}
 
 	// Datagen shortcuts

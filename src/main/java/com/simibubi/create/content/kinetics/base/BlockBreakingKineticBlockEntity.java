@@ -144,7 +144,7 @@ public abstract class BlockBreakingKineticBlockEntity extends KineticBlockEntity
 			if (!level.getGameRules()
 				.getBoolean(GameRules.RULE_DOBLOCKDROPS))
 				return;
-			if (level.restoringBlockSnapshots)
+			if (com.simibubi.create.foundation.event.BlockSnapshot.isRestoring(level))
 				return;
 
 			ItemEntity itementity = new ItemEntity(level, vec.x, vec.y, vec.z, stack);

@@ -133,7 +133,7 @@ public class ShoppingListItem extends Item {
 		ShoppingList list = getList(stack);
 
 		if (list != null) {
-			Couple<InventorySummary> lists = list.bakeEntries(context.level(), null);
+			Couple<InventorySummary> lists = list.bakeEntries(com.simibubi.create.foundation.utility.DistExecutor.unsafeCallWhenOn(net.fabricmc.api.EnvType.CLIENT, () -> () -> net.minecraft.client.Minecraft.getInstance().level), null);
 
 			if (lists != null) {
 				for (InventorySummary items : lists) {

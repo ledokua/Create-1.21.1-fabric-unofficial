@@ -1,5 +1,7 @@
 package com.simibubi.create.content.fluids.spout;
 
+import com.simibubi.create.foundation.fluid.FluidRenderer;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
@@ -52,7 +54,7 @@ public class SpoutRenderer extends SafeBlockEntityRenderer<SpoutBlockEntity> {
 			if (!top) ms.translate(0, yOffset, 0);
 			else ms.translate(0, max - min, 0);
 
-			FabricCatnipServices.FLUID_RENDERER.renderFluidBox(fluidStack, min, min - yOffset, min, max, min,
+			FluidRenderer.renderFluidBox(fluidStack, min, min - yOffset, min, max, min,
 				max, buffer, ms, light, false, true);
 
 			ms.popPose();
@@ -67,7 +69,7 @@ public class SpoutRenderer extends SafeBlockEntityRenderer<SpoutBlockEntity> {
 		if (!fluidStack.isEmpty() && processingTicks != -1) {
 			radius = (float) (Math.pow(((2 * processingProgress) - 1), 2) - 1);
 			AABB bb = new AABB(0.5, 0.0, 0.5, 0.5, -1.2, 0.5).inflate(radius / 32f);
-			FabricCatnipServices.FLUID_RENDERER.renderFluidBox(fluidStack, (float) bb.minX, (float) bb.minY, (float) bb.minZ,
+			FluidRenderer.renderFluidBox(fluidStack, (float) bb.minX, (float) bb.minY, (float) bb.minZ,
 				(float) bb.maxX, (float) bb.maxY, (float) bb.maxZ, buffer, ms, light, true, true);
 		}
 

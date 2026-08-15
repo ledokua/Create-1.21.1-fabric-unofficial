@@ -16,7 +16,6 @@ import com.simibubi.create.foundation.platform.NeoForgeExtraCodecs;
 import com.simibubi.create.foundation.transfer.fluid.crafting.FluidIngredient;
 import com.simibubi.create.foundation.transfer.fluid.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.transfer.item.ItemStackHandler;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class CreateCodecs {
 	public static final Codec<Integer> INT_STR = Codec.STRING.comapFlatMap(
@@ -52,7 +51,7 @@ public class CreateCodecs {
 	}
 
 	public static Codec<SizedFluidIngredient> FLAT_SIZED_FLUID_INGREDIENT_WITH_TYPE = RecordCodecBuilder.create(instance -> instance.group(
-		NeoForgeRegistries.FLUID_INGREDIENT_TYPES.byNameCodec().fieldOf("type").forGetter(i -> i.ingredient().getType()),
+		FluidIngredient.TYPE_CODEC.fieldOf("type").forGetter(i -> i.ingredient().getType()),
 		FluidIngredient.MAP_CODEC_NONEMPTY.forGetter(SizedFluidIngredient::ingredient),
 		NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", 1000).forGetter(SizedFluidIngredient::amount)
 	).apply(instance, (type, ingredient, amount) -> new SizedFluidIngredient(ingredient, amount)));

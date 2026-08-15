@@ -2,23 +2,17 @@ package com.simibubi.create;
 
 import com.simibubi.create.content.trains.entity.CarriageSyncDataSerializer;
 
-import net.minecraft.network.syncher.EntityDataSerializer;
 import com.simibubi.create.foundation.event.bus.IEventBus;
-import com.simibubi.create.foundation.registry.DeferredHolder;
-import com.simibubi.create.foundation.registry.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraft.network.syncher.EntityDataSerializers;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 public class AllEntityDataSerializers {
-	private static final DeferredRegister<EntityDataSerializer<?>> REGISTER = DeferredRegister.create(NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, Create.ID);
-
+	// NeoForge has a registry for these (NeoForgeRegistries.ENTITY_DATA_SERIALIZERS); vanilla/Fabric use the static id map.
 	public static final CarriageSyncDataSerializer CARRIAGE_DATA = new CarriageSyncDataSerializer();
-
-	public static final DeferredHolder<EntityDataSerializer<?>, CarriageSyncDataSerializer> CARRIAGE_DATA_ENTRY = REGISTER.register("carriage_data", () -> CARRIAGE_DATA);
 
 	@Internal
 	public static void register(IEventBus modEventBus) {
-		REGISTER.register(modEventBus);
+		EntityDataSerializers.registerSerializer(CARRIAGE_DATA);
 	}
 }

@@ -113,7 +113,12 @@ public enum AllRecipeTypes implements IRecipeTypeInfo, StringRepresentable {
 		id = Create.asResource(name);
 		this.serializerSupplier = serializerSupplier;
 		serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
-		typeObject = Registers.TYPE_REGISTER.register(name, () -> RecipeType.simple(id));
+		typeObject = Registers.TYPE_REGISTER.register(name, () -> new RecipeType<>() {
+			@Override
+			public String toString() {
+				return id.toString();
+			}
+		});
 		type = typeObject;
 		isProcessingRecipe = false;
 	}
@@ -130,7 +135,8 @@ public enum AllRecipeTypes implements IRecipeTypeInfo, StringRepresentable {
 
 	@Internal
 	public static void register(IEventBus modEventBus) {
-		ShapedRecipePattern.setCraftingSize(9, 9);
+		// NeoForge: ShapedRecipePattern.setCraftingSize(9, 9) — vanilla caps shaped recipes at 3x3; Create's 9x9 mechanical
+		// crafter recipes need ShapedRecipePatternMixin (Phase 2).
 		Registers.SERIALIZER_REGISTER.register(modEventBus);
 		Registers.TYPE_REGISTER.register(modEventBus);
 	}

@@ -30,8 +30,8 @@ public class SchematicProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public StructureTemplate.StructureBlockInfo process(LevelReader world, BlockPos pos, BlockPos anotherPos, StructureTemplate.StructureBlockInfo rawInfo,
-			StructureTemplate.StructureBlockInfo info, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
+	public StructureTemplate.StructureBlockInfo processBlock(LevelReader world, BlockPos pos, BlockPos anotherPos, StructureTemplate.StructureBlockInfo rawInfo,
+			StructureTemplate.StructureBlockInfo info, StructurePlaceSettings settings) {
 		if (info.nbt() != null && info.state().hasBlockEntity()) {
 			BlockEntity be = ((EntityBlock) info.state().getBlock()).newBlockEntity(info.pos(), info.state());
 			if (be != null) {
@@ -43,8 +43,9 @@ public class SchematicProcessor extends StructureProcessor {
 		return info;
 	}
 
+	// NeoForge-only StructureProcessor hook; vanilla has no entity processing pass. Fabric: invoked from Create's
+	// own schematic entity placement path (see PORTING_PLAN.md, Phase 2 runtime).
 	@Nullable
-	@Override
 	public StructureTemplate.StructureEntityInfo processEntity(LevelReader world, BlockPos pos, StructureTemplate.StructureEntityInfo rawInfo,
 			StructureTemplate.StructureEntityInfo info, StructurePlaceSettings settings, StructureTemplate template) {
 		return EntityType.by(info.nbt).flatMap(type -> {

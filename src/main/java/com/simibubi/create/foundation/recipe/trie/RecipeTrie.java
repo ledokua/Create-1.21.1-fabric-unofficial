@@ -188,7 +188,7 @@ public class RecipeTrie<R extends Recipe<?>> {
 					ingredients.add(AbstractIngredient.Universal.INSTANCE);
 					continue;
 				}
-				if (!ingredient.isSimple()) {
+				if (ingredient.getCustomIngredient() != null) { // Fabric: custom ingredients ~ NeoForge's !isSimple()
 					ingredients.add(AbstractIngredient.Universal.INSTANCE);
 					continue;
 				}

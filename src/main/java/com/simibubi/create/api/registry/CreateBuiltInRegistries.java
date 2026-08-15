@@ -23,7 +23,6 @@ import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 
-import net.neoforged.neoforge.registries.RegistryBuilder;
 
 /**
  * Static registries added by Create.
@@ -58,18 +57,23 @@ public class CreateBuiltInRegistries {
 
 	@SuppressWarnings({"deprecation", "unchecked", "rawtypes"})
 	private static <T> Registry<T> register(ResourceKey<Registry<T>> key, boolean hasIntrusiveHolders, Runnable onBakeCallback) {
-		RegistryBuilder<T> builder = new RegistryBuilder<>(key)
-			.sync(true);
-
-		if (hasIntrusiveHolders)
-			builder.withIntrusiveHolders();
-
-		builder.onBake(r -> onBakeCallback.run());
-
-		Registry<T> registry = builder.create();
-		((WritableRegistry) BuiltInRegistries.REGISTRY)
-			.register(key, registry, RegistrationInfo.BUILT_IN);
+		// NeoForge: RegistryBuilder(key).sync(true)[.withIntrusiveHolders()].onBake(..).create(). Fabric: FabricRegistryBuilder
+		// (SYNCED attribute; intrusive holders via the MappedRegistry constructor flag). onBake is fired by Fabric on
+		// registry freeze — Create only uses it for post-registration validation, done from Create#init instead.
+		net.minecraft.core.MappedRegistry<T> mapped = new net.minecraft.core.MappedRegistry<>(key, com.mojang.serialization.Lifecycle.stable(), hasIntrusiveHolders);
+		Registry<T> registry = net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder.from(mapped)
+			.attribute(net.fabricmc.fabric.api.event.registry.RegistryAttribute.SYNCED)
+			.buildAndRegister();
+		BAKE_CALLBACKS.add(onBakeCallback);
 		return registry;
+	}
+
+	private static final java.util.List<Runnable> BAKE_CALLBACKS = new java.util.ArrayList<>();
+
+	/** Runs the NeoForge {@code onBake} callbacks; called once from {@code Create#init} after registration. */
+	@Internal
+	public static void runBakeCallbacks() {
+		BAKE_CALLBACKS.forEach(Runnable::run);
 	}
 
 	@Internal

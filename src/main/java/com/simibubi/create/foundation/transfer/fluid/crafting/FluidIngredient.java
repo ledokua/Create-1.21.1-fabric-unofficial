@@ -56,7 +56,7 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 		return ResourceLocation.fromNamespaceAndPath("neoforge", path);
 	}
 
-	static final Codec<FluidIngredientType<?>> TYPE_CODEC = ResourceLocation.CODEC.comapFlatMap(
+	public static final Codec<FluidIngredientType<?>> TYPE_CODEC = ResourceLocation.CODEC.comapFlatMap(
 		id -> {
 			FluidIngredientType<?> type = TYPES.get(id);
 			return type == null ? DataResult.error(() -> "Unknown fluid ingredient type: " + id) : DataResult.success(type);

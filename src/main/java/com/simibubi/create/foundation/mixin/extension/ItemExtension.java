@@ -96,4 +96,9 @@ public interface ItemExtension {
 	default String getCreatorModId(net.minecraft.world.item.ItemStack stack) {
 		return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
 	}
+
+	/** NeoForge's equip hook: vanilla only checks the armor slot. */
+	default boolean canEquip(net.minecraft.world.item.ItemStack stack, net.minecraft.world.entity.EquipmentSlot armorType, net.minecraft.world.entity.LivingEntity entity) {
+		return entity.getEquipmentSlotForItem(stack) == armorType;
+	}
 }

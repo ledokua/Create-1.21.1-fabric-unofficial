@@ -64,7 +64,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 				continue;
 			}
 
-			IFluidHandlerItem capability = stack.getCapability(FluidHandler.ITEM);
+			IFluidHandlerItem capability = FluidHandler.ITEM.find(stack, null);
 			if (capability == null)
 				continue;
 
@@ -78,7 +78,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 					continue;
 
 				ItemStack copy = stack.copy();
-				IFluidHandlerItem fhi = copy.getCapability(FluidHandler.ITEM);
+				IFluidHandlerItem fhi = FluidHandler.ITEM.find(copy, null);
 				if (fhi != null) {
 					if (!GenericItemFilling.isFluidHandlerValid(copy, fhi))
 						continue;

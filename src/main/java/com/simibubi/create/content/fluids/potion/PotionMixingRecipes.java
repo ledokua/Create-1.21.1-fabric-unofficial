@@ -27,8 +27,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.common.brewing.BrewingRecipe;
-import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 import com.simibubi.create.foundation.transfer.fluid.crafting.DataComponentFluidIngredient;
 import com.simibubi.create.foundation.transfer.fluid.crafting.SizedFluidIngredient;
@@ -114,34 +112,8 @@ public class PotionMixingRecipes {
 			}
 		}
 
-		recipeIndex = 0;
-		for (IBrewingRecipe recipe : potionBrewing.getRecipes()) {
-			if (recipe instanceof BrewingRecipe recipeImpl) {
-				ItemStack output = recipeImpl.getOutput();
-				if (!SUPPORTED_CONTAINERS.contains(output.getItem())) {
-					continue;
-				}
-
-				Ingredient input = recipeImpl.getInput();
-				Ingredient ingredient = recipeImpl.getIngredient();
-				FluidStack outputFluid = null;
-				for (ItemStack stack : supportedContainerStacks) {
-					if (input.test(stack)) {
-						ItemStack[] stacks = input.getItems();
-						if (stacks.length == 0){
-							continue;
-						}
-						FluidStack inputFluid = PotionFluidHandler.getFluidFromPotionItem(stacks[0]);
-						inputFluid.setAmount(1000);
-						if (outputFluid == null) {
-							outputFluid = PotionFluidHandler.getFluidFromPotionItem(output);
-						}
-						outputFluid.setAmount(1000);
-						mixingRecipes.add(createRecipe("potion_mixing_modded_" + recipeIndex++, ingredient, inputFluid, outputFluid));
-					}
-				}
-			}
-		}
+		// NeoForge exposes modded IBrewingRecipes via PotionBrewing#getRecipes(); vanilla/Fabric only has the potion mixes
+		// iterated above (Fabric brewing additions register through the same vanilla PotionBrewing.Builder).
 
 		return mixingRecipes;
 	}

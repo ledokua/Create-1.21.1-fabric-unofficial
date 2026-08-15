@@ -99,10 +99,22 @@ public class BlockSnapshot {
 		return restoreToLocation(level, pos, notifyNeighbors ? Block.UPDATE_ALL : Block.UPDATE_CLIENTS);
 	}
 
+	/** Levels currently inside a snapshot restore (NeoForge's {@code Level#restoringBlockSnapshots} flag). */
+	private static final java.util.Set<LevelAccessor> RESTORING = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+	public static boolean isRestoring(LevelAccessor level) {
+		return RESTORING.contains(level);
+	}
+
 	public boolean restoreToLocation(LevelAccessor level, BlockPos pos, int flags) {
 		BlockState current = getCurrentBlock();
 		if (current != state) {
-			level.setBlock(pos, state, flags);
+			RESTORING.add(level);
+			try {
+				level.setBlock(pos, state, flags);
+			} finally {
+				RESTORING.remove(level);
+			}
 		}
 		BlockEntity be = null;
 		if (nbt != null) {

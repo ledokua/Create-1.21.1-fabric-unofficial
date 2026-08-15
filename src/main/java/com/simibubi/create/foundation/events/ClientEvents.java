@@ -111,7 +111,6 @@ import com.simibubi.create.foundation.event.client.RenderFrameEvent;
 import com.simibubi.create.foundation.event.client.RenderLevelStageEvent;
 import com.simibubi.create.foundation.event.client.RenderLevelStageEvent.Stage;
 import com.simibubi.create.foundation.event.client.ViewportEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import com.simibubi.create.foundation.event.client.VanillaGuiLayers;
 import com.simibubi.create.foundation.event.entity.EntityMountEvent;
 import com.simibubi.create.foundation.event.entity.player.ItemTooltipEvent;
@@ -388,12 +387,6 @@ public class ClientEvents {
 		event.register(AllItems.POTATO_CANNON, PotatoCannonItemRenderer.DECORATOR);
 	}
 
-	@SubscribeEvent
-	public static void onLoadComplete(FMLLoadCompleteEvent event) {
-		ModContainer createContainer = ModList.get()
-			.getModContainerById(Create.ID)
-			.orElseThrow(() -> new IllegalStateException("Create mod container missing on LoadComplete"));
-		Supplier<IConfigScreenFactory> configScreen = () -> (mc, previousScreen) -> new BaseConfigScreen(previousScreen, Create.ID);
-		createContainer.registerExtensionPoint(IConfigScreenFactory.class, configScreen);
-	}
+	// NeoForge registers the config screen via IConfigScreenFactory here; on Fabric that's the ModMenu entrypoint
+	// (com.simibubi.create.compat.modmenu, Phase 12).
 }

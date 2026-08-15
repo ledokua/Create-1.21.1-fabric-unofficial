@@ -62,17 +62,15 @@ public class AllCreativeModeTabs {
 		DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Create.ID);
 
 	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BASE_CREATIVE_TAB = REGISTER.register("base",
-		() -> CreativeModeTab.builder()
+		() -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
 			.title(Component.translatable("itemGroup.create.base"))
-			.withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
 			.icon(() -> AllBlocks.COGWHEEL.asStack())
 			.displayItems(new RegistrateDisplayItemsGenerator(true, AllCreativeModeTabs.BASE_CREATIVE_TAB))
 			.build());
 
 	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> PALETTES_CREATIVE_TAB = REGISTER.register("palettes",
-		() -> CreativeModeTab.builder()
+		() -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
 			.title(Component.translatable("itemGroup.create.palettes"))
-			.withTabsBefore(BASE_CREATIVE_TAB.getKey())
 			.icon(() -> AllPaletteBlocks.ORNATE_IRON_WINDOW.asStack())
 			.displayItems(new RegistrateDisplayItemsGenerator(false, AllCreativeModeTabs.PALETTES_CREATIVE_TAB))
 			.build());

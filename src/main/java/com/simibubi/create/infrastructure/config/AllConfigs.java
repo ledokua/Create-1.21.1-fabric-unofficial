@@ -1,5 +1,7 @@
 package com.simibubi.create.infrastructure.config;
 
+import com.simibubi.create.Create;
+
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,7 +15,6 @@ import net.createmod.catnip.config.ConfigBase;
 
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import com.simibubi.create.foundation.platform.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import net.neoforged.fml.config.ModConfig;
 import com.simibubi.create.foundation.event.lifecycle.ModConfigEvent;
@@ -57,13 +58,20 @@ public class AllConfigs {
 		return config;
 	}
 
-	public static void register(ModLoadingContext context, ModContainer container) {
+	public static void register() {
 		client = register(CClient::new, ModConfig.Type.CLIENT);
 		common = register(CCommon::new, ModConfig.Type.COMMON);
 		server = register(CServer::new, ModConfig.Type.SERVER);
 
+		// Forge Config API Port: same ModConfigSpec/ModConfig types as NeoForge, registered by mod id instead of container.
 		for (Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet())
-			container.registerConfig(pair.getKey(), pair.getValue().specification);
+			fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry.INSTANCE.register(Create.ID, pair.getKey(), pair.getValue().specification);
+
+		// (Re)load notifications: bridge FCAP's events onto Create's ModConfigEvent so the @SubscribeEvent handlers below fire.
+		fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeModConfigEvents.loading(Create.ID)
+			.register(config -> com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(new ModConfigEvent.Loading(config)));
+		fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeModConfigEvents.reloading(Create.ID)
+			.register(config -> com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(new ModConfigEvent.Reloading(config)));
 
 		CStress stress = server().kinetics.stressValues;
 		BlockStressValues.IMPACTS.registerProvider(stress::getImpact);

@@ -88,7 +88,8 @@ public class TagGen {
 		}
 
 		public TagBuilder getOrCreateRawBuilder(TagKey<T> tag) {
-			return provider.addTag(tag).getInternalBuilder();
+			// datagen shell (see RegistrateTagsProvider): hand back a detached builder
+			return TagBuilder.create();
 		}
 	}
 

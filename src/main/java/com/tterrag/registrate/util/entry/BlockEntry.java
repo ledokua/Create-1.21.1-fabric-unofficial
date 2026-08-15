@@ -15,6 +15,13 @@ public class BlockEntry<T extends Block> extends ItemProviderEntry<Block, T> {
 		super(Registries.BLOCK, id);
 	}
 
+	/** Wraps an already-registered block (e.g. another mod's) in an entry; upstream builds these from a DeferredHolder. */
+	public static <T extends Block> BlockEntry<T> of(T block) {
+		BlockEntry<T> entry = new BlockEntry<>(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block));
+		entry.resolve(block);
+		return entry;
+	}
+
 	public BlockState getDefaultState() {
 		return get().defaultBlockState();
 	}

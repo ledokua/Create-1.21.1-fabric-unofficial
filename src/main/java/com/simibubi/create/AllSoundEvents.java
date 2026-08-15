@@ -401,8 +401,8 @@ public class AllSoundEvents {
 				consumer.accept(entry.getSubtitleKey(), entry.getSubtitle());
 	}
 
-	public static SoundEntryProvider provider(DataGenerator generator) {
-		return new SoundEntryProvider(generator);
+	public static SoundEntryProvider provider(PackOutput output) {
+		return new SoundEntryProvider(output);
 	}
 
 	public static void playItemPickup(Player player) {
@@ -425,8 +425,8 @@ public class AllSoundEvents {
 
 		private PackOutput output;
 
-		public SoundEntryProvider(DataGenerator generator) {
-			output = generator.getPackOutput();
+		public SoundEntryProvider(PackOutput output) {
+			this.output = output;
 		}
 
 		@Override

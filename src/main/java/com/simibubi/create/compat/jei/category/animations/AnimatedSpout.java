@@ -1,5 +1,7 @@
 package com.simibubi.create.compat.jei.category.animations;
 
+import com.simibubi.create.foundation.fluid.FluidRenderer;
+
 import java.util.List;
 
 import com.mojang.blaze3d.platform.Lighting;
@@ -72,7 +74,7 @@ public class AnimatedSpout extends AnimatedKinetics {
 		float from = 3f / 16f;
 		float to = 17f / 16f;
 		FluidStack fluidStack = fluids.get(0);
-		FabricCatnipServices.FLUID_RENDERER.renderFluidBox(fluidStack, from, from, from, to, to, to, graphics.bufferSource(), matrixStack, LightTexture.FULL_BRIGHT, false, true);
+		FluidRenderer.renderFluidBox(fluidStack, from, from, from, to, to, to, graphics.bufferSource(), matrixStack, LightTexture.FULL_BRIGHT, false, true);
 		matrixStack.popPose();
 
 		float width = 1 / 128f * squeeze;
@@ -82,7 +84,7 @@ public class AnimatedSpout extends AnimatedKinetics {
 		matrixStack.translate(-0.5f, 0, -0.5f);
 		from = -width / 2 + 0.5f;
 		to = width / 2 + 0.5f;
-		FabricCatnipServices.FLUID_RENDERER.renderFluidBox(fluidStack, from, 0, from, to, 2, to, graphics.bufferSource(), matrixStack, LightTexture.FULL_BRIGHT, false, true);
+		FluidRenderer.renderFluidBox(fluidStack, from, 0, from, to, 2, to, graphics.bufferSource(), matrixStack, LightTexture.FULL_BRIGHT, false, true);
 		graphics.flush();
 		Lighting.setupFor3DItems();
 
