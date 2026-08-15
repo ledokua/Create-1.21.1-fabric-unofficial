@@ -5,21 +5,20 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
-
+import com.simibubi.create.foundation.attachment.AttachmentType;
 import com.simibubi.create.foundation.event.bus.IEventBus;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import com.simibubi.create.foundation.registry.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+/** Data attachments. Fabric port: built directly on Create's {@link AttachmentType} (over Fabric's attachment API) instead of a NeoForge registry. */
 public class AllAttachmentTypes {
-	private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Create.ID);
 
-	public static final Supplier<AttachmentType<MinecartController>> MINECART_CONTROLLER = ATTACHMENT_TYPES.register(
-		"minecart_controller", () -> AttachmentType.builder(() -> MinecartController.EMPTY).serialize(MinecartController.SERIALIZER).build()
+	public static final Supplier<AttachmentType<MinecartController>> MINECART_CONTROLLER = lazy(
+		AttachmentType.builder(() -> MinecartController.EMPTY).serialize(MinecartController.SERIALIZER).build(Create.asResource("minecart_controller"))
 	);
 
-	@Internal
-	public static void register(IEventBus modEventBus) {
-		ATTACHMENT_TYPES.register(modEventBus);
+	private static <T> Supplier<T> lazy(T value) {
+		return () -> value;
 	}
+
+	@Internal
+	public static void register(IEventBus modEventBus) {}
 }

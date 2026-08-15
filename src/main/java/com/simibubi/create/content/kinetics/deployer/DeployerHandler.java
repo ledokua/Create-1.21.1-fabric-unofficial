@@ -71,7 +71,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import com.simibubi.create.foundation.platform.CommonHooks;
-import net.neoforged.neoforge.common.extensions.IBaseRailBlockExtension;
+import com.simibubi.create.foundation.platform.IBaseRailBlockExtension;
 import net.fabricmc.fabric.api.util.TriState;
 import com.simibubi.create.foundation.event.EventHooks;
 import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent.LeftClickBlock;

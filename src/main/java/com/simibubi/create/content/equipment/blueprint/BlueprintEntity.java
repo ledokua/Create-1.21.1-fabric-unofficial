@@ -63,7 +63,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import com.simibubi.create.foundation.platform.CommonHooks;
 import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import com.simibubi.create.foundation.entity.IEntityWithComplexSpawn;
 import com.simibubi.create.foundation.event.EventHooks;
 import com.simibubi.create.foundation.transfer.item.IItemHandlerModifiable;
 import com.simibubi.create.foundation.transfer.item.ItemStackHandler;

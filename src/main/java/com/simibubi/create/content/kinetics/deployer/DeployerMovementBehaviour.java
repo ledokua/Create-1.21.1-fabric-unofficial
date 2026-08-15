@@ -52,7 +52,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.common.extensions.IBaseRailBlockExtension;
+import com.simibubi.create.foundation.platform.IBaseRailBlockExtension;
 import com.simibubi.create.foundation.event.BlockSnapshot;
 import com.simibubi.create.foundation.event.EventHooks;
 import com.simibubi.create.foundation.transfer.item.IItemHandler;

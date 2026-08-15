@@ -18,7 +18,7 @@ import com.simibubi.create.foundation.item.ItemHelper;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.neoforge.NeoForgeTypes;
+import com.simibubi.create.compat.jei.CreateJeiIngredientTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -47,7 +47,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 	}
 
 	public static void consumeRecipes(Consumer<RecipeHolder<FillingRecipe>> consumer, IIngredientManager ingredientManager) {
-		Collection<FluidStack> fluidStacks = ingredientManager.getAllIngredients(NeoForgeTypes.FLUID_STACK);
+		Collection<FluidStack> fluidStacks = ingredientManager.getAllIngredients(CreateJeiIngredientTypes.FLUID_STACK);
 		for (ItemStack stack : ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK)) {
 			if (PotionFluidHandler.isPotionItem(stack)) {
 				FluidStack fluidFromPotionItem = PotionFluidHandler.getFluidFromPotionItem(stack);

@@ -26,7 +26,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import com.simibubi.create.foundation.entity.IEntityWithComplexSpawn;
 
 public class SeatEntity extends Entity implements IEntityWithComplexSpawn {
 	public SeatEntity(EntityType<?> entityType, Level level) {

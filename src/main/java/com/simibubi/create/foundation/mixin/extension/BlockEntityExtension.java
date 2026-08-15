@@ -18,4 +18,9 @@ public interface BlockEntityExtension {
 
 	/** NeoForge: re-query model data + rebuild chunk. Fabric re-reads render data on chunk rebuild anyway. */
 	default void requestModelDataUpdate() {}
+
+	/** Mod-private NBT that persists with the block entity (NeoForge's {@code BlockEntity#getPersistentData()}). */
+	default net.minecraft.nbt.CompoundTag getPersistentData() {
+		throw new AbstractMethodError("BlockEntityExtension#getPersistentData not implemented by mixin");
+	}
 }

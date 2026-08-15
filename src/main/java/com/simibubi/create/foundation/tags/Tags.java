@@ -59,6 +59,7 @@ public final class Tags {
 		public static final TagKey<Item> ENCHANTABLES = TagKey.create(Registries.ITEM, c("enchantables"));
 		public static final TagKey<Item> ENDER_PEARLS = TagKey.create(Registries.ITEM, c("ender_pearls"));
 		public static final TagKey<Item> FEATHERS = TagKey.create(Registries.ITEM, c("feathers"));
+		public static final TagKey<Item> FOODS = TagKey.create(Registries.ITEM, c("foods"));
 		public static final TagKey<Item> FOODS_DOUGH = TagKey.create(Registries.ITEM, c("foods/dough"));
 		public static final TagKey<Item> GEMS_LAPIS = TagKey.create(Registries.ITEM, c("gems/lapis"));
 		public static final TagKey<Item> GEMS_QUARTZ = TagKey.create(Registries.ITEM, c("gems/quartz"));

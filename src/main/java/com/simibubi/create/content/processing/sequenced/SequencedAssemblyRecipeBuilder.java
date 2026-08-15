@@ -23,7 +23,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.ItemLike;
 
-import net.neoforged.neoforge.common.conditions.ICondition;
+import com.simibubi.create.foundation.platform.conditions.ICondition;
 
 public class SequencedAssemblyRecipeBuilder {
 

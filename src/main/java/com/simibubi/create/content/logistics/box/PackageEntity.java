@@ -52,7 +52,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import com.simibubi.create.foundation.platform.CommonHooks;
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import com.simibubi.create.foundation.entity.IEntityWithComplexSpawn;
 import com.simibubi.create.foundation.transfer.item.ItemStackHandler;
 
 public class PackageEntity extends LivingEntity implements IEntityWithComplexSpawn {

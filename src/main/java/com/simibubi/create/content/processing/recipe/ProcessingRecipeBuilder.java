@@ -22,9 +22,9 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 
-import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
-import net.neoforged.neoforge.common.conditions.NotCondition;
+import com.simibubi.create.foundation.platform.conditions.ICondition;
+import com.simibubi.create.foundation.platform.conditions.ModLoadedCondition;
+import com.simibubi.create.foundation.platform.conditions.NotCondition;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 import com.simibubi.create.foundation.transfer.fluid.crafting.FluidIngredient;

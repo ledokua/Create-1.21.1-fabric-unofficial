@@ -24,6 +24,7 @@
     "MobMixin",
     "PlayerMixin",
     "ProjectileUtilMixin",
+    "ServerEntityComplexSpawnMixin",
     "SmithingMenuMixin",
     "WaterWheelFluidSpreadMixin",
     "accessor.BlockBehaviourAccessor",

@@ -85,7 +85,7 @@ public class ItemHelper {
 
 	public static <T extends IBE<? extends BlockEntity>> int calcRedstoneFromBlockEntity(T ibe, Level level, BlockPos pos) {
 		return ibe.getBlockEntityOptional(level, pos)
-			.map(be -> level.getCapability(ItemHandler.BLOCK, pos, null))
+			.map(be -> ItemHandler.BLOCK.find(level, pos, null))
 			.map(ItemHelper::calcRedstoneFromInventory)
 			.orElse(0);
 	}

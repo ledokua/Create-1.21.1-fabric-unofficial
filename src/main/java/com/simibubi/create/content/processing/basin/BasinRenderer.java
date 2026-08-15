@@ -10,7 +10,7 @@ import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.IntAttached;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
-import net.createmod.catnip.platform.NeoForgeCatnipServices;
+import net.createmod.catnip.platform.FabricCatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -175,7 +175,7 @@ public class BasinRenderer extends SmartBlockEntityRenderer<BasinBlockEntity> {
 
 				float partial = Mth.clamp(units / totalUnits, 0, 1);
 				xMax += partial * 12 / 16f;
-				NeoForgeCatnipServices.FLUID_RENDERER.renderFluidBox(renderedFluid, xMin, yMin, zMin, xMax, yMax, zMax,
+				FabricCatnipServices.FLUID_RENDERER.renderFluidBox(renderedFluid, xMin, yMin, zMin, xMax, yMax, zMax,
 					buffer, ms, light, false, false);
 
 				xMin = xMax;

@@ -20,7 +20,7 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.neoforge.NeoForgeTypes;
+import com.simibubi.create.compat.jei.CreateJeiIngredientTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.createmod.catnip.registry.RegisteredObjectsHelper;
@@ -89,7 +89,7 @@ public class SequencedAssemblyCategory extends CreateRecipeCategory<SequencedAss
 				for (SizedFluidIngredient fluidIngredient : sequencedRecipe.getRecipe()
 					.getFluidIngredients())
 					builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
-						.addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(fluidIngredient.getFluids()));
+						.addIngredients(CreateJeiIngredientTypes.FLUID_STACK, Arrays.asList(fluidIngredient.getFluids()));
 			}
 		}
 	}

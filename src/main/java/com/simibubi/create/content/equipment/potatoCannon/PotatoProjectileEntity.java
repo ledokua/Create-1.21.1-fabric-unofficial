@@ -42,7 +42,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import com.simibubi.create.foundation.entity.IEntityWithComplexSpawn;
 
 public class PotatoProjectileEntity extends AbstractHurtingProjectile implements IEntityWithComplexSpawn {
 

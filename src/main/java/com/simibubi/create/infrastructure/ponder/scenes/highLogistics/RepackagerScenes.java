@@ -384,7 +384,7 @@ public class RepackagerScenes {
 		scene.world()
 			.modifyBlockEntity(util.grid()
 				.at(3, 2, 5), BlockEntity.class, be -> {
-					IItemHandler handler = be.getLevel().getCapability(ItemHandler.BLOCK, be.getBlockPos(), null);
+					IItemHandler handler = ItemHandler.BLOCK.find(be.getLevel(), be.getBlockPos(), null);
 					if (handler == null)
 						return;
 					ItemHandlerHelper.insertItemStacked(handler, stack, false);

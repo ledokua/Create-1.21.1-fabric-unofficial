@@ -329,7 +329,7 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 		BlockEntity blockEntity = level.getBlockEntity(worldPosition.relative(side));
 		if (blockEntity == null || blockEntity instanceof FrogportBlockEntity)
 			return null;
-		return level.getCapability(ItemHandler.BLOCK, blockEntity.getBlockPos(), side.getOpposite());
+		return ItemHandler.BLOCK.find(level, blockEntity.getBlockPos(), side.getOpposite());
 	}
 
 	@Override

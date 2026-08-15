@@ -22,8 +22,8 @@
   ],
   "custom": {
     "loom:injected_interfaces": {
-      "net/minecraft/class_1297": ["com/simibubi/create/foundation/mixin/extension/EntityExtension"],
-      "net/minecraft/class_2586": ["com/simibubi/create/foundation/mixin/extension/BlockEntityExtension"],
+      "net/minecraft/class_1297": ["com/simibubi/create/foundation/mixin/extension/EntityExtension", "com/simibubi/create/foundation/attachment/IAttachmentHolder"],
+      "net/minecraft/class_2586": ["com/simibubi/create/foundation/mixin/extension/BlockEntityExtension", "com/simibubi/create/foundation/attachment/IAttachmentHolder"],
       "net/minecraft/class_465": ["com/simibubi/create/foundation/mixin/extension/AbstractContainerScreenExtension"],
       "net/minecraft/class_1799": ["com/simibubi/create/foundation/mixin/extension/ItemStackExtension"],
       "net/minecraft/class_304": ["com/simibubi/create/foundation/mixin/extension/KeyMappingExtension"],
@@ -33,7 +33,13 @@
       "net/minecraft/class_1087": ["com/simibubi/create/foundation/mixin/extension/BakedModelExtension"],
       "net/minecraft/class_3611": ["com/simibubi/create/foundation/mixin/extension/FluidExtension"],
       "net/minecraft/class_3610": ["com/simibubi/create/foundation/mixin/extension/FluidStateExtension"],
-      "net/minecraft/class_4538": ["com/simibubi/create/foundation/mixin/extension/LevelExtension"]
+      "net/minecraft/class_4538": ["com/simibubi/create/foundation/mixin/extension/LevelExtension"],
+      "net/minecraft/class_2791": ["com/simibubi/create/foundation/attachment/IAttachmentHolder"],
+      "net/minecraft/class_1937": ["com/simibubi/create/foundation/attachment/IAttachmentHolder"],
+      "net/minecraft/class_1767": ["com/simibubi/create/foundation/mixin/extension/DyeColorExtension"],
+      "net/minecraft/class_2241": ["com/simibubi/create/foundation/mixin/extension/BaseRailBlockExtension"],
+      "net/minecraft/class_1688": ["com/simibubi/create/foundation/mixin/extension/AbstractMinecartExtension"],
+      "net/minecraft/class_1735": ["com/simibubi/create/foundation/mixin/extension/SlotExtension"]
     }
   },
   "depends": {

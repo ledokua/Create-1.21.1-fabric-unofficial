@@ -65,7 +65,7 @@ public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<Pac
 					.relative(face));
 			if (be instanceof PackagerBlockEntity)
 				continue;
-			if (be != null && be.hasLevel() &&be.getLevel().getCapability(ItemHandler.BLOCK, be.getBlockPos(), null) != null) {
+			if (be != null && be.hasLevel() &&ItemHandler.BLOCK.find(be.getLevel(), be.getBlockPos(), null) != null) {
 				preferredFacing = face.getOpposite();
 				break;
 			}

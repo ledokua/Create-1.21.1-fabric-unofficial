@@ -70,7 +70,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 
-import net.neoforged.neoforge.common.SpecialPlantable;
+import com.simibubi.create.foundation.platform.SpecialPlantable;
 import com.simibubi.create.foundation.event.level.BlockDropsEvent;
 import com.simibubi.create.foundation.event.level.BlockEvent;
 

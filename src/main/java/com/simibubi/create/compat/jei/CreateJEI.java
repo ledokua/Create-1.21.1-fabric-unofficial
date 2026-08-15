@@ -74,7 +74,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
-import mezz.jei.api.neoforge.NeoForgeTypes;
+import com.simibubi.create.compat.jei.CreateJeiIngredientTypes;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -361,8 +361,8 @@ public class CreateJEI implements IModPlugin {
 	public <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
 		PotionFluidSubtypeInterpreter interpreter = new PotionFluidSubtypeInterpreter();
 		PotionFluid potionFluid = AllFluids.POTION.get();
-		registration.registerSubtypeInterpreter(NeoForgeTypes.FLUID_STACK, potionFluid.getSource(), interpreter);
-		registration.registerSubtypeInterpreter(NeoForgeTypes.FLUID_STACK, potionFluid.getFlowing(), interpreter);
+		registration.registerSubtypeInterpreter(CreateJeiIngredientTypes.FLUID_STACK, potionFluid.getSource(), interpreter);
+		registration.registerSubtypeInterpreter(CreateJeiIngredientTypes.FLUID_STACK, potionFluid.getFlowing(), interpreter);
 	}
 
 	@Override
@@ -394,7 +394,7 @@ public class CreateJEI implements IModPlugin {
 
 			potionFluids.add(PotionFluid.of(1000, potionContents, PotionFluid.BottleType.REGULAR));
 		}
-		registration.addExtraIngredients(NeoForgeTypes.FLUID_STACK, potionFluids);
+		registration.addExtraIngredients(CreateJeiIngredientTypes.FLUID_STACK, potionFluids);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})

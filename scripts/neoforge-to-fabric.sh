@@ -102,3 +102,21 @@ find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
   -e 's/net\.neoforged\.neoforge\.common\.world\.AuxiliaryLightManager\b/com.simibubi.create.foundation.platform.AuxiliaryLightManager/g' \
   -e 's/net\.neoforged\.neoforge\.client\.gui\.VanillaGuiLayers\b/com.simibubi.create.foundation.event.client.VanillaGuiLayers/g' \
   -e 's/net\.neoforged\.neoforge\.client\.IItemDecorator\b/com.simibubi.create.foundation.event.client.RegisterItemDecorationsEvent.IItemDecorator/g'
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.attachment\./com.simibubi.create.foundation.attachment./g'
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.entity\.IEntityWithComplexSpawn\b/com.simibubi.create.foundation.entity.IEntityWithComplexSpawn/g'
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.createmod\.ponder\.render\.VirtualRenderHelper\b/com.simibubi.create.foundation.virtualWorld.VirtualRenderHelper/g' \
+  -e 's/net\.createmod\.catnip\.platform\.NeoForgeCatnipServices\b/net.createmod.catnip.platform.FabricCatnipServices/g' \
+  -e 's/\bNeoForgeCatnipServices\b/FabricCatnipServices/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.SpecialPlantable\b/com.simibubi.create.foundation.platform.SpecialPlantable/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.(ItemAbility|ItemAbilities)\b/com.simibubi.create.foundation.platform.\1/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.extensions\.IBaseRailBlockExtension\b/com.simibubi.create.foundation.platform.IBaseRailBlockExtension/g' \
+  -e 's/\bAABB\.INFINITE\b/com.simibubi.create.foundation.utility.AABBs.INFINITE/g'
+# getCapability with statically-imported nested class (ItemHandler.BLOCK / FluidHandler.BLOCK)
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/([A-Za-z_][A-Za-z0-9_.]*(\(\))?)\.getCapability\(((ItemHandler|FluidHandler)\.BLOCK),\s*/\3.find(\1, /g' \
+  -e 's/mezz\.jei\.api\.neoforge\.NeoForgeTypes\b/com.simibubi.create.compat.jei.CreateJeiIngredientTypes/g' \
+  -e 's/\bNeoForgeTypes\.FLUID_STACK\b/CreateJeiIngredientTypes.FLUID_STACK/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.conditions\./com.simibubi.create.foundation.platform.conditions./g'

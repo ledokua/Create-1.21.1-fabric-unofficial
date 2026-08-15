@@ -19,7 +19,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 
-import net.neoforged.neoforge.common.SpecialPlantable;
+import com.simibubi.create.foundation.platform.SpecialPlantable;
 
 public class AllPotatoProjectileBlockHitActions {
 

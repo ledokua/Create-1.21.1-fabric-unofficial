@@ -39,8 +39,8 @@ import net.minecraft.world.level.block.PoweredRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import net.neoforged.neoforge.attachment.IAttachmentSerializer;
+import com.simibubi.create.foundation.attachment.IAttachmentHolder;
+import com.simibubi.create.foundation.attachment.IAttachmentSerializer;
 import com.simibubi.create.foundation.transfer.util.INBTSerializable;
 
 /**

@@ -33,7 +33,7 @@ public abstract class SimpleMountedStorageType<T extends SimpleMountedStorage> e
 	}
 
 	protected IItemHandler getHandler(Level level, BlockEntity be) {
-		IItemHandler handler = level.getCapability(ItemHandler.BLOCK, be.getBlockPos(), null);
+		IItemHandler handler = ItemHandler.BLOCK.find(level, be.getBlockPos(), null);
 		// make sure the handler is modifiable so new contents can be moved over on disassembly
 		return handler instanceof IItemHandlerModifiable modifiable ? modifiable : null;
 	}

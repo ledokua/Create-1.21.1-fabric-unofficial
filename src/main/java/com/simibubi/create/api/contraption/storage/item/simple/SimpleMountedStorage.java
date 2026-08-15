@@ -49,7 +49,7 @@ public class SimpleMountedStorage extends WrapperMountedItemStorage<ItemStackHan
 		if (be == null)
 			return;
 
-		IItemHandler cap = level.getCapability(ItemHandler.BLOCK, pos, null);
+		IItemHandler cap = ItemHandler.BLOCK.find(level, pos, null);
 		if (cap != null) {
 			validate(cap).ifPresent(handler -> {
 				for (int i = 0; i < handler.getSlots(); i++) {
