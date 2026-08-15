@@ -48,4 +48,26 @@ public interface EntityExtension {
 
 	/** Called when the entity is removed from its level (both sides). Wired by an Entity mixin. */
 	default void onRemovedFromLevel() {}
+
+	default net.minecraft.world.entity.MobCategory getClassification(boolean forSpawnCount) {
+		return ((net.minecraft.world.entity.Entity) this).getType().getCategory();
+	}
+
+	default boolean isAddedToLevel() {
+		net.minecraft.world.entity.Entity self = (net.minecraft.world.entity.Entity) this;
+		return self.level() != null && self.level().getEntity(self.getId()) == self;
+	}
+
+	default boolean canDrownInFluidType(com.simibubi.create.foundation.transfer.fluid.FluidType type) {
+		net.minecraft.world.entity.Entity self = (net.minecraft.world.entity.Entity) this;
+		return self instanceof net.minecraft.world.entity.LivingEntity living && type.canDrownIn(living);
+	}
+
+	default net.minecraft.nbt.CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
+		return ((net.minecraft.world.entity.Entity) this).saveWithoutId(new net.minecraft.nbt.CompoundTag());
+	}
+
+	default void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, net.minecraft.nbt.CompoundTag nbt) {
+		((net.minecraft.world.entity.Entity) this).load(nbt);
+	}
 }

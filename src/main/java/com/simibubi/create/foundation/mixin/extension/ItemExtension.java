@@ -87,4 +87,13 @@ public interface ItemExtension {
 		if (item() instanceof net.minecraft.world.item.BlockItem blockItem)
 			blockToItemMap.remove(blockItem.getBlock());
 	}
+
+	default boolean canBeHurtBy(net.minecraft.world.item.ItemStack stack, net.minecraft.world.damagesource.DamageSource source) {
+		return stack.canBeHurtBy(source);
+	}
+
+	/** Mod id that added this item (NeoForge derives it from the registry key too). */
+	default String getCreatorModId(net.minecraft.world.item.ItemStack stack) {
+		return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
+	}
 }

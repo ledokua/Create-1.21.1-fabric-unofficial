@@ -18,4 +18,9 @@ public interface AbstractContainerScreenExtension {
 	default int getYSize() {
 		throw new AbstractMethodError("not implemented by mixin");
 	}
+
+	/** NeoForge's slot highlight colour hook (vanilla's constant). */
+	default int getSlotColor(int index) {
+		return -2130706433;
+	}
 }

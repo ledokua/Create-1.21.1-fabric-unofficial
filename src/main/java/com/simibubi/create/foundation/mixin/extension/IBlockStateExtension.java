@@ -147,4 +147,9 @@ public interface IBlockStateExtension {
 	default boolean shouldDisplayFluidOverlay(net.minecraft.world.level.BlockAndTintGetter level, BlockPos pos, FluidState fluidState) {
 		return block().shouldDisplayFluidOverlay(self(), level, pos, fluidState);
 	}
+
+	/** NeoForge's level-aware rotate; blocks that need position context override on the block side. */
+	default BlockState rotate(net.minecraft.world.level.LevelAccessor level, BlockPos pos, net.minecraft.world.level.block.Rotation direction) {
+		return self().rotate(direction);
+	}
 }

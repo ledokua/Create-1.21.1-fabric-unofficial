@@ -45,4 +45,20 @@ public interface ItemStackExtension {
 		ItemStack self = (ItemStack) (Object) this;
 		return self.getOrDefault(net.minecraft.core.component.DataComponents.ATTRIBUTE_MODIFIERS, self.getItem().getDefaultAttributeModifiers());
 	}
+
+	default net.minecraft.world.InteractionResult onItemUseFirst(net.minecraft.world.item.context.UseOnContext context) {
+		ItemStack self = (ItemStack) (Object) this;
+		return self.getItem().onItemUseFirst(self, context);
+	}
+
+	default boolean doesSneakBypassUse(net.minecraft.world.level.LevelReader level, net.minecraft.core.BlockPos pos, net.minecraft.world.entity.player.Player player) {
+		ItemStack self = (ItemStack) (Object) this;
+		return self.getItem().doesSneakBypassUse(self, level, pos, player);
+	}
+
+	/** Furnace burn time in ticks (Fabric's FuelRegistry), 0 if not a fuel. The recipe-type parameter is ignored. */
+	default int getBurnTime(@org.jetbrains.annotations.Nullable net.minecraft.world.item.crafting.RecipeType<?> recipeType) {
+		Integer time = net.fabricmc.fabric.api.registry.FuelRegistry.INSTANCE.get(((ItemStack) (Object) this).getItem());
+		return time == null ? 0 : time;
+	}
 }

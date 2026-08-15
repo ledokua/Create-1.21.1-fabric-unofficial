@@ -4,7 +4,7 @@ import com.simibubi.create.foundation.platform.AuxiliaryLightManager;
 
 import net.minecraft.core.BlockPos;
 
-/** Injected onto {@code LevelReader}: NeoForge's auxiliary light manager accessor (see {@link AuxiliaryLightManager}). */
+/** Injected onto {@code BlockGetter} (so it reaches Level, LevelReader and virtual worlds): assorted NeoForge Level patch-methods. */
 public interface LevelExtension {
 	default AuxiliaryLightManager getAuxLightManager(BlockPos pos) {
 		return AuxiliaryLightManager.NONE;
@@ -43,5 +43,10 @@ public interface LevelExtension {
 	/** NeoForge's {@code Level#isAreaLoaded(center, range)}. */
 	default boolean isAreaLoaded(BlockPos center, int range) {
 		return ((net.minecraft.world.level.LevelReader) this).hasChunksAt(center.offset(-range, -range, -range), center.offset(range, range, range));
+	}
+
+	/** NeoForge's {@code Level#holderOrThrow(key)}. */
+	default <T> net.minecraft.core.Holder<T> holderOrThrow(net.minecraft.resources.ResourceKey<T> key) {
+		return ((net.minecraft.world.level.LevelReader) this).registryAccess().registryOrThrow(key.registryKey()).getHolderOrThrow(key);
 	}
 }

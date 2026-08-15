@@ -37,6 +37,10 @@ public final class DataIngredient {
 		return "has_" + id.getPath().replace('/', '_');
 	}
 
+	public Criterion<?> getCriterion(RecipeProvider prov) {
+		return criterion.get();
+	}
+
 	public Criterion<?> getCritereon(RecipeProvider prov) {
 		return criterion.get();
 	}

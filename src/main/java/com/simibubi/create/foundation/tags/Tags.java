@@ -36,6 +36,12 @@ public final class Tags {
 		public static final TagKey<Block> STORAGE_BLOCKS = TagKey.create(Registries.BLOCK, c("storage_blocks"));
 	}
 
+	public static final class EntityTypes {
+		private EntityTypes() {}
+
+		public static final TagKey<EntityType<?>> TELEPORTING_NOT_SUPPORTED = TagKey.create(Registries.ENTITY_TYPE, c("teleporting_not_supported"));
+	}
+
 	public static final class Fluids {
 		private Fluids() {}
 
@@ -60,6 +66,10 @@ public final class Tags {
 		public static final TagKey<Item> ENDER_PEARLS = TagKey.create(Registries.ITEM, c("ender_pearls"));
 		public static final TagKey<Item> FEATHERS = TagKey.create(Registries.ITEM, c("feathers"));
 		public static final TagKey<Item> FOODS = TagKey.create(Registries.ITEM, c("foods"));
+		public static final TagKey<Item> FOODS_BERRY = TagKey.create(Registries.ITEM, c("foods/berry"));
+		public static final TagKey<Item> FOODS_FRUIT = TagKey.create(Registries.ITEM, c("foods/fruit"));
+		public static final TagKey<Item> DRINKS = TagKey.create(Registries.ITEM, c("drinks"));
+		public static final TagKey<Item> RAW_MATERIALS = TagKey.create(Registries.ITEM, c("raw_materials"));
 		public static final TagKey<Item> FOODS_DOUGH = TagKey.create(Registries.ITEM, c("foods/dough"));
 		public static final TagKey<Item> GEMS_LAPIS = TagKey.create(Registries.ITEM, c("gems/lapis"));
 		public static final TagKey<Item> GEMS_QUARTZ = TagKey.create(Registries.ITEM, c("gems/quartz"));

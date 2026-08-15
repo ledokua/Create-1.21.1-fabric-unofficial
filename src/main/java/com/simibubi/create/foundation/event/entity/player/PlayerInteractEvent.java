@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.foundation.event.bus.ICancellableEvent;
 
-import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -58,8 +57,8 @@ public class PlayerInteractEvent extends PlayerEvent {
 		return getEntity().level();
 	}
 
-	public EnvType getSide() {
-		return getLevel().isClientSide ? EnvType.CLIENT : EnvType.SERVER;
+	public com.simibubi.create.foundation.platform.LogicalSide getSide() {
+		return getLevel().isClientSide ? com.simibubi.create.foundation.platform.LogicalSide.CLIENT : com.simibubi.create.foundation.platform.LogicalSide.SERVER;
 	}
 
 	/** The result the interaction returns to vanilla when the event is cancelled. */

@@ -33,7 +33,7 @@
       "net/minecraft/class_1087": ["com/simibubi/create/foundation/mixin/extension/BakedModelExtension"],
       "net/minecraft/class_3611": ["com/simibubi/create/foundation/mixin/extension/FluidExtension"],
       "net/minecraft/class_3610": ["com/simibubi/create/foundation/mixin/extension/FluidStateExtension"],
-      "net/minecraft/class_4538": ["com/simibubi/create/foundation/mixin/extension/LevelExtension"],
+      "net/minecraft/class_1922": ["com/simibubi/create/foundation/mixin/extension/LevelExtension"],
       "net/minecraft/class_1937": ["com/simibubi/create/foundation/attachment/IAttachmentHolder"],
       "net/minecraft/class_1767": ["com/simibubi/create/foundation/mixin/extension/DyeColorExtension"],
       "net/minecraft/class_2241": ["com/simibubi/create/foundation/mixin/extension/BaseRailBlockExtension"],
@@ -47,7 +47,9 @@
       "net/minecraft/class_778": ["com/simibubi/create/foundation/mixin/extension/ModelBlockRendererExtension"],
       "net/minecraft/class_776": ["com/simibubi/create/foundation/mixin/extension/BlockRenderDispatcherExtension"],
       "net/minecraft/class_332": ["com/simibubi/create/foundation/mixin/extension/GuiGraphicsExtension"],
-      "net/minecraft/class_1657": ["com/simibubi/create/foundation/mixin/extension/PlayerExtension"]
+      "net/minecraft/class_1657": ["com/simibubi/create/foundation/mixin/extension/PlayerExtension"],
+      "net/minecraft/class_437": ["com/simibubi/create/foundation/mixin/extension/ScreenExtension"],
+      "net/minecraft/class_898": ["com/simibubi/create/foundation/mixin/extension/EntityRenderDispatcherExtension"]
     }
   },
   "depends": {

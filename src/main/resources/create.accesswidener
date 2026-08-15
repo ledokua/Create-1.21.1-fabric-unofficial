@@ -53,8 +53,6 @@ accessible class net/minecraft/util/datafix/fixes/ItemStackComponentizationFix$I
 
 accessible method net/minecraft/world/item/crafting/CraftingInput <init> (IILjava/util/List;)V
 
-accessible method net/minecraft/world/entity/decoration/HangingEntity recalculateBoundingBox ()V
-extendable method net/minecraft/world/entity/decoration/HangingEntity recalculateBoundingBox ()V
 
 accessible class net/minecraft/world/item/alchemy/PotionBrewing$Mix
 
@@ -76,3 +74,5 @@ accessible method net/minecraft/world/level/block/Block popExperience (Lnet/mine
 accessible field net/minecraft/world/entity/Mob targetSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
 accessible method net/minecraft/client/renderer/entity/LivingEntityRenderer addLayer (Lnet/minecraft/client/renderer/entity/layers/RenderLayer;)Z
 accessible method net/minecraft/client/renderer/entity/ItemRenderer renderQuadList (Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Ljava/util/List;Lnet/minecraft/world/item/ItemStack;II)V
+accessible method net/minecraft/world/entity/vehicle/AbstractMinecart moveAlongTrack (Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V
+accessible field net/minecraft/client/renderer/entity/EntityRenderDispatcher playerRenderers Ljava/util/Map;

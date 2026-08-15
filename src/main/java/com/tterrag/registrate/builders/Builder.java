@@ -65,6 +65,12 @@ public interface Builder<R, T extends R, P, S extends Builder<R, T, P, S>> exten
 		return (S) this;
 	}
 
+	/** NeoForge data-map attachment (datagen); accepted and dropped — data maps come from vendored JSON. */
+	@SuppressWarnings("unchecked")
+	default <D> S dataMap(com.simibubi.create.foundation.datamap.DataMapType<R, D> type, D value) {
+		return (S) this;
+	}
+
 	/** Runs once, right after this entry resolves during the owner's flush. */
 	@SuppressWarnings("unchecked")
 	default S onRegister(NonNullConsumer<? super T> callback) {

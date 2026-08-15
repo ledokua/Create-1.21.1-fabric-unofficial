@@ -18,4 +18,9 @@ public class EntityEntry<T extends Entity> extends RegistryEntry<EntityType<?>, 
 	public boolean is(Entity entity) {
 		return entity != null && entity.getType() == get();
 	}
+
+	@org.jetbrains.annotations.Nullable
+	public T create(net.minecraft.world.level.Level level) {
+		return get().create(level);
+	}
 }

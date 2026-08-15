@@ -14,4 +14,7 @@ import java.util.Map;
 public interface EntityRenderDispatcherAccessor {
 	@Accessor("renderers")
 	Map<EntityType<?>, EntityRenderer<?>> create$getRenderers();
+
+	@Accessor("playerRenderers")
+	java.util.Map<net.minecraft.client.resources.PlayerSkin.Model, net.minecraft.client.renderer.entity.EntityRenderer<? extends net.minecraft.world.entity.player.Player>> create$getPlayerRenderers();
 }
