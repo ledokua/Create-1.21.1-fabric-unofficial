@@ -39,4 +39,10 @@ public interface ItemStackExtension {
 	default boolean canPerformAction(com.simibubi.create.foundation.platform.ItemAbility ability) {
 		return com.simibubi.create.foundation.platform.ItemAbilities.canPerform((ItemStack) (Object) this, ability);
 	}
+
+	/** NeoForge's {@code ItemStack#getAttributeModifiers()}: the stack's attribute modifiers component (or the item default). */
+	default net.minecraft.world.item.component.ItemAttributeModifiers getAttributeModifiers() {
+		ItemStack self = (ItemStack) (Object) this;
+		return self.getOrDefault(net.minecraft.core.component.DataComponents.ATTRIBUTE_MODIFIERS, self.getItem().getDefaultAttributeModifiers());
+	}
 }

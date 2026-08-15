@@ -28,7 +28,7 @@
       "net/minecraft/class_1799": ["com/simibubi/create/foundation/mixin/extension/ItemStackExtension"],
       "net/minecraft/class_304": ["com/simibubi/create/foundation/mixin/extension/KeyMappingExtension"],
       "net/minecraft/class_1792": ["com/simibubi/create/foundation/mixin/extension/ItemExtension"],
-      "net/minecraft/class_2248": ["com/simibubi/create/foundation/mixin/extension/BlockExtension"],
+      "net/minecraft/class_2248": ["com/simibubi/create/foundation/mixin/extension/BlockExtension", "com/simibubi/create/foundation/mixin/extension/IBlockExtension"],
       "net/minecraft/class_1920": ["com/simibubi/create/foundation/mixin/extension/BlockAndTintGetterExtension"],
       "net/minecraft/class_1087": ["com/simibubi/create/foundation/mixin/extension/BakedModelExtension"],
       "net/minecraft/class_3611": ["com/simibubi/create/foundation/mixin/extension/FluidExtension"],
@@ -39,7 +39,8 @@
       "net/minecraft/class_1767": ["com/simibubi/create/foundation/mixin/extension/DyeColorExtension"],
       "net/minecraft/class_2241": ["com/simibubi/create/foundation/mixin/extension/BaseRailBlockExtension"],
       "net/minecraft/class_1688": ["com/simibubi/create/foundation/mixin/extension/AbstractMinecartExtension"],
-      "net/minecraft/class_1735": ["com/simibubi/create/foundation/mixin/extension/SlotExtension"]
+      "net/minecraft/class_1735": ["com/simibubi/create/foundation/mixin/extension/SlotExtension"],
+      "net/minecraft/class_4970$class_4971": ["com/simibubi/create/foundation/mixin/extension/IBlockStateExtension"]
     }
   },
   "depends": {

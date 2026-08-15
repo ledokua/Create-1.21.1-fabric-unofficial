@@ -62,3 +62,8 @@ accessible class net/minecraft/data/models/ItemModelGenerators$TrimModelData
 
 # Fabric-port additions (not from upstream's AT)
 accessible class net/minecraft/client/particle/ParticleEngine$SpriteParticleRegistration
+accessible method net/minecraft/world/level/block/state/BlockBehaviour getSoundType (Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/level/block/SoundType;
+accessible class net/minecraft/world/item/crafting/Ingredient$Value
+accessible class net/minecraft/world/item/crafting/Ingredient$ItemValue
+accessible class net/minecraft/world/item/crafting/Ingredient$TagValue
+accessible field net/minecraft/world/item/BucketItem content Lnet/minecraft/world/level/material/Fluid;

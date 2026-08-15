@@ -1,47 +1,19 @@
 package com.simibubi.create.infrastructure.worldgen;
 
-import com.simibubi.create.Create;
-
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstrapContext;
-import net.minecraft.resources.ResourceKey;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.tags.BiomeTags;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.GenerationStep.Decoration;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.neoforged.neoforge.common.world.BiomeModifier;
-import net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+/**
+ * Upstream: NeoForge biome-modifier JSON (datagen'd) adding Create's ore features to overworld/nether biomes.
+ * Fabric port: the same three additions through Fabric's BiomeModifications API at init.
+ */
 public class AllBiomeModifiers {
-	public static final ResourceKey<BiomeModifier>
-				ZINC_ORE = key("zinc_ore"),
-				STRIATED_ORES_OVERWORLD = key("striated_ores_overworld"),
-				STRIATED_ORES_NETHER = key("striated_ores_nether");
 
-	private static ResourceKey<BiomeModifier> key(String name) {
-		return ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, Create.asResource(name));
-	}
-
-	public static void bootstrap(BootstrapContext<BiomeModifier> ctx) {
-		HolderGetter<Biome> biomeLookup = ctx.lookup(Registries.BIOME);
-		HolderSet<Biome> isOverworld = biomeLookup.getOrThrow(BiomeTags.IS_OVERWORLD);
-		HolderSet<Biome> isNether = biomeLookup.getOrThrow(BiomeTags.IS_NETHER);
-
-		HolderGetter<PlacedFeature> featureLookup = ctx.lookup(Registries.PLACED_FEATURE);
-		Holder<PlacedFeature> zincOre = featureLookup.getOrThrow(AllPlacedFeatures.ZINC_ORE);
-		Holder<PlacedFeature> striatedOresOverworld = featureLookup.getOrThrow(AllPlacedFeatures.STRIATED_ORES_OVERWORLD);
-		Holder<PlacedFeature> striatedOresNether = featureLookup.getOrThrow(AllPlacedFeatures.STRIATED_ORES_NETHER);
-
-		ctx.register(ZINC_ORE, addOre(isOverworld, zincOre));
-		ctx.register(STRIATED_ORES_OVERWORLD, addOre(isOverworld, striatedOresOverworld));
-		ctx.register(STRIATED_ORES_NETHER, addOre(isNether, striatedOresNether));
-	}
-
-	private static AddFeaturesBiomeModifier addOre(HolderSet<Biome> biomes, Holder<PlacedFeature> feature) {
-		return new AddFeaturesBiomeModifier(biomes, HolderSet.direct(feature), Decoration.UNDERGROUND_ORES);
+	public static void register() {
+		BiomeModifications.addFeature(BiomeSelectors.tag(BiomeTags.IS_OVERWORLD), Decoration.UNDERGROUND_ORES, AllPlacedFeatures.ZINC_ORE);
+		BiomeModifications.addFeature(BiomeSelectors.tag(BiomeTags.IS_OVERWORLD), Decoration.UNDERGROUND_ORES, AllPlacedFeatures.STRIATED_ORES_OVERWORLD);
+		BiomeModifications.addFeature(BiomeSelectors.tag(BiomeTags.IS_NETHER), Decoration.UNDERGROUND_ORES, AllPlacedFeatures.STRIATED_ORES_NETHER);
 	}
 }

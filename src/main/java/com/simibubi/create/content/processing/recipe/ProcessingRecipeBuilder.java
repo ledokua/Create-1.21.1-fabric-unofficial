@@ -25,7 +25,7 @@ import net.minecraft.world.level.material.Fluid;
 import com.simibubi.create.foundation.platform.conditions.ICondition;
 import com.simibubi.create.foundation.platform.conditions.ModLoadedCondition;
 import com.simibubi.create.foundation.platform.conditions.NotCondition;
-import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 import com.simibubi.create.foundation.transfer.fluid.crafting.FluidIngredient;
 import com.simibubi.create.foundation.transfer.fluid.crafting.SizedFluidIngredient;
@@ -134,7 +134,7 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 	}
 
 	// TODO
-	public S require(ICustomIngredient ingredient) {
+	public S require(CustomIngredient ingredient) {
 		params.ingredients.add(ingredient.toVanilla());
 		return self();
 	}

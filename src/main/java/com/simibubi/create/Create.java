@@ -132,6 +132,7 @@ public class Create implements ModInitializer {
 		AllPackets.register();
 		AllFeatures.register(modEventBus);
 		AllPlacementModifiers.register(modEventBus);
+		com.simibubi.create.infrastructure.worldgen.AllBiomeModifiers.register();
 		AllIngredients.register(modEventBus);
 		AllAttachmentTypes.register(modEventBus);
 		AllDataComponents.register(modEventBus);

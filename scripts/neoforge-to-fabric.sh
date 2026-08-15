@@ -120,3 +120,5 @@ find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
   -e 's/mezz\.jei\.api\.neoforge\.NeoForgeTypes\b/com.simibubi.create.compat.jei.CreateJeiIngredientTypes/g' \
   -e 's/\bNeoForgeTypes\.FLUID_STACK\b/CreateJeiIngredientTypes.FLUID_STACK/g' \
   -e 's/net\.neoforged\.neoforge\.common\.conditions\./com.simibubi.create.foundation.platform.conditions./g'
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.common\.crafting\.CompoundIngredient\b/com.simibubi.create.foundation.recipe.CompoundIngredient/g'

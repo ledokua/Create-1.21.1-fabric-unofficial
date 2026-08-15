@@ -33,7 +33,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 
-import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import com.simibubi.create.foundation.recipe.CompoundIngredient;
 import com.simibubi.create.foundation.transfer.item.ItemStackHandler;
 
 public class BlueprintItem extends Item {
@@ -90,7 +90,7 @@ public class BlueprintItem extends Item {
 	}
 
 	private static ItemStack convertIngredientToFilter(Ingredient ingredient) {
-		boolean isCompoundIngredient = ingredient.getCustomIngredient() instanceof CompoundIngredient;
+		boolean isCompoundIngredient = CompoundIngredient.isCompound(ingredient);
 		Value[] acceptedItems = ingredient.values;
 		if (acceptedItems == null || acceptedItems.length > 18)
 			return ItemStack.EMPTY;

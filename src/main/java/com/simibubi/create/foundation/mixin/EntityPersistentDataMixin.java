@@ -32,6 +32,34 @@ public class EntityPersistentDataMixin implements EntityExtension {
 		return create$persistentData;
 	}
 
+	@Unique
+	private java.util.Collection<net.minecraft.world.entity.item.ItemEntity> create$capturedDrops;
+
+	@Override
+	public java.util.Collection<net.minecraft.world.entity.item.ItemEntity> captureDrops(java.util.Collection<net.minecraft.world.entity.item.ItemEntity> value) {
+		java.util.Collection<net.minecraft.world.entity.item.ItemEntity> previous = create$capturedDrops;
+		create$capturedDrops = value;
+		return previous;
+	}
+
+	@Override
+	public java.util.Collection<net.minecraft.world.entity.item.ItemEntity> captureDrops() {
+		return create$capturedDrops;
+	}
+
+	@Inject(method = "spawnAtLocation(Lnet/minecraft/world/item/ItemStack;F)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At("HEAD"), cancellable = true)
+	private void create$captureDrop(net.minecraft.world.item.ItemStack stack, float offsetY, CallbackInfoReturnable<net.minecraft.world.entity.item.ItemEntity> cir) {
+		if (create$capturedDrops == null || stack.isEmpty())
+			return;
+		net.minecraft.world.entity.Entity self = (net.minecraft.world.entity.Entity) (Object) this;
+		if (self.level().isClientSide)
+			return;
+		net.minecraft.world.entity.item.ItemEntity item = new net.minecraft.world.entity.item.ItemEntity(self.level(), self.getX(), self.getY() + offsetY, self.getZ(), stack);
+		item.setDefaultPickUpDelay();
+		create$capturedDrops.add(item);
+		cir.setReturnValue(item);
+	}
+
 	@Inject(method = "saveWithoutId", at = @At("RETURN"))
 	private void create$savePersistentData(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
 		if (create$persistentData != null && !create$persistentData.isEmpty())

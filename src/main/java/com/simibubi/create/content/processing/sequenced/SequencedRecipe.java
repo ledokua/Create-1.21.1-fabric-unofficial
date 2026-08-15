@@ -10,7 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 
-import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import com.simibubi.create.foundation.recipe.CompoundIngredient;
 
 public class SequencedRecipe<T extends ProcessingRecipe<?, ?>> {
 	public static final Codec<SequencedRecipe<?>> CODEC = Recipe.CODEC
