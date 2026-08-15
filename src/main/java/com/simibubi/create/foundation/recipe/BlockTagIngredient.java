@@ -29,7 +29,7 @@ public record BlockTagIngredient(TagKey<Block> tag) implements CustomIngredient 
 	).apply(i, BlockTagIngredient::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, BlockTagIngredient> STREAM_CODEC = ResourceLocation.STREAM_CODEC
-		.map(id -> new BlockTagIngredient(TagKey.create(Registries.BLOCK, id)), i -> i.tag().location());
+		.<BlockTagIngredient>map(id -> new BlockTagIngredient(TagKey.create(Registries.BLOCK, id)), i -> i.tag().location()).cast();
 
 	public static final CustomIngredientSerializer<BlockTagIngredient> SERIALIZER = new CustomIngredientSerializer<>() {
 		@Override

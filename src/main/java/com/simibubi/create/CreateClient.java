@@ -65,8 +65,11 @@ public class CreateClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		com.simibubi.create.foundation.event.CreateClientEventHooks.register();
 		onCtorClient();
 		clientInit();
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(new com.simibubi.create.foundation.event.lifecycle.FMLClientSetupEvent());
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(new com.simibubi.create.foundation.event.lifecycle.FMLLoadCompleteEvent());
 	}
 
 	/** Upstream's client constructor body. */

@@ -18,12 +18,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 /**
  * Registration handle passed to Create's static {@code registerCapabilities(RegisterCapabilitiesEvent)}
- * methods (kept upstream-shaped so those ~40 methods port unchanged). Not an event on Fabric — just called
- * once from mod init with a fresh instance. Registrations into {@link Capabilities}' item/fluid BLOCK
+ * methods (kept upstream-shaped so those ~40 methods port unchanged). Posted once on the bridge bus from mod init
+ * after the Registrate flush. Registrations into {@link Capabilities}' item/fluid BLOCK
  * lookups are mirrored (wrapped) into Fabric's {@link ItemStorage#SIDED}/{@link FluidStorage#SIDED} so the
  * rest of the Fabric ecosystem sees Create's inventories and tanks.
  */
-public class RegisterCapabilitiesEvent {
+public class RegisterCapabilitiesEvent extends com.simibubi.create.foundation.event.bus.Event {
 
 	@SuppressWarnings("unchecked")
 	public <T, C, BE extends BlockEntity> void registerBlockEntity(BlockApiLookup<T, C> capability, BlockEntityType<BE> type,

@@ -54,7 +54,19 @@
     "accessor.UseOnContextAccessor",
     "datafixer.BlockPosFormatAndRenamesFixMixin",
     "datafixer.ItemStackComponentizationFixMixin",
-    "datafixer.V1460Mixin"
+    "datafixer.V1460Mixin",
+    "event.BlockItemPlaceEventMixin",
+    "event.EntityDropCaptureMixin",
+    "event.EntityMountEventMixin",
+    "event.EntitySectionChangeMixin",
+    "event.EntitySizeEventMixin",
+    "event.EntityTickServerLevelMixin",
+    "event.LivingEntityEventsMixin",
+    "event.MobTargetEventMixin",
+    "event.PackRepositoryMixin",
+    "event.PlayerTickMixin",
+    "event.ProjectileImpactEventMixin",
+    "event.TrackedEntityStartTrackingMixin"
   ],
   "client": [
     "accessor.AgeableListModelAccessor",
@@ -76,7 +88,19 @@
     "client.HumanoidModelMixin",
     "client.KeyMappingExtensionMixin",
     "client.LevelRendererMixin",
-    "client.PlayerRendererMixin"
+    "client.PlayerRendererMixin",
+    "event.client.EntityRenderDispatcherEventsMixin",
+    "event.client.EntityTickClientLevelMixin",
+    "event.client.FogRendererEventsMixin",
+    "event.client.GameRendererEventsMixin",
+    "event.client.GuiGraphicsTooltipEventMixin",
+    "event.client.ItemInHandRendererEventsMixin",
+    "event.client.KeyboardHandlerEventsMixin",
+    "event.client.MinecraftEventsMixin",
+    "event.client.ModelBakeryEventsMixin",
+    "event.client.MouseHandlerEventsMixin",
+    "event.client.PlayerRendererEventsMixin",
+    "event.client.TransientEntitySectionChangeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

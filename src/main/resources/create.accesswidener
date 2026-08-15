@@ -78,3 +78,10 @@ accessible method net/minecraft/world/entity/vehicle/AbstractMinecart moveAlongT
 accessible field net/minecraft/client/renderer/entity/EntityRenderDispatcher playerRenderers Ljava/util/Map;
 accessible field net/minecraft/world/item/AxeItem STRIPPABLES Ljava/util/Map;
 extendable method net/minecraft/world/entity/decoration/HangingEntity recalculateBoundingBox ()V
+accessible method net/minecraft/server/MinecraftServer haveTime ()Z
+accessible field net/minecraft/server/MinecraftServer resources Lnet/minecraft/server/MinecraftServer$ReloadableResources;
+accessible class net/minecraft/server/MinecraftServer$ReloadableResources
+accessible method net/minecraft/client/Camera setRotation (FF)V
+accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
+accessible class net/minecraft/world/level/entity/PersistentEntitySectionManager$Callback
+accessible class net/minecraft/world/level/entity/TransientEntitySectionManager$Callback

@@ -102,11 +102,19 @@ public class Create implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		// NeoForge scans @EventBusSubscriber classes at mod construction; we do the same before anything is posted.
+		CreateEventBus.registerSubscribers();
+		com.simibubi.create.foundation.event.CreateEventHooks.register();
 		onCtor(CreateEventBus.BUS);
 		// NeoForge: fired once per registry after the mod constructors ran. Here: the Registrate flush.
 		REGISTRATE.register();
 		onRegister();
+		CreateEventBus.BUS.post(new com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent());
+		// FMLCommonSetupEvent: upstream's own handler is init(); other subscribers listen for it on the bus.
 		init();
+		CreateEventBus.BUS.post(new com.simibubi.create.foundation.event.lifecycle.FMLCommonSetupEvent());
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.SERVER)
+			CreateEventBus.BUS.post(new com.simibubi.create.foundation.event.lifecycle.FMLLoadCompleteEvent()); // client posts it after client setup
 	}
 
 	/** Upstream's constructor body: file everything for registration. The bus is the bridge bus (see PORTING_PLAN.md). */
@@ -177,6 +185,7 @@ public class Create implements ModInitializer {
 
 	/** Upstream's FMLCommonSetupEvent handler. */
 	public static void init() {
+		com.simibubi.create.api.registry.CreateBuiltInRegistries.runBakeCallbacks();
 		AllFluids.registerFluidInteractions();
 		CreateNBTProcessors.register();
 

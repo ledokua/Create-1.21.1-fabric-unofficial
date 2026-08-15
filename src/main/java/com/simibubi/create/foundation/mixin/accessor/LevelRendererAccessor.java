@@ -16,4 +16,7 @@ public interface LevelRendererAccessor {
 	@Nullable
 	@Accessor("capturedFrustum")
 	Frustum create$getCapturedFrustum();
+
+	@Accessor("ticks")
+	int create$getTicks();
 }
