@@ -56,9 +56,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import com.simibubi.create.foundation.event.bus.IEventBus;
 import com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import com.simibubi.create.foundation.transfer.fluid.BaseFlowingFluid;
+import com.simibubi.create.foundation.transfer.fluid.FluidType;
+import com.simibubi.create.foundation.registry.DeferredHolder;
 
 public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 	private static final Map<RegistryEntry<?, ?>, DeferredHolder<CreativeModeTab, CreativeModeTab>> TAB_LOOKUP = Collections.synchronizedMap(new IdentityHashMap<>());

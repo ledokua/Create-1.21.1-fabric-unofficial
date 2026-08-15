@@ -13,7 +13,7 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.lang.LangBuilder;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
@@ -39,7 +39,7 @@ public class StressGaugeBlockEntity extends GaugeBlockEntity {
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-					PeripheralCapability.get(),
+					PeripheralLookup.get(),
 					AllBlockEntityTypes.STRESSOMETER.get(),
 					(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

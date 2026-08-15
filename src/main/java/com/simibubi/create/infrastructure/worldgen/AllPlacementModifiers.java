@@ -5,8 +5,8 @@ import com.simibubi.create.Create;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import com.simibubi.create.foundation.event.bus.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredHolder;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 

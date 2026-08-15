@@ -19,6 +19,7 @@
     "ItemStackExtensionMixin",
     "ItemStackMixin",
     "LavaSwimmingMixin",
+    "LiquidBlockFluidInteractionMixin",
     "MapItemSavedDataMixin",
     "MobMixin",
     "PlayerMixin",

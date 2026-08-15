@@ -27,7 +27,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.data.IntAttached;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -83,7 +83,7 @@ public class TableClothBlockEntity extends SmartBlockEntity implements Transform
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.TABLE_CLOTH.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

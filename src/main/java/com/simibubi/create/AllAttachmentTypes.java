@@ -8,7 +8,7 @@ import com.simibubi.create.content.contraptions.minecart.capability.MinecartCont
 
 import com.simibubi.create.foundation.event.bus.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class AllAttachmentTypes {

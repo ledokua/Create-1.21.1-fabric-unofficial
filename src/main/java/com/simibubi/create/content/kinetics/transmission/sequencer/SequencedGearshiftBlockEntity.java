@@ -11,7 +11,7 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.transmission.SplitShaftBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -77,7 +77,7 @@ public class SequencedGearshiftBlockEntity extends SplitShaftBlockEntity {
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-					PeripheralCapability.get(),
+					PeripheralLookup.get(),
 					AllBlockEntityTypes.SEQUENCED_GEARSHIFT.get(),
 					(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

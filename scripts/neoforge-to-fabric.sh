@@ -66,3 +66,21 @@ find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
   -e 's/net\.neoforged\.neoforge\.client\.ChunkRenderTypeSet\b/com.simibubi.create.foundation.model.ChunkRenderTypeSet/g' \
   -e 's/net\.neoforged\.neoforge\.client\.extensions\.common\./com.simibubi.create.foundation.client.extensions./g' \
   -e 's/net\.neoforged\.neoforge\.client\.extensions\.IGuiGraphicsExtension\b/com.simibubi.create.foundation.client.extensions.IGuiGraphicsExtension/g'
+
+# ---- registries -> Create-owned DeferredRegister/DeferredHolder over vanilla Registry.register ----
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.registries\.(DeferredRegister|DeferredHolder)\b/com.simibubi.create.foundation.registry.\1/g'
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.registries\.RegisterEvent\b/com.simibubi.create.foundation.registry.RegisterEvent/g'
+
+# ---- CC:Tweaked NeoForge capability -> Fabric lookup (same BlockApiLookup shape) ----
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/dan200\.computercraft\.api\.peripheral\.PeripheralCapability\b/dan200.computercraft.api.peripheral.PeripheralLookup/g' \
+  -e 's/\bPeripheralCapability\.get\(\)/PeripheralLookup.get()/g'
+
+# ---- fluids: FluidType/BaseFlowingFluid/FluidInteractionRegistry/NeoForgeMod -> Create-owned fluid layer ----
+find "$target" -name '*.java' -print0 | xargs -0 sed -i -E \
+  -e 's/net\.neoforged\.neoforge\.fluids\.(FluidType|BaseFlowingFluid|FluidInteractionRegistry)\b/com.simibubi.create.foundation.transfer.fluid.\1/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.(SoundActions|SoundAction)\b/com.simibubi.create.foundation.transfer.fluid.\1/g' \
+  -e 's/net\.neoforged\.neoforge\.common\.NeoForgeMod\b/com.simibubi.create.foundation.transfer.fluid.CommonFluids/g' \
+  -e 's/\bNeoForgeMod\./CommonFluids./g'

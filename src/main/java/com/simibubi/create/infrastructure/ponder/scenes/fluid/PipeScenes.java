@@ -37,7 +37,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import com.simibubi.create.foundation.transfer.capability.Capabilities;
-import net.neoforged.neoforge.common.NeoForgeMod;
+import com.simibubi.create.foundation.transfer.fluid.CommonFluids;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler.FluidAction;
@@ -497,7 +497,7 @@ public class PipeScenes {
 		scene.world().modifyBlockEntity(basinPos, BasinBlockEntity.class, be -> {
 			IFluidHandler ifh = Capabilities.FluidHandler.BLOCK.find(be.getLevel(), be.getBlockPos(), null);
 			if (ifh != null)
-				ifh.fill(new FluidStack(NeoForgeMod.MILK.get(), 1000), FluidAction.EXECUTE);
+				ifh.fill(new FluidStack(CommonFluids.MILK.get(), 1000), FluidAction.EXECUTE);
 		});
 
 		scene.world().setBlock(util.grid().at(3, 1, 3), AllBlocks.FLUID_PIPE.get()

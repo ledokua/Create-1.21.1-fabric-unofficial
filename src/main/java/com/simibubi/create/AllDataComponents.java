@@ -51,7 +51,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 
 import com.simibubi.create.foundation.event.bus.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 
 public class AllDataComponents {
 	private static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Create.ID);

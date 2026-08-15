@@ -39,7 +39,7 @@ import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.level.material.Fluids;
 
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
+import com.simibubi.create.foundation.transfer.fluid.FluidType;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler.FluidAction;
 import com.simibubi.create.foundation.transfer.item.IItemHandler;

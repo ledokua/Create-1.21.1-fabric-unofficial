@@ -23,7 +23,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Clearable;
@@ -53,7 +53,7 @@ public class TrackObserverBlockEntity extends SmartBlockEntity implements Transf
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.TRACK_OBSERVER.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

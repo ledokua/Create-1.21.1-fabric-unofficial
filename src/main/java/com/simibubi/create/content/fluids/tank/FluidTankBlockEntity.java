@@ -36,7 +36,7 @@ import net.minecraft.world.phys.AABB;
 import com.simibubi.create.foundation.transfer.capability.Capabilities;
 import com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
+import com.simibubi.create.foundation.transfer.fluid.FluidType;
 import com.simibubi.create.foundation.transfer.fluid.IFluidTank;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler.FluidAction;

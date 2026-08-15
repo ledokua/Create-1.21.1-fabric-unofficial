@@ -4,8 +4,8 @@ import com.simibubi.create.content.trains.entity.CarriageSyncDataSerializer;
 
 import net.minecraft.network.syncher.EntityDataSerializer;
 import com.simibubi.create.foundation.event.bus.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredHolder;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import org.jetbrains.annotations.ApiStatus.Internal;

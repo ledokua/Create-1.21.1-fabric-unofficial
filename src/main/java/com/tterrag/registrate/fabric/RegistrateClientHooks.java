@@ -71,4 +71,18 @@ public final class RegistrateClientHooks {
 		NonNullSupplier<ScreenFactory<T, SC>> screenFactory) {
 		MenuScreens.<T, SC>register(type, (menu, inv, title) -> screenFactory.get().create(menu, inv, title));
 	}
+
+	/** Fluid textures/tint via Fabric's fluid rendering API, plus an optional render layer. */
+	public static void registerFluidRendering(net.minecraft.world.level.material.Fluid fluid,
+		com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions ext, @org.jetbrains.annotations.Nullable Supplier<RenderType> layer) {
+		net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry.INSTANCE.register(fluid,
+			new net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler(ext.getStillTexture(), ext.getFlowingTexture(), ext.getOverlayTexture(), ext.getTintColor()) {
+				@Override
+				public int getFluidColor(@org.jetbrains.annotations.Nullable net.minecraft.world.level.BlockAndTintGetter view, @org.jetbrains.annotations.Nullable net.minecraft.core.BlockPos pos, net.minecraft.world.level.material.FluidState state) {
+					return view == null || pos == null ? ext.getTintColor() : ext.getTintColor(state, view, pos);
+				}
+			});
+		if (layer != null)
+			BlockRenderLayerMap.INSTANCE.putFluid(fluid, layer.get());
+	}
 }

@@ -69,7 +69,7 @@ public class PotionFluid extends VirtualFluid {
 
 	public static class PotionFluidType extends TintedFluidType {
 
-		public PotionFluidType(net.neoforged.neoforge.fluids.FluidType.Properties properties, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
+		public PotionFluidType(com.simibubi.create.foundation.transfer.fluid.FluidType.Properties properties, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
 			super(properties, stillTexture, flowingTexture);
 		}
 

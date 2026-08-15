@@ -13,7 +13,7 @@ import com.simibubi.create.content.logistics.packager.PackagingRequest;
 
 import com.simibubi.create.compat.computercraft.events.RepackageEvent;
 import com.simibubi.create.compat.computercraft.events.PackageEvent;
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -150,7 +150,7 @@ public class RepackagerBlockEntity extends PackagerBlockEntity {
 
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.REPACKAGER.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler;
 import com.simibubi.create.foundation.transfer.item.IItemHandler;
 
+import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Direction;
@@ -25,7 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 public class RegisterCapabilitiesEvent {
 
 	@SuppressWarnings("unchecked")
-	public <T, C, BE extends BlockEntity> void registerBlockEntity(BlockCapability<T, C> capability, BlockEntityType<BE> type,
+	public <T, C, BE extends BlockEntity> void registerBlockEntity(BlockApiLookup<T, C> capability, BlockEntityType<BE> type,
 		BiFunction<? super BE, C, @Nullable T> provider) {
 		capability.registerForBlockEntity(provider, type);
 

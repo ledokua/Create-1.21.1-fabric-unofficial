@@ -12,7 +12,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 
-import net.neoforged.neoforge.common.NeoForgeMod;
+import com.simibubi.create.foundation.transfer.fluid.CommonFluids;
 
 /**
  * Create's own Data Generation for Emptying recipes
@@ -36,7 +36,7 @@ public final class CreateEmptyingRecipeGen extends EmptyingRecipeGen {
 		.output(Items.GLASS_BOTTLE)),
 
 	FD_MILK = create(Mods.FD.recipeId("milk_bottle"), b -> b.require(Mods.FD, "milk_bottle")
-		.output(NeoForgeMod.MILK.get(), 250)
+		.output(CommonFluids.MILK.get(), 250)
 		.output(Items.GLASS_BOTTLE)
 		.whenModLoaded(Mods.FD.getId())),
 
@@ -46,7 +46,7 @@ public final class CreateEmptyingRecipeGen extends EmptyingRecipeGen {
 		.whenModLoaded(Mods.AM.getId())),
 
 	NEO_MILK = create(Mods.NEA.recipeId("milk_bottle"), b -> b.require(Mods.FD, "milk_bottle")
-		.output(NeoForgeMod.MILK.get(), 250)
+		.output(CommonFluids.MILK.get(), 250)
 		.output(Items.GLASS_BOTTLE)
 		.whenModLoaded(Mods.NEA.getId()))
 

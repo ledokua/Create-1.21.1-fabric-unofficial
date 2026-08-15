@@ -27,7 +27,7 @@ import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.item.SmartInventory;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.platform.CatnipServices;
@@ -90,7 +90,7 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.STOCK_TICKER.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-import net.neoforged.neoforge.common.NeoForgeMod;
+import com.simibubi.create.foundation.transfer.fluid.CommonFluids;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -85,10 +85,10 @@ public class SimpleDatagenIngredient implements ICustomIngredient {
 				@SuppressWarnings("unchecked")
 				MappedRegistryAccessor<IngredientType<?>> mra$ = (MappedRegistryAccessor<IngredientType<?>>) mra;
 
-				IngredientType<?> baseType = NeoForgeMod.COMPOUND_INGREDIENT_TYPE.get();
+				IngredientType<?> baseType = CommonFluids.COMPOUND_INGREDIENT_TYPE.get();
 
 				int wrappedId = mra$.getToId().getOrDefault(baseType, -1);
-				ResourceKey<IngredientType<?>> wrappedKey = NeoForgeMod.COMPOUND_INGREDIENT_TYPE.getKey();
+				ResourceKey<IngredientType<?>> wrappedKey = CommonFluids.COMPOUND_INGREDIENT_TYPE.getKey();
 
 				mra$.getToId().put(INGREDIENT_TYPE, wrappedId);
 				//noinspection DataFlowIssue - it is ok to pass null as the owner, because this is only being used for serialization

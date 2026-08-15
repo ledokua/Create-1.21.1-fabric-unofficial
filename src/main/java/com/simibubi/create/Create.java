@@ -41,9 +41,15 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.worldgen.AllFeatures;
 import com.simibubi.create.infrastructure.worldgen.AllPlacementModifiers;
 
+import com.simibubi.create.foundation.event.bus.CreateEventBus;
+import com.simibubi.create.foundation.event.bus.IEventBus;
+import com.simibubi.create.foundation.registry.RegisterEvent;
+import com.simibubi.create.foundation.transfer.fluid.CommonFluids;
+
 import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.lang.LangBuilder;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -96,20 +102,20 @@ public class Create implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		onCtor();
+		onCtor(CreateEventBus.BUS);
 		// NeoForge: fired once per registry after the mod constructors ran. Here: the Registrate flush.
 		REGISTRATE.register();
 		onRegister();
 		init();
 	}
 
-	/** Upstream's constructor body: file everything for registration. */
-	public static void onCtor() {
+	/** Upstream's constructor body: file everything for registration. The bus is the bridge bus (see PORTING_PLAN.md). */
+	public static void onCtor(IEventBus modEventBus) {
 		LOGGER.info("{} {} initializing! Commit hash: {}", NAME, CreateBuildInfo.VERSION, CreateBuildInfo.GIT_COMMIT);
 
 		AllSoundEvents.prepare();
-		AllCreativeModeTabs.register();
-		AllArmorMaterials.register();
+		AllCreativeModeTabs.register(modEventBus);
+		AllArmorMaterials.register(modEventBus);
 		AllDisplaySources.register();
 		AllDisplayTargets.register();
 		AllBlocks.register();
@@ -119,23 +125,23 @@ public class Create implements ModInitializer {
 		AllMenuTypes.register();
 		AllEntityTypes.register();
 		AllBlockEntityTypes.register();
-		AllRecipeTypes.register();
-		AllParticleTypes.register();
-		AllStructureProcessorTypes.register();
-		AllEntityDataSerializers.register();
+		AllRecipeTypes.register(modEventBus);
+		AllParticleTypes.register(modEventBus);
+		AllStructureProcessorTypes.register(modEventBus);
+		AllEntityDataSerializers.register(modEventBus);
 		AllPackets.register();
-		AllFeatures.register();
-		AllPlacementModifiers.register();
-		AllIngredients.register();
-		AllAttachmentTypes.register();
-		AllDataComponents.register();
-		AllMapDecorationTypes.register();
+		AllFeatures.register(modEventBus);
+		AllPlacementModifiers.register(modEventBus);
+		AllIngredients.register(modEventBus);
+		AllAttachmentTypes.register(modEventBus);
+		AllDataComponents.register(modEventBus);
+		AllMapDecorationTypes.register(modEventBus);
 		AllMountedStorageTypes.register();
 
 		AllConfigs.register();
 
 		// TODO - Make these use Registry.register and move them into the RegisterEvent
-		AllPackagePortTargetTypes.register();
+		AllPackagePortTargetTypes.register(modEventBus);
 
 		AllSchematicStateFilters.registerDefaults();
 
@@ -146,7 +152,9 @@ public class Create implements ModInitializer {
 
 		ComputerCraftProxy.register();
 
-		AllSoundEvents.register();
+		CommonFluids.enableMilkFluid();
+
+		AllSoundEvents.register(new RegisterEvent(Registries.SOUND_EVENT));
 	}
 
 	/** Upstream's RegisterEvent handler (things that need to run once registries are populated). */

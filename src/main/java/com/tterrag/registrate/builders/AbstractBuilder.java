@@ -21,7 +21,7 @@ public abstract class AbstractBuilder<R, T extends R, P, S extends Builder<R, T,
 	private final P parent;
 	private final String name;
 	private final ResourceKey<? extends Registry<R>> registryKey;
-	private final BuilderCallback callback;
+	protected final BuilderCallback callback;
 
 	/** Supplier that forgets this builder once resolved, so captured lambdas don't pin the builder forever. */
 	private final LazyRegistryEntry<R, T> safeSupplier = new LazyRegistryEntry<>(this);

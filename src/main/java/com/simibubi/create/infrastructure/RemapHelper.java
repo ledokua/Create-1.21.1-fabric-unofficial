@@ -65,8 +65,8 @@ import net.minecraft.world.level.block.Blocks;
 
 import com.simibubi.create.foundation.event.bus.SubscribeEvent;
 import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import com.simibubi.create.foundation.transfer.fluid.CommonFluids;
+import com.simibubi.create.foundation.registry.RegisterEvent;
 
 @EventBusSubscriber
 public class RemapHelper {
@@ -234,22 +234,10 @@ public class RemapHelper {
 		}
 	}
 
-	@SubscribeEvent
-	public static void remap(RegisterEvent event) {
-		Registry<?> registry = event.getRegistry();
-
-		if (registry == Registries.BLOCK || registry == Registries.ITEM) {
-			reMap.forEach((string, resourceLocation) -> registry.addAlias(asResource(string), resourceLocation));
-		}
-
-		if (registry == Registries.FLUID) {
-			registry.addAlias(asResource("milk"), NeoForgeMod.MILK.getId());
-			registry.addAlias(asResource("flowing_milk"), NeoForgeMod.FLOWING_MILK.getId());
-		}
-
-		if (registry == Registries.BLOCK_ENTITY_TYPE) {
-			registry.addAlias(asResource("copper_backtank"), AllBlockEntityTypes.BACKTANK.getId());
-			registry.addAlias(asResource("adjustable_pulley"), AllBlockEntityTypes.ADJUSTABLE_CHAIN_GEARSHIFT.getId());
-		}
-	}
+	/**
+	 * Fabric port: NeoForge registry aliases ({@code Registry#addAlias}) have no Fabric equivalent, so legacy
+	 * id remapping isn't wired yet. TODO(Phase 13): implement via a Fabric-side alias mechanism (e.g. a
+	 * datafixer or a missing-id hook) using the {@code reMap} table above.
+	 */
+	public static void remap(RegisterEvent event) {}
 }

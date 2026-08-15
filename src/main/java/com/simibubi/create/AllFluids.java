@@ -43,13 +43,13 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 
 import com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.common.NeoForgeMod;
+import com.simibubi.create.foundation.transfer.fluid.CommonFluids;
 import com.simibubi.create.foundation.tags.Tags;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
-import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
-import net.neoforged.neoforge.fluids.FluidInteractionRegistry.InteractionInformation;
+import com.simibubi.create.foundation.transfer.fluid.BaseFlowingFluid;
+import com.simibubi.create.foundation.transfer.fluid.FluidInteractionRegistry;
+import com.simibubi.create.foundation.transfer.fluid.FluidInteractionRegistry.InteractionInformation;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
+import com.simibubi.create.foundation.transfer.fluid.FluidType;
 
 public class AllFluids {
 	private static final CreateRegistrate REGISTRATE = Create.registrate();
@@ -118,7 +118,7 @@ public class AllFluids {
 	}
 
 	public static void registerFluidInteractions() {
-		FluidInteractionRegistry.addInteraction(NeoForgeMod.LAVA_TYPE.value(), new InteractionInformation(
+		FluidInteractionRegistry.addInteraction(CommonFluids.LAVA_TYPE.value(), new InteractionInformation(
 			HONEY.get().getFluidType(),
 			fluidState -> {
 				if (fluidState.isSource()) {
@@ -131,7 +131,7 @@ public class AllFluids {
 			}
 		));
 
-		FluidInteractionRegistry.addInteraction(NeoForgeMod.LAVA_TYPE.value(), new InteractionInformation(
+		FluidInteractionRegistry.addInteraction(CommonFluids.LAVA_TYPE.value(), new InteractionInformation(
 			CHOCOLATE.get().getFluidType(),
 			fluidState -> {
 				if (fluidState.isSource()) {

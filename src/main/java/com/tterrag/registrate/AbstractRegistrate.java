@@ -33,6 +33,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Fluid;
 
+import com.simibubi.create.foundation.transfer.fluid.BaseFlowingFluid;
+import com.simibubi.create.foundation.transfer.fluid.FluidType;
+
 import com.tterrag.registrate.builders.BlockBuilder;
 import com.tterrag.registrate.builders.BlockEntityBuilder;
 import com.tterrag.registrate.builders.BlockEntityBuilder.BlockEntityFactory;
@@ -433,14 +436,32 @@ public abstract class AbstractRegistrate<S extends AbstractRegistrate<S>> {
 		return entry(name, callback -> MenuBuilder.create(this, parent, name, callback, factory, screenFactory));
 	}
 
-	/**
-	 * Fluids: upstream has ~40 overloads built around NeoForge's FluidType. Create only registers 4 fluids,
-	 * all through {@code CreateRegistrate.standardFluid}/{@code virtualFluid}, which construct their
-	 * FluidBuilder directly via {@link #entry}. So only the bare (parent, name, factory) form lives here —
-	 * see {@link FluidBuilder} for the deferral note.
-	 */
-	public <T extends Fluid, P> FluidBuilder<T, P> fluid(P parent, String name, NonNullSupplier<T> factory) {
-		return entry(name, callback -> FluidBuilder.create(this, parent, name, callback, factory));
+	// ---- fluids (subset of upstream's overloads that Create's CreateRegistrate calls) ----
+
+	public FluidBuilder<BaseFlowingFluid.Flowing, S> fluid(String name, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
+		return fluid(self(), name, stillTexture, flowingTexture);
+	}
+
+	public FluidBuilder<BaseFlowingFluid.Flowing, S> fluid(String name, ResourceLocation stillTexture, ResourceLocation flowingTexture, FluidBuilder.FluidTypeFactory typeFactory) {
+		return fluid(self(), name, stillTexture, flowingTexture, typeFactory);
+	}
+
+	public <T extends BaseFlowingFluid> FluidBuilder<T, S> fluid(String name, ResourceLocation stillTexture, ResourceLocation flowingTexture,
+		FluidBuilder.FluidTypeFactory typeFactory, NonNullFunction<BaseFlowingFluid.Properties, T> fluidFactory) {
+		return fluid(self(), name, stillTexture, flowingTexture, typeFactory, fluidFactory);
+	}
+
+	public <P> FluidBuilder<BaseFlowingFluid.Flowing, P> fluid(P parent, String name, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
+		return this.<BaseFlowingFluid.Flowing, P>fluid(parent, name, stillTexture, flowingTexture, (p, s, f) -> new FluidType(p), BaseFlowingFluid.Flowing::new);
+	}
+
+	public <P> FluidBuilder<BaseFlowingFluid.Flowing, P> fluid(P parent, String name, ResourceLocation stillTexture, ResourceLocation flowingTexture, FluidBuilder.FluidTypeFactory typeFactory) {
+		return this.<BaseFlowingFluid.Flowing, P>fluid(parent, name, stillTexture, flowingTexture, typeFactory, BaseFlowingFluid.Flowing::new);
+	}
+
+	public <T extends BaseFlowingFluid, P> FluidBuilder<T, P> fluid(P parent, String name, ResourceLocation stillTexture, ResourceLocation flowingTexture,
+		FluidBuilder.FluidTypeFactory typeFactory, NonNullFunction<BaseFlowingFluid.Properties, T> fluidFactory) {
+		return entry(name, callback -> FluidBuilder.create(this, parent, name, callback, stillTexture, flowingTexture, typeFactory, fluidFactory));
 	}
 
 	/** Arbitrary registry entry with no builder-specific config (creative tabs, custom registries, ...). */

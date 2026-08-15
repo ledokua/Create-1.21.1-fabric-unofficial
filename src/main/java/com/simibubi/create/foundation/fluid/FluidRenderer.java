@@ -21,7 +21,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
+import com.simibubi.create.foundation.transfer.fluid.FluidType;
 
 @Environment(EnvType.CLIENT)
 public class FluidRenderer {

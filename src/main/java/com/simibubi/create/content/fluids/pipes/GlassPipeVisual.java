@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import com.simibubi.create.foundation.client.extensions.IClientFluidTypeExtensions;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 
-import net.neoforged.neoforge.fluids.FluidType;
+import com.simibubi.create.foundation.transfer.fluid.FluidType;
 
 import org.jetbrains.annotations.Nullable;
 

@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 
-import net.neoforged.neoforge.registries.DeferredHolder;
+import com.simibubi.create.foundation.registry.DeferredHolder;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -53,7 +53,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 
 import com.simibubi.create.foundation.event.bus.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 

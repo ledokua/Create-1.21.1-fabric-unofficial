@@ -61,7 +61,7 @@ import com.tterrag.registrate.util.entry.RegistryEntry;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.neoforged.neoforge.registries.DeferredHolder;
+import com.simibubi.create.foundation.registry.DeferredHolder;
 
 import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
 import net.minecraft.resources.ResourceLocation;

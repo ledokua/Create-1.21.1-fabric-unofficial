@@ -30,7 +30,9 @@
       "net/minecraft/class_1792": ["com/simibubi/create/foundation/mixin/extension/ItemExtension"],
       "net/minecraft/class_2248": ["com/simibubi/create/foundation/mixin/extension/BlockExtension"],
       "net/minecraft/class_1920": ["com/simibubi/create/foundation/mixin/extension/BlockAndTintGetterExtension"],
-      "net/minecraft/class_1087": ["com/simibubi/create/foundation/mixin/extension/BakedModelExtension"]
+      "net/minecraft/class_1087": ["com/simibubi/create/foundation/mixin/extension/BakedModelExtension"],
+      "net/minecraft/class_3611": ["com/simibubi/create/foundation/mixin/extension/FluidExtension"],
+      "net/minecraft/class_3610": ["com/simibubi/create/foundation/mixin/extension/FluidStateExtension"]
     }
   },
   "depends": {

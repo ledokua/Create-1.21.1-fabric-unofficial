@@ -18,7 +18,7 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.utility.DynamicComponent;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.data.Couple;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -101,7 +101,7 @@ public class NixieTubeBlockEntity extends SmartBlockEntity {
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.NIXIE_TUBE.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

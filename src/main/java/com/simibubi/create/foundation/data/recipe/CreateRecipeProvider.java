@@ -23,7 +23,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
 import com.simibubi.create.foundation.tags.Tags;
-import net.neoforged.neoforge.fluids.FluidType;
+import com.simibubi.create.foundation.transfer.fluid.FluidType;
 
 /**
  * The class that handles gathering Create's generated recipes for most types.

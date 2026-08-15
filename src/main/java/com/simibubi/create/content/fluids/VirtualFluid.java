@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import com.simibubi.create.foundation.transfer.fluid.BaseFlowingFluid;
 
 public class VirtualFluid extends BaseFlowingFluid {
 

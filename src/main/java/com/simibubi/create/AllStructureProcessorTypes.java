@@ -5,8 +5,8 @@ import com.simibubi.create.content.schematics.SchematicProcessor;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import com.simibubi.create.foundation.event.bus.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredHolder;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 

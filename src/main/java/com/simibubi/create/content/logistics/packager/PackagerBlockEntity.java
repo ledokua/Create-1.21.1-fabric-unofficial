@@ -41,7 +41,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.inventory.InvManipul
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.VersionedInventoryTrackerBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.math.BlockFace;
@@ -123,7 +123,7 @@ public class PackagerBlockEntity extends SmartBlockEntity implements Clearable {
 
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.PACKAGER.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

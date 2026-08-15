@@ -279,6 +279,14 @@ public final class FluidStack implements DataComponentHolder {
 		return copy;
 	}
 
+	public FluidType getFluidType() {
+		return FluidTypeRegistry.get(getFluid());
+	}
+
+	public boolean is(FluidType fluidType) {
+		return getFluidType() == fluidType;
+	}
+
 	// ---- queries ----
 
 	public boolean is(TagKey<Fluid> tag) {

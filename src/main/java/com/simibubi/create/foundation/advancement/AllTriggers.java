@@ -8,7 +8,7 @@ import com.simibubi.create.Create;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 
 public class AllTriggers {
 

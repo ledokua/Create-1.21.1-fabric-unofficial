@@ -17,7 +17,7 @@ import com.simibubi.create.content.trains.track.TrackTargetingBehaviour;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -71,7 +71,7 @@ public class SignalBlockEntity extends SmartBlockEntity implements Transformable
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.TRACK_SIGNAL.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

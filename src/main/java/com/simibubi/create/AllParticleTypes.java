@@ -21,8 +21,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import com.simibubi.create.foundation.event.bus.IEventBus;
 import com.simibubi.create.foundation.event.client.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredHolder;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 

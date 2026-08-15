@@ -14,7 +14,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
@@ -43,7 +43,7 @@ public class CreativeMotorBlockEntity extends GeneratingKineticBlockEntity {
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.MOTOR.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

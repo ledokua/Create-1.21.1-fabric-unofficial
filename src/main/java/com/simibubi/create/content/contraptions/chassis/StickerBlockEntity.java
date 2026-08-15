@@ -13,7 +13,7 @@ import com.simibubi.create.content.contraptions.glue.SuperGlueItem;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
@@ -46,7 +46,7 @@ public class StickerBlockEntity extends SmartBlockEntity {
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.STICKER.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

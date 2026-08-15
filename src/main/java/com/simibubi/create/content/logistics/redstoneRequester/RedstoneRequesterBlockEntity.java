@@ -15,7 +15,7 @@ import com.simibubi.create.content.logistics.stockTicker.PackageOrderWithCrafts;
 import com.simibubi.create.content.logistics.stockTicker.StockCheckingBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
@@ -55,7 +55,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.REDSTONE_REQUESTER.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);

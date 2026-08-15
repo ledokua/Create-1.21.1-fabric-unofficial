@@ -10,7 +10,7 @@ import com.simibubi.create.content.logistics.packagePort.PackagePortTarget.Train
 import net.minecraft.core.Holder;
 
 import com.simibubi.create.foundation.event.bus.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import com.simibubi.create.foundation.registry.DeferredRegister;
 
 public class AllPackagePortTargetTypes {
 	private static final DeferredRegister<PackagePortTargetType> REGISTER = DeferredRegister.create(CreateRegistries.PACKAGE_PORT_TARGET_TYPE, Create.ID);

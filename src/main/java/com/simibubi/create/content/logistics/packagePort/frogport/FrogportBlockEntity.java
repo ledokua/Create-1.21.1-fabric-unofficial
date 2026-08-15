@@ -20,7 +20,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.item.TooltipHelper;
 
-import dan200.computercraft.api.peripheral.PeripheralCapability;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.data.Iterate;
@@ -93,7 +93,7 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 
 		if (Mods.COMPUTERCRAFT.isLoaded()) {
 			event.registerBlockEntity(
-				PeripheralCapability.get(),
+				PeripheralLookup.get(),
 				AllBlockEntityTypes.PACKAGE_FROGPORT.get(),
 				(be, context) -> be.computerBehaviour.getPeripheralCapability()
 			);
