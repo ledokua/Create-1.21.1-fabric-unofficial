@@ -8,6 +8,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 
 import com.tterrag.registrate.util.nullness.NonNullFunction;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
@@ -24,7 +25,7 @@ import com.tterrag.registrate.util.nullness.NonNullSupplier;
  * is created unresolved and filled in later by that flush via {@link #resolve}, same two-phase shape as
  * upstream, just driven by an explicit ordered pass instead of an event bus. See {@code AbstractRegistrate}.
  */
-public class RegistryEntry<R, T extends R> implements NonNullSupplier<T> {
+public class RegistryEntry<R, T extends R> implements NonNullSupplier<T>, Holder<R> {
 
 	public static <R, T extends R> RegistryEntry<R, T> unresolved(ResourceKey<? extends Registry<R>> registryKey, ResourceLocation id) {
 		return new RegistryEntry<>(registryKey, id);
@@ -80,16 +81,71 @@ public class RegistryEntry<R, T extends R> implements NonNullSupplier<T> {
 		return isPresent() && predicate.test(value);
 	}
 
-	public boolean is(T value) {
+	/** Identity check against the built object (upstream: {@code is(R)}). */
+	public boolean is(R value) {
 		return this.value == value;
 	}
 
+	// ---- Holder<R> (delegates to the live registry holder once registered) ----
+
+	@Override
+	public R value() {
+		return get();
+	}
+
+	@Override
+	public boolean isBound() {
+		return isPresent();
+	}
+
+	@Override
 	public boolean is(ResourceLocation id) {
 		return getId().equals(id);
 	}
 
+	@Override
 	public boolean is(ResourceKey<R> key) {
 		return this.key.equals(key);
+	}
+
+	@Override
+	public boolean is(Predicate<ResourceKey<R>> predicate) {
+		return predicate.test(key);
+	}
+
+	@Override
+	public boolean is(TagKey<R> tagKey) {
+		return isPresent() && asHolder().is(tagKey);
+	}
+
+	@Override
+	public boolean is(Holder<R> holder) {
+		return holder.unwrapKey().map(k -> k.equals(key)).orElse(false);
+	}
+
+	@Override
+	public java.util.stream.Stream<TagKey<R>> tags() {
+		return isPresent() ? asHolder().tags() : java.util.stream.Stream.empty();
+	}
+
+	@Override
+	public com.mojang.datafixers.util.Either<ResourceKey<R>, R> unwrap() {
+		return com.mojang.datafixers.util.Either.left(key);
+	}
+
+	@Override
+	public java.util.Optional<ResourceKey<R>> unwrapKey() {
+		return java.util.Optional.of(key);
+	}
+
+	@Override
+	public Kind kind() {
+		return Kind.REFERENCE;
+	}
+
+	@Override
+	public boolean canSerializeIn(net.minecraft.core.HolderOwner<R> owner) {
+		return isPresent() && asHolder().canSerializeIn(owner);
 	}
 
 	public NonNullSupplier<T> asSupplier() {

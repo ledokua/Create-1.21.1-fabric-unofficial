@@ -30,6 +30,11 @@ public class ItemProviderEntry<R, T extends R> extends RegistryEntry<R, T> imple
 		return isItem(stack.getItem());
 	}
 
+	public boolean is(ItemStack stack) {
+		return isIn(stack);
+	}
+
+	/** Item identity check. (For {@code ItemEntry} the inherited {@code is(R)} covers the same thing.) */
 	public boolean isItem(Item item) {
 		return asItem() == item;
 	}

@@ -20,6 +20,11 @@ public class BlockEntry<T extends Block> extends ItemProviderEntry<Block, T> {
 	}
 
 	public boolean has(BlockState state) {
-		return isPresent() && get() == state.getBlock();
+		return is(state.getBlock());
+	}
+
+	/** Upstream {@code BlockEntry#is(Item)}: matches this block's item. */
+	public boolean is(net.minecraft.world.item.Item item) {
+		return isItem(item);
 	}
 }

@@ -43,7 +43,11 @@
       "net/minecraft/class_6880": ["com/simibubi/create/foundation/mixin/extension/HolderExtension"],
       "net/minecraft/class_2791": ["com/simibubi/create/foundation/attachment/IAttachmentHolder", "com/simibubi/create/foundation/mixin/extension/ChunkAccessExtension"],
       "net/minecraft/class_327": ["com/simibubi/create/foundation/mixin/extension/FontExtension"],
-      "net/minecraft/class_827": ["com/simibubi/create/foundation/mixin/extension/BlockEntityRendererExtension"]
+      "net/minecraft/class_827": ["com/simibubi/create/foundation/mixin/extension/BlockEntityRendererExtension<TT;>"],
+      "net/minecraft/class_778": ["com/simibubi/create/foundation/mixin/extension/ModelBlockRendererExtension"],
+      "net/minecraft/class_776": ["com/simibubi/create/foundation/mixin/extension/BlockRenderDispatcherExtension"],
+      "net/minecraft/class_332": ["com/simibubi/create/foundation/mixin/extension/GuiGraphicsExtension"],
+      "net/minecraft/class_1657": ["com/simibubi/create/foundation/mixin/extension/PlayerExtension"]
     }
   },
   "depends": {

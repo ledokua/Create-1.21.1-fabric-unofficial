@@ -32,7 +32,7 @@ public interface IDynamicBakedModel extends BakedModel, FabricBakedModel {
 
 	@Override
 	default @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand) {
-		return getQuads(state, side, rand, ModelData.EMPTY, null);
+		return getQuads(state, side, rand, ModelDataContext.current(), ModelDataContext.currentLayer());
 	}
 
 	@NotNull
