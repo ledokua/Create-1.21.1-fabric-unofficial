@@ -209,7 +209,7 @@ Done in Phase 3 so far (all runtime-tested by boot + gametests, client-side ones
   `run/screenshots/create-harness-{overview,goggles,ponder}.png` and quits — the only automated way to eyeball rendering
   (no client gametest API for 1.21.1). Extend the showcase when touching rendering. Options: `CREATE_HARNESS_PONDER=<item id>`
   picks the Ponder scene; shots: overview, goggles (overlay on a stressometer), contraption (spinning bearing rig),
-  creative-base/palettes, config, jei-mixing/jei-next (Create's JEI categories), ponder-1..4. It also logs Create items
+  creative-base/palettes, config, jei-mixing/jei-next (Create's JEI categories), menu-schematic-table/schematicannon, ponder-1..4. It also logs Create items
   whose baked model is empty and whether SuperByteBuffers of a few models have geometry.
 - Found via the harness so far: HUD layers weren't drawn (no HudRenderCallback), map decoration renderers had no mixin,
   fluid variants (potion tint in JEI) needed a FluidVariantRenderHandler, Ponder cogs needed the virtual-data rule.

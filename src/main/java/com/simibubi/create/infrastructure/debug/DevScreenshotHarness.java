@@ -78,7 +78,9 @@ public final class DevScreenshotHarness {
 				case 7 -> { if (tick >= 30) { screenshot(mc, "creative-palettes"); mc.setScreen(new net.createmod.catnip.config.ui.BaseConfigScreen(null, Create.ID)); phase = 8; tick = 0; } }
 				case 8 -> { if (tick >= 30) { screenshot(mc, "config"); if (com.simibubi.create.compat.Mods.JEI.isLoaded() && JeiHarness.showRecipes(mc)) { phase = 9; } else { mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; } tick = 0; } }
 				case 9 -> { if (tick >= 40) { screenshot(mc, "jei-mixing"); JeiHarness.next(mc); phase = 10; tick = 0; } }
-				case 10 -> { if (tick >= 40) { screenshot(mc, "jei-next"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
+				case 10 -> { if (tick >= 40) { screenshot(mc, "jei-next"); mc.setScreen(null); openMenuAt(mc, BASE.offset(24, 0, 12)); phase = 11; tick = 0; } }
+				case 11 -> { if (tick >= 40) { screenshot(mc, "menu-schematic-table"); mc.setScreen(null); openMenuAt(mc, BASE.offset(24, 0, 11)); phase = 12; tick = 0; } }
+				case 12 -> { if (tick >= 40) { screenshot(mc, "menu-schematicannon"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
 				case 3 -> {
 					if (tick == 60) screenshot(mc, "ponder-1");
 					if (tick == 160) screenshot(mc, "ponder-2");
@@ -159,6 +161,19 @@ public final class DevScreenshotHarness {
 			Create.LOGGER.info("[harness] JEI create categories: {}", types.stream().map(t -> t.getUid().getPath()).toList());
 			runtime.getRecipesGui().showTypes(types);
 		}
+	}
+
+	/** Server-side {@code openMenu} of the block entity at pos (exercises the extended-data menu path). */
+	private static void openMenuAt(Minecraft mc, BlockPos pos) {
+		MinecraftServer server = mc.getSingleplayerServer();
+		server.execute(() -> {
+			ServerPlayer player = server.getPlayerList().getPlayer(mc.player.getUUID());
+			if (server.overworld().getBlockEntity(pos) instanceof net.minecraft.world.MenuProvider provider
+				&& provider instanceof com.simibubi.create.foundation.blockEntity.SmartBlockEntity sbe)
+				player.openMenu(provider, sbe::sendToMenu);
+			else
+				Create.LOGGER.warn("[harness] no menu provider at {}", pos);
+		});
 	}
 
 	private static void openCreativeTab(Minecraft mc, net.minecraft.world.item.CreativeModeTab tab) {
@@ -263,6 +278,8 @@ public final class DevScreenshotHarness {
 			place.accept(new Object[] { 20, 0, 9, AllBlocks.REDSTONE_LINK.getDefaultState() });
 			// spinning bearing contraption (motor under the floor → bearing → planks + cog + glass + casing)
 			place.accept(new Object[] { 22, -1, 9, AllBlocks.CREATIVE_MOTOR.getDefaultState().setValue(BlockStateProperties.FACING, Direction.UP) });
+			place.accept(new Object[] { 24, 0, 12, AllBlocks.SCHEMATIC_TABLE.getDefaultState() });
+			place.accept(new Object[] { 24, 0, 11, AllBlocks.SCHEMATICANNON.getDefaultState() });
 			place.accept(new Object[] { 22, 0, 9, AllBlocks.MECHANICAL_BEARING.getDefaultState().setValue(BlockStateProperties.FACING, Direction.UP) });
 			place.accept(new Object[] { 22, 1, 9, Blocks.OAK_PLANKS.defaultBlockState() });
 			place.accept(new Object[] { 23, 1, 9, AllBlocks.COGWHEEL.getDefaultState() });
