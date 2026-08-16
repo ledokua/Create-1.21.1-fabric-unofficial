@@ -2,6 +2,7 @@ package com.simibubi.create;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.pojav.PojavChecker;
 import com.simibubi.create.content.contraptions.glue.SuperGlueSelectionHandler;
 import com.simibubi.create.content.contraptions.render.ContraptionEntityRenderer;
@@ -90,7 +91,8 @@ public class CreateClient implements ClientModInitializer {
 		ZAPPER_RENDER_HANDLER.registerListeners(modEventBus);
 		POTATO_CANNON_RENDER_HANDLER.registerListeners(modEventBus);
 
-		// TODO(Phase 12): Mods.FTBLIBRARY -> FTBIntegration.init, Mods.SODIUM -> SodiumCompat.init
+		// (upstream's FTBIntegration is a no-op "until FTB Library's new config system settles")
+		Mods.SODIUM.executeIfInstalled(() -> () -> com.simibubi.create.compat.sodium.SodiumCompat.init());
 		PojavChecker.init();
 	}
 
