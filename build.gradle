@@ -64,16 +64,13 @@ dependencies {
         exclude group: "dev.engine-room.flywheel", module: "flywheel-fabric-api-${project.minecraft_version}"
     }
 
-    // Catnip (vendored under src/main/java/net/createmod/catnip, see below) needs these directly since
-    // upstream's own build only declares them as non-transitive `implementation`.
+    // Upstream Create's own build declares these as non-transitive `implementation`; some Catnip/Create signatures use them.
     implementation "javax.annotation:javax.annotation-api:1.3.2"
     implementation "com.google.code.findbugs:jsr305:3.0.2"
 
-    // NOTE: Catnip-Fabric-1.21.1 (the official prebuilt) is deliberately NOT used here. It hasn't been
-    // updated since Dec 2024 and is built against io.github.fabricators_of_create:Porting-Lib (a
-    // NeoForge-API compatibility shim) plus a forked flywheel-fabric-api version — pulling it in would drag
-    // Porting-Lib into the whole project and pin flywheel to that old fork, defeating the native-port
-    // strategy. Catnip needs to be ported natively from source instead — see PORTING_PLAN.md Phase 0a.
+    // NOTE: Catnip (net.createmod.catnip) is NOT a separate dependency: the Ponder-Fabric jar above bundles the
+    // compiled Catnip classes + service files, and Create compiles against those (see PORTING_PLAN.md Phase 0a).
+    // The standalone Catnip-Fabric-1.21.1 maven artifact is stale (built against Porting-Lib) and must not be added.
 
     // Registrate: reimplemented natively under src/main/java/com/tterrag/registrate — see PORTING_PLAN.md Phase 0b.
 
