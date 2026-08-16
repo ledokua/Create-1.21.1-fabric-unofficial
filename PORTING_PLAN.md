@@ -250,7 +250,11 @@ Next (roughly by user impact):
    Entity#getPersistentData mixin clashes with other mods (now a uniquely named duck); reported "many break sounds" when
    breaking a large water wheel — not reproducible in dev (1 sound), likely a sound-mod interaction; reported FPS drop near
    rails/moving kinetics — need client log + `/flywheel backend` output.
-5. Publishing: `modLocalRuntime` JEI/ModMenu are dev-only; check the built jar's fabric.mod.json depends block before release.
+6. Publishing: `./gradlew build` → `build/libs/Create-<mod_version>.jar` (mod_version in gradle.properties, currently
+   6.0.11-fabric.1). Gametests are NOT part of `build`/`check` (run `./gradlew runGameTest`): with all 71 in one batch,
+   `TestItems.storages` / `TestProcessing.precisionMechanismCrafting` occasionally time out (test positions are random
+   multi-million coordinates each run — suspect float precision in item transport; investigate if it shows in play).
+   `modLocalRuntime` JEI/ModMenu are dev-only. Daemon needs `org.gradle.jvmargs=-Xmx3G` (1G GC-thrashed on full build).
 
 Useful commands:
 ```
