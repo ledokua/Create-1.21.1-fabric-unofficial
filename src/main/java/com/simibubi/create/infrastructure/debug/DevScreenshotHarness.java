@@ -70,10 +70,15 @@ public final class DevScreenshotHarness {
 		tick++;
 		try {
 			switch (phase) {
-				case 0 -> { if (tick >= 40) { build(mc); phase = 1; tick = 0; } }
-				case 1 -> { if (tick == 5) mc.player.getInventory().selected = 0; if (tick >= 140) { screenshot(mc, "overview"); teleport(mc, 6.5, 151.0, 0.5, 90, 10, false); phase = 2; tick = 0; } }
-				case 2 -> { if (tick >= 60) { screenshot(mc, "goggles"); mc.setScreen(PonderUI.of(AllBlocks.COGWHEEL.asStack())); phase = 3; tick = 0; } }
-				case 3 -> { if (tick >= 100) { screenshot(mc, "ponder"); mc.setScreen(null); phase = 4; tick = 0; } }
+				case 0 -> { if (tick >= 40) { build(mc); probeBuffers(mc); phase = 1; tick = 0; } }
+				case 1 -> { if (tick == 5) mc.player.getInventory().selected = 0; if (tick >= 140) { screenshot(mc, "overview"); teleport(mc, 8.5, 150.0, 1.5, 90, 22, false); phase = 2; tick = 0; } }
+				case 2 -> { if (tick >= 60) { screenshot(mc, "goggles"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
+				case 3 -> {
+					if (tick == 60) screenshot(mc, "ponder-1");
+					if (tick == 160) screenshot(mc, "ponder-2");
+					if (tick == 260) screenshot(mc, "ponder-3");
+					if (tick >= 360) { screenshot(mc, "ponder-4"); mc.setScreen(null); phase = 4; tick = 0; }
+				}
 				case 4 -> { if (tick >= 5) { Create.LOGGER.info("[harness] done"); done = true; mc.stop(); } }
 			}
 		} catch (Throwable t) {
@@ -81,6 +86,29 @@ public final class DevScreenshotHarness {
 			done = true;
 			mc.stop();
 		}
+	}
+
+	/** Logs whether Catnip's SuperByteBuffer path (Ponder / contraption rendering) produces geometry for a few models. */
+	private static void probeBuffers(Minecraft mc) {
+		BlockState[] states = { AllBlocks.COGWHEEL.getDefaultState(), AllBlocks.SHAFT.getDefaultState(), AllBlocks.LARGE_COGWHEEL.getDefaultState(),
+			AllBlocks.CREATIVE_MOTOR.getDefaultState(), Blocks.STONE.defaultBlockState(), AllBlocks.ANDESITE_CASING.getDefaultState() };
+		for (BlockState state : states) {
+			var model = mc.getBlockRenderer().getBlockModel(state);
+			boolean empty = net.createmod.catnip.render.SuperBufferFactory.getInstance().createForBlock(state).isEmpty();
+			int quads = 0;
+			for (Direction d : Direction.values()) quads += model.getQuads(state, d, net.minecraft.util.RandomSource.create(42)).size();
+			quads += model.getQuads(state, null, net.minecraft.util.RandomSource.create(42)).size();
+			Create.LOGGER.info("[harness] sbb {} model={} vanillaAdapter={} quads={} sbbEmpty={}", state.getBlock().getName().getString(), model.getClass().getSimpleName(),
+				((net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel) model).isVanillaAdapter(), quads, empty);
+		}
+	}
+
+	/** {@code CREATE_HARNESS_PONDER=<item id>} picks the Ponder scene (default cogwheel). */
+	private static ItemStack ponderTarget() {
+		String id = System.getProperty("create.harness.ponder", System.getenv("CREATE_HARNESS_PONDER"));
+		if (id == null)
+			return AllBlocks.COGWHEEL.asStack();
+		return new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(id)));
 	}
 
 	private static void screenshot(Minecraft mc, String name) {

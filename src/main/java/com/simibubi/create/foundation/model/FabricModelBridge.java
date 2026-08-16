@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.foundation.model.data.ModelData;
+import com.simibubi.create.foundation.virtualWorld.VirtualRenderHelper;
 
 import net.fabricmc.fabric.api.blockview.v2.FabricBlockView;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
@@ -39,7 +40,22 @@ public final class FabricModelBridge {
 	/** The {@link ModelData} a level exposes at a position (a Create block entity's render data), or EMPTY. */
 	public static ModelData modelDataAt(BlockAndTintGetter level, BlockPos pos) {
 		Object data = ((FabricBlockView) level).getBlockEntityRenderData(pos);
-		return data instanceof ModelData md ? md : ModelData.EMPTY;
+		ModelData modelData = data instanceof ModelData md ? md : ModelData.EMPTY;
+		if (isVirtualLevel(level) && !VirtualRenderHelper.isVirtual(modelData))
+			modelData = modelData == ModelData.EMPTY ? VirtualRenderHelper.VIRTUAL_DATA : modelData.derive().with(VirtualRenderHelper.VIRTUAL_PROPERTY, true).build();
+		return modelData;
+	}
+
+	/**
+	 * "Virtual" rendering context: NeoForge Catnip's SuperByteBuffer/Flywheel model baking passes
+	 * {@code VirtualRenderHelper.VIRTUAL_DATA} explicitly; Fabric Catnip/Flywheel bake against Flywheel's
+	 * {@code VirtualBlockGetter} instead, so that block view type is the signal. Models like
+	 * {@code BracketedKineticBlockModel} render their full geometry only when virtual — the static pass of the real
+	 * level, Ponder scenes and contraptions must NOT be virtual, or the block would be drawn twice (static + the
+	 * moving copy the block-entity renderer draws from the SuperByteBuffer).
+	 */
+	public static boolean isVirtualLevel(BlockAndTintGetter level) {
+		return level instanceof dev.engine_room.flywheel.lib.model.baked.VirtualBlockGetter;
 	}
 
 	public static void emitBlockQuads(IDynamicBakedModel model, BlockAndTintGetter level, BlockState state, BlockPos pos,
