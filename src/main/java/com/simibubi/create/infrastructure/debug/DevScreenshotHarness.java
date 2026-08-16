@@ -70,7 +70,7 @@ public final class DevScreenshotHarness {
 		tick++;
 		try {
 			switch (phase) {
-				case 0 -> { if (tick >= 40) { build(mc); probeBuffers(mc); phase = 1; tick = 0; } }
+				case 0 -> { if (tick >= 40) { build(mc); probeBuffers(mc); probeItemModels(mc); phase = 1; tick = 0; } }
 				case 1 -> { if (tick == 5) mc.player.getInventory().selected = 0; if (tick >= 140) { screenshot(mc, "overview"); teleport(mc, 8.5, 150.0, 1.5, 90, 22, false); phase = 2; tick = 0; } }
 				case 2 -> { if (tick >= 60) { screenshot(mc, "goggles"); teleport(mc, 22.5, 154.5, 3.5, 0, 35, false); phase = 5; tick = 0; } }
 				case 5 -> { if (tick >= 60) { screenshot(mc, "contraption"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get()); phase = 6; tick = 0; } }
@@ -89,6 +89,27 @@ public final class DevScreenshotHarness {
 			done = true;
 			mc.stop();
 		}
+	}
+
+	/** Logs every Create item whose baked model is empty (no quads, no custom renderer) — i.e. would render invisible. */
+	private static void probeItemModels(Minecraft mc) {
+		int invisible = 0, total = 0;
+		var missing = mc.getModelManager().getMissingModel();
+		for (net.minecraft.world.item.Item item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+			if (!net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(Create.ID))
+				continue;
+			total++;
+			ItemStack stack = new ItemStack(item);
+			var model = mc.getItemRenderer().getModel(stack, mc.level, mc.player, 0);
+			int quads = model.getQuads(null, null, net.minecraft.util.RandomSource.create(42)).size();
+			for (Direction d : Direction.values())
+				quads += model.getQuads(null, d, net.minecraft.util.RandomSource.create(42)).size();
+			if (model == missing || (quads == 0 && !model.isCustomRenderer())) {
+				invisible++;
+				Create.LOGGER.warn("[harness] item model empty: {} ({}{})", net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item), model.getClass().getSimpleName(), model == missing ? ", MISSING" : "");
+			}
+		}
+		Create.LOGGER.info("[harness] item models probed: {} total, {} empty", total, invisible);
 	}
 
 	/** Logs whether Catnip's SuperByteBuffer path (Ponder / contraption rendering) produces geometry for a few models. */
@@ -118,7 +139,9 @@ public final class DevScreenshotHarness {
 		net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen screen =
 			new net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen(mc.player, mc.player.connection.enabledFeatures(), true);
 		mc.setScreen(screen);
-		((com.simibubi.create.foundation.mixin.accessor.CreativeModeInventoryScreenAccessor) screen).create$selectTab(tab);
+		net.fabricmc.fabric.api.client.itemgroup.v1.FabricCreativeInventoryScreen fabric = (net.fabricmc.fabric.api.client.itemgroup.v1.FabricCreativeInventoryScreen) screen;
+		fabric.switchToPage(fabric.getPage(tab));
+		fabric.setSelectedItemGroup(tab);
 	}
 
 	private static void screenshot(Minecraft mc, String name) {

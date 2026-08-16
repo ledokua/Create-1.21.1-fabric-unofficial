@@ -101,7 +101,6 @@
 	"client": [
 		"accessor.AgeableListModelAccessor",
 		"accessor.BlockModelAccessor",
-		"accessor.CreativeModeInventoryScreenAccessor",
 		"accessor.EntityRenderDispatcherAccessor",
 		"accessor.FontAccessor",
 		"accessor.GuiAccessor",
