@@ -19,7 +19,8 @@ Conversions:
     (fluid ingredients keep their "type": Create's FluidIngredient registry accepts the neoforge:* aliases)
   * data/create/neoforge/biome_modifier/** dropped (AllBiomeModifiers uses Fabric BiomeModifications in code)
   * data/neoforge/data_maps/** kept as-is (foundation.datamap.DataMapLoader reads NeoForge's layout)
-  * EXTRA_FILES written afterwards: things NeoForge itself provides (c:milk fluid tag for Create's own milk fluid)
+  * scripts/extra-resources/** copied over afterwards: things NeoForge itself provides (c:milk fluid tag for Create's
+    own milk fluid) and Fabric-port-only files (bridge gametest templates)
 """
 import json
 import os
@@ -33,10 +34,8 @@ OUT = os.path.join(REPO, "src/main/resources")
 
 stats = {}
 
-# Files NeoForge (not upstream Create) provides and that Fabric lacks; written after vendoring.
-EXTRA_FILES = {
-    "data/c/tags/fluid/milk.json": {"replace": False, "values": ["create:milk", "create:flowing_milk"]},
-}
+# Files NeoForge (not upstream Create) provides and that Fabric lacks, plus Fabric-port-only resources; copied after vendoring.
+EXTRA_RESOURCES = os.path.join(HERE, "extra-resources")
 
 
 def bump(k):
@@ -138,13 +137,10 @@ def main():
                     json.dump(j, fh, indent=2)
                     fh.write("\n")
                 bump("files changed")
-    for rel, content in EXTRA_FILES.items():
-        path = os.path.join(OUT, rel)
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as fh:
-            json.dump(content, fh, indent=2)
-            fh.write("\n")
-        bump("extra files")
+    copy_tree(EXTRA_RESOURCES, OUT)
+    for root, _, files in os.walk(EXTRA_RESOURCES):
+        for _ in files:
+            bump("extra files")
     for k in sorted(stats):
         print(f"{stats[k]:6d}  {k}")
 
