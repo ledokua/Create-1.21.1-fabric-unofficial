@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
-import com.simibubi.create.compat.jei.ConversionRecipe;
+import com.simibubi.create.compat.recipeViewer.ConversionRecipe;
 import com.simibubi.create.content.equipment.sandPaper.SandPaperPolishingRecipe;
 import com.simibubi.create.content.equipment.toolbox.ToolboxDyeingRecipe;
 import com.simibubi.create.content.fluids.transfer.EmptyingRecipe;

@@ -87,6 +87,9 @@ dependencies {
     modCompileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-fabric-api:${project.cc_tweaked_version}"
     modCompileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-core-api:${project.cc_tweaked_version}"
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}" // config screen entrypoint (compat/modmenu)
+    modCompileOnly "dev.emi:emi-fabric:${project.emi_version}:api" // native EMI recipe viewer plugin (compat/emi)
+    if (project.hasProperty("withEmi")) // ./gradlew runClient -PwithEmi
+        modLocalRuntime "dev.emi:emi-fabric:${project.emi_version}"
     modCompileOnly("maven.modrinth:trinkets:${project.trinkets_version}") { transitive = false } // goggles/backtank in trinket slots (compat/trinkets)
     modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
     modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"

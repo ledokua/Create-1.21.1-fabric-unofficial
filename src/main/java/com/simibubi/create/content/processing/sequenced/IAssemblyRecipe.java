@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
+import com.simibubi.create.compat.recipeViewer.category.sequencedAssembly.SequencedAssemblySubCategory;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Ingredient;
