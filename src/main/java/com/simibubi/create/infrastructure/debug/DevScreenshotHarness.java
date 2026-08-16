@@ -76,7 +76,9 @@ public final class DevScreenshotHarness {
 				case 5 -> { if (tick >= 60) { screenshot(mc, "contraption"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get()); phase = 6; tick = 0; } }
 				case 6 -> { if (tick >= 30) { screenshot(mc, "creative-base"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.PALETTES_CREATIVE_TAB.get()); phase = 7; tick = 0; } }
 				case 7 -> { if (tick >= 30) { screenshot(mc, "creative-palettes"); mc.setScreen(new net.createmod.catnip.config.ui.BaseConfigScreen(null, Create.ID)); phase = 8; tick = 0; } }
-				case 8 -> { if (tick >= 30) { screenshot(mc, "config"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
+				case 8 -> { if (tick >= 30) { screenshot(mc, "config"); if (com.simibubi.create.compat.Mods.JEI.isLoaded() && JeiHarness.showRecipes(mc)) { phase = 9; } else { mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; } tick = 0; } }
+				case 9 -> { if (tick >= 40) { screenshot(mc, "jei-mixing"); JeiHarness.next(mc); phase = 10; tick = 0; } }
+				case 10 -> { if (tick >= 40) { screenshot(mc, "jei-next"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
 				case 3 -> {
 					if (tick == 60) screenshot(mc, "ponder-1");
 					if (tick == 160) screenshot(mc, "ponder-2");
@@ -134,6 +136,29 @@ public final class DevScreenshotHarness {
 		if (id == null)
 			return AllBlocks.COGWHEEL.asStack();
 		return new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(id)));
+	}
+
+	/** Separate class so JEI classes only load when JEI is present. */
+	private static final class JeiHarness {
+		static boolean showRecipes(Minecraft mc) {
+			mezz.jei.api.runtime.IJeiRuntime runtime = com.simibubi.create.compat.jei.CreateJEI.runtime;
+			if (runtime == null)
+				return false;
+			runtime.getRecipesGui().show(runtime.getJeiHelpers().getFocusFactory().createFocus(mezz.jei.api.recipe.RecipeIngredientRole.OUTPUT,
+				mezz.jei.api.constants.VanillaTypes.ITEM_STACK, AllItems.ANDESITE_ALLOY.asStack()));
+			return true;
+		}
+
+		static void next(Minecraft mc) {
+			mezz.jei.api.runtime.IJeiRuntime runtime = com.simibubi.create.compat.jei.CreateJEI.runtime;
+			java.util.List<mezz.jei.api.recipe.RecipeType<?>> types = new java.util.ArrayList<>();
+			runtime.getRecipeManager().createRecipeCategoryLookup().get().forEach(c -> {
+				if (c.getRecipeType().getUid().getNamespace().equals(Create.ID))
+					types.add(c.getRecipeType());
+			});
+			Create.LOGGER.info("[harness] JEI create categories: {}", types.stream().map(t -> t.getUid().getPath()).toList());
+			runtime.getRecipesGui().showTypes(types);
+		}
 	}
 
 	private static void openCreativeTab(Minecraft mc, net.minecraft.world.item.CreativeModeTab tab) {

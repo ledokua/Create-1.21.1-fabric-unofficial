@@ -82,6 +82,30 @@ public final class RegistrateClientHooks {
 					return view == null || pos == null ? ext.getTintColor() : ext.getTintColor(state, view, pos);
 				}
 			});
+		// Component-aware rendering (potion fluids): Fabric's variant renderer feeds JEI/GUIs; NeoForge shape is FluidStack-based.
+		net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering.register(fluid, new net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRenderHandler() {
+			private com.simibubi.create.foundation.transfer.fluid.FluidStack stack(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant variant) {
+				return new com.simibubi.create.foundation.transfer.fluid.FluidStack(variant.getFluid().builtInRegistryHolder(), 1000, variant.getComponents());
+			}
+
+			@Override
+			public net.minecraft.client.renderer.texture.TextureAtlasSprite[] getSprites(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant variant) {
+				com.simibubi.create.foundation.transfer.fluid.FluidStack stack = stack(variant);
+				java.util.function.Function<net.minecraft.resources.ResourceLocation, net.minecraft.client.renderer.texture.TextureAtlasSprite> atlas =
+					net.minecraft.client.Minecraft.getInstance().getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS);
+				return new net.minecraft.client.renderer.texture.TextureAtlasSprite[] { atlas.apply(ext.getStillTexture(stack)), atlas.apply(ext.getFlowingTexture(stack)) };
+			}
+
+			@Override
+			public int getColor(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant variant, @org.jetbrains.annotations.Nullable net.minecraft.world.level.BlockAndTintGetter view, @org.jetbrains.annotations.Nullable net.minecraft.core.BlockPos pos) {
+				return ext.getTintColor(stack(variant));
+			}
+
+			@Override
+			public void appendTooltip(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant variant, java.util.List<net.minecraft.network.chat.Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+				// name line is added by Fabric from FluidVariantAttributes.getName; nothing extra
+			}
+		});
 		if (layer != null)
 			BlockRenderLayerMap.INSTANCE.putFluid(fluid, layer.get());
 	}

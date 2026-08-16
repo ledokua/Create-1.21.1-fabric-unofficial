@@ -208,8 +208,13 @@ Done in Phase 3 so far (all runtime-tested by boot + gametests, client-side ones
   --args="--quickPlaySingleplayer 'New World (1)'"` builds a showcase of Create blocks in the loaded world, saves
   `run/screenshots/create-harness-{overview,goggles,ponder}.png` and quits — the only automated way to eyeball rendering
   (no client gametest API for 1.21.1). Extend the showcase when touching rendering. Options: `CREATE_HARNESS_PONDER=<item id>`
-  picks the Ponder scene; shots: overview, goggles, contraption (spinning bearing rig), creative-base/palettes (creative
-  tab selection still lands on vanilla's first page — TODO switch pages), ponder-1..4.
+  picks the Ponder scene; shots: overview, goggles (overlay on a stressometer), contraption (spinning bearing rig),
+  creative-base/palettes, config, jei-mixing/jei-next (Create's JEI categories), ponder-1..4. It also logs Create items
+  whose baked model is empty and whether SuperByteBuffers of a few models have geometry.
+- Found via the harness so far: HUD layers weren't drawn (no HudRenderCallback), map decoration renderers had no mixin,
+  fluid variants (potion tint in JEI) needed a FluidVariantRenderHandler, Ponder cogs needed the virtual-data rule.
+- Verified: client joins a **dedicated server** cleanly (`online-mode=false` in run/server.properties for the dev player,
+  `--quickPlayMultiplayer localhost:25565`).
 - **Virtual model data**: on Fabric only Flywheel's `VirtualBlockGetter` (SuperByteBuffer baking) counts as "virtual"
   (`FabricModelBridge.isVirtualLevel`); Ponder levels/contraption worlds must not, or bracketed kinetic blocks draw twice.
   User reported "moving parts doubled in Ponder" on the build *before* this fix — re-check with them; if it persists, find
