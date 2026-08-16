@@ -3,7 +3,6 @@ package com.simibubi.create.foundation.event.bus;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -67,42 +66,120 @@ public class EventBus implements IEventBus {
 		boolean isStatic = target instanceof Class<?>;
 		Class<?> clazz = isStatic ? (Class<?>) target : target.getClass();
 		int found = 0;
-		for (Method method : clazz.getDeclaredMethods()) {
-			SubscribeEvent annotation = method.getAnnotation(SubscribeEvent.class);
-			if (annotation == null)
+		for (HandlerMethod hm : scanHandlers(clazz)) {
+			if (hm.isStatic() != isStatic)
 				continue;
-			if (Modifier.isStatic(method.getModifiers()) != isStatic)
-				continue;
-			if (method.getParameterCount() != 1 || !Event.class.isAssignableFrom(method.getParameterTypes()[0]))
-				throw new IllegalArgumentException("@SubscribeEvent method " + method + " must take exactly one Event parameter");
+			Class<?> paramType;
+			try {
+				paramType = Class.forName(hm.paramType(), false, clazz.getClassLoader());
+			} catch (ClassNotFoundException e) {
+				throw new IllegalArgumentException("@SubscribeEvent method " + clazz.getName() + "#" + hm.name() + " has an unloadable event parameter " + hm.paramType(), e);
+			}
+			if (!Event.class.isAssignableFrom(paramType))
+				throw new IllegalArgumentException("@SubscribeEvent method " + clazz.getName() + "#" + hm.name() + " must take exactly one Event parameter");
 			@SuppressWarnings("unchecked")
-			Class<? extends Event> eventType = (Class<? extends Event>) method.getParameterTypes()[0];
-			method.setAccessible(true);
+			Class<? extends Event> eventType = (Class<? extends Event>) paramType;
 			MethodHandle handle;
 			try {
-				handle = MethodHandles.lookup().unreflect(method);
-				if (!isStatic)
-					handle = handle.bindTo(target);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException("Cannot access @SubscribeEvent method " + method, e);
+				MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(clazz, MethodHandles.lookup());
+				java.lang.invoke.MethodType type = java.lang.invoke.MethodType.methodType(void.class, paramType);
+				handle = isStatic ? lookup.findStatic(clazz, hm.name(), type) : lookup.findVirtual(clazz, hm.name(), type).bindTo(target);
+			} catch (ReflectiveOperationException e) {
+				throw new RuntimeException("Cannot access @SubscribeEvent method " + clazz.getName() + "#" + hm.name(), e);
 			}
 			MethodHandle finalHandle = handle;
+			String description = clazz.getName() + "#" + hm.name();
 			Consumer<Event> consumer = event -> {
 				try {
 					finalHandle.invoke(event);
 				} catch (RuntimeException | Error e) {
 					throw e;
 				} catch (Throwable t) {
-					throw new RuntimeException("Exception in event handler " + method, t);
+					throw new RuntimeException("Exception in event handler " + description, t);
 				}
 			};
 			listeners.computeIfAbsent(eventType, k -> new ArrayList<>())
-				.add(new Listener(annotation.priority(), annotation.receiveCanceled(), consumer, target, seq++));
+				.add(new Listener(hm.priority(), hm.receiveCanceled(), consumer, target, seq++));
 			found++;
 		}
 		if (found == 0)
 			Create.LOGGER.warn("Registered {} on the event bus but it has no @SubscribeEvent {} methods", clazz.getName(), isStatic ? "static" : "instance");
 		dispatchCache.clear();
+	}
+
+	private record HandlerMethod(String name, String paramType, boolean isStatic, EventPriority priority, boolean receiveCanceled) {}
+
+	/**
+	 * Finds {@code @SubscribeEvent} methods by reading the class file instead of {@code getDeclaredMethods()}: reflection
+	 * resolves every method's parameter types, and on a dedicated server that trips over the leftover lambda bodies of
+	 * Fabric-stripped {@code @Environment(CLIENT)} handlers (upstream's common classes mix in client-only handlers).
+	 */
+	private static List<HandlerMethod> scanHandlers(Class<?> clazz) {
+		List<HandlerMethod> result = new ArrayList<>();
+		String resource = clazz.getName().replace('.', '/') + ".class";
+		try (java.io.InputStream in = clazz.getClassLoader().getResourceAsStream(resource)) {
+			if (in == null)
+				throw new IllegalStateException("Cannot read class file for " + clazz.getName());
+			org.objectweb.asm.ClassReader reader = new org.objectweb.asm.ClassReader(in.readAllBytes());
+			String annotationDesc = org.objectweb.asm.Type.getDescriptor(SubscribeEvent.class);
+			String envDesc = org.objectweb.asm.Type.getDescriptor(net.fabricmc.api.Environment.class);
+			String currentEnv = net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType().name();
+			reader.accept(new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+				@Override
+				public org.objectweb.asm.MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+					org.objectweb.asm.Type[] args = org.objectweb.asm.Type.getArgumentTypes(descriptor);
+					boolean isStatic = (access & org.objectweb.asm.Opcodes.ACC_STATIC) != 0;
+					return new org.objectweb.asm.MethodVisitor(org.objectweb.asm.Opcodes.ASM9) {
+						boolean subscribe;
+						boolean strippedForEnv;
+						EventPriority priority = EventPriority.NORMAL;
+						boolean receiveCanceled;
+
+						@Override
+						public org.objectweb.asm.AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+							if (desc.equals(envDesc)) {
+								// Fabric strips @Environment methods of the other side at class load; mirror that here
+								return new org.objectweb.asm.AnnotationVisitor(org.objectweb.asm.Opcodes.ASM9) {
+									@Override
+									public void visitEnum(String n, String d, String value) {
+										if (!value.equals(currentEnv))
+											strippedForEnv = true;
+									}
+								};
+							}
+							if (!desc.equals(annotationDesc))
+								return null;
+							subscribe = true;
+							return new org.objectweb.asm.AnnotationVisitor(org.objectweb.asm.Opcodes.ASM9) {
+								@Override
+								public void visitEnum(String n, String d, String value) {
+									if (n.equals("priority"))
+										priority = EventPriority.valueOf(value);
+								}
+
+								@Override
+								public void visit(String n, Object value) {
+									if (n.equals("receiveCanceled"))
+										receiveCanceled = (Boolean) value;
+								}
+							};
+						}
+
+						@Override
+						public void visitEnd() {
+							if (!subscribe || strippedForEnv)
+								return;
+							if (args.length != 1)
+								throw new IllegalArgumentException("@SubscribeEvent method " + clazz.getName() + "#" + name + " must take exactly one Event parameter");
+							result.add(new HandlerMethod(name, args[0].getClassName(), isStatic, priority, receiveCanceled));
+						}
+					};
+				}
+			}, org.objectweb.asm.ClassReader.SKIP_CODE | org.objectweb.asm.ClassReader.SKIP_DEBUG | org.objectweb.asm.ClassReader.SKIP_FRAMES);
+		} catch (java.io.IOException e) {
+			throw new IllegalStateException("Cannot read class file for " + clazz.getName(), e);
+		}
+		return result;
 	}
 
 	@Override

@@ -68,14 +68,6 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 			return id;
 		});
 
-	static {
-		register(createId("empty"), EmptyFluidIngredient.TYPE, neoforgeAlias("empty"));
-		register(createId("single"), SingleFluidIngredient.TYPE, neoforgeAlias("single"));
-		register(createId("tag"), TagFluidIngredient.TYPE, neoforgeAlias("tag"));
-		register(createId("compound"), CompoundFluidIngredient.TYPE, neoforgeAlias("compound"));
-		register(createId("components"), DataComponentFluidIngredient.TYPE, neoforgeAlias("components"));
-	}
-
 	// ---- codecs ----
 
 	private static final MapCodec<FluidIngredient> SINGLE_OR_TAG_CODEC = MapCodec.recursive("FluidIngredient.SINGLE_OR_TAG_CODEC", self -> singleOrTagCodec());
@@ -90,6 +82,16 @@ public abstract class FluidIngredient implements Predicate<FluidStack> {
 
 	public static final Codec<FluidIngredient> CODEC = codec(true);
 	public static final Codec<FluidIngredient> CODEC_NON_EMPTY = codec(false);
+
+	// after the codecs: the built-in types' own codecs reference LIST_CODEC_NON_EMPTY etc. during their class init
+	static {
+		register(createId("empty"), EmptyFluidIngredient.TYPE, neoforgeAlias("empty"));
+		register(createId("single"), SingleFluidIngredient.TYPE, neoforgeAlias("single"));
+		register(createId("tag"), TagFluidIngredient.TYPE, neoforgeAlias("tag"));
+		register(createId("compound"), CompoundFluidIngredient.TYPE, neoforgeAlias("compound"));
+		register(createId("components"), DataComponentFluidIngredient.TYPE, neoforgeAlias("components"));
+	}
+
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, FluidIngredient> STREAM_CODEC = new StreamCodec<>() {
 		private static final StreamCodec<RegistryFriendlyByteBuf, List<FluidStack>> FLUID_LIST_CODEC = FluidStack.STREAM_CODEC.apply(ByteBufCodecs.collection(NonNullList::createWithCapacity));

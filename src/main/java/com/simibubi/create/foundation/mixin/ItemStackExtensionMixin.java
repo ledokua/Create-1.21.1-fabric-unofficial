@@ -2,7 +2,7 @@ package com.simibubi.create.foundation.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 
-import com.simibubi.create.foundation.mixin.extension.ItemStackExtension;
+import com.simibubi.create.foundation.extension.ItemStackExtension;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

@@ -42,7 +42,7 @@ public class ModelSwapper {
 	}
 
 	public void registerListeners(IEventBus modEventBus) {
-		modEventBus.addListener(this::onModelBake);
+		modEventBus.addListener(ModelEvent.ModifyBakingResult.class, this::onModelBake);
 	}
 
 	public static <T extends BakedModel> void swapModels(Map<ModelResourceLocation, BakedModel> modelRegistry,

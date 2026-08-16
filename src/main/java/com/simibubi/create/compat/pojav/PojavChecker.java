@@ -59,7 +59,7 @@ public class PojavChecker {
 		if (!IS_PRESENT)
 			return;
 
-		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener(PojavChecker::onScreenInit);
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener(com.simibubi.create.foundation.event.client.ScreenEvent.Init.Post.class, PojavChecker::onScreenInit);
 	}
 
 	public static void onScreenInit(ScreenEvent.Init.Post event) {

@@ -16,6 +16,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.simibubi.create.foundation.event.DropCapture;
 import com.simibubi.create.foundation.event.bus.CreateEventBus;
 import com.simibubi.create.foundation.event.entity.living.LivingBreatheEvent;
 import com.simibubi.create.foundation.event.entity.living.LivingDropsEvent;

@@ -6,7 +6,6 @@ import com.simibubi.create.foundation.event.entity.EntityJoinLevelEvent;
 import com.simibubi.create.foundation.event.entity.EntityLeaveLevelEvent;
 import com.simibubi.create.foundation.event.entity.living.LivingEquipmentChangeEvent;
 import com.simibubi.create.foundation.event.entity.player.AttackEntityEvent;
-import com.simibubi.create.foundation.event.entity.player.ItemTooltipEvent;
 import com.simibubi.create.foundation.event.entity.player.PlayerEvent;
 import com.simibubi.create.foundation.event.entity.player.PlayerInteractEvent;
 import com.simibubi.create.foundation.event.level.BlockEvent;
@@ -63,6 +62,13 @@ public final class CreateEventHooks {
 
 	private static <T extends com.simibubi.create.foundation.event.bus.Event> T post(T event) {
 		return CreateEventBus.BUS.post(event);
+	}
+
+	/** Posted after registration (NeoForge fires AddPackFindersEvent post-registry); the pack repository mixin drains CreatePackSources. */
+	public static void postPackFinders() {
+		post(new AddPackFindersEvent(PackType.SERVER_DATA));
+		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+			post(new AddPackFindersEvent(PackType.CLIENT_RESOURCES));
 	}
 
 	public static void register() {
@@ -124,19 +130,7 @@ public final class CreateEventHooks {
 			}
 		});
 
-		// Pack finders: upstream's handler runs once per pack type at startup; the pack repository mixin drains CreatePackSources.
-		post(new AddPackFindersEvent(PackType.SERVER_DATA));
-		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
-			post(new AddPackFindersEvent(PackType.CLIENT_RESOURCES));
 
-		// Tooltips are client-only in practice, but the callback lives in fabric-item-api (common)
-		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
-			registerTooltipHook();
-	}
-
-	private static void registerTooltipHook() {
-		net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, flag, lines) ->
-			post(new ItemTooltipEvent(stack, net.minecraft.client.Minecraft.getInstance().player, lines, flag, context)));
 	}
 
 	// ---- interaction adapters ----

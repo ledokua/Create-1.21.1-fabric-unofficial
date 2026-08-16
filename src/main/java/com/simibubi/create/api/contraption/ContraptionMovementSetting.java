@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-import com.simibubi.create.foundation.mixin.extension.IBlockExtension;
+import com.simibubi.create.foundation.extension.IBlockExtension;
 
 /**
  * Defines whether a block is movable by contraptions.

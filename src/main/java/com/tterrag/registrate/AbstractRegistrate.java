@@ -198,7 +198,9 @@ public abstract class AbstractRegistrate<S extends AbstractRegistrate<S>> {
 		}
 		Registration<?, ?> previous = registrations.computeIfAbsent(registryKey, k -> new LinkedHashMap<>()).put(name, registration);
 		if (previous != null) {
-			throw new IllegalArgumentException("Duplicate registration '" + name + "' in registry " + registryKey.location());
+			// Upstream Registrate silently overwrites (Table#put), dropping the earlier registration and its callbacks;
+			// Create relies on it (e.g. WindowGen re-adds a block's item).
+			allEntries.get(registryKey).remove(previous.entry);
 		}
 		allEntries.computeIfAbsent(registryKey, k -> new ArrayList<>()).add(entry);
 		return entry;

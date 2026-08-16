@@ -34,7 +34,7 @@ public class TagProviderImpl<K, V> implements SimpleRegistry.Provider<K, V> {
 
 	@Override
 	public void onRegister(Runnable invalidate) {
-		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener((TagsUpdatedEvent event) -> {
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener(TagsUpdatedEvent.class, (TagsUpdatedEvent event) -> {
 			if (event.shouldUpdateStaticData()) {
 				invalidate.run();
 			}

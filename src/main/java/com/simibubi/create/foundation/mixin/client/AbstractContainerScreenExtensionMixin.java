@@ -3,7 +3,7 @@ package com.simibubi.create.foundation.mixin.client;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-import com.simibubi.create.foundation.mixin.extension.AbstractContainerScreenExtension;
+import com.simibubi.create.foundation.extension.AbstractContainerScreenExtension;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 

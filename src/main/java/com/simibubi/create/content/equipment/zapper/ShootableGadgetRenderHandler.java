@@ -66,7 +66,7 @@ public abstract class ShootableGadgetRenderHandler {
 	protected abstract void transformHand(PoseStack ms, float flip, float equipProgress, float recoil, float pt);
 
 	public void registerListeners(IEventBus bus) {
-		bus.addListener(this::onRenderPlayerHand);
+		bus.addListener(RenderHandEvent.class, this::onRenderPlayerHand);
 	}
 
 	protected void onRenderPlayerHand(RenderHandEvent event) {

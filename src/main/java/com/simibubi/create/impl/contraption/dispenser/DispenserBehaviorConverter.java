@@ -62,7 +62,7 @@ public enum DispenserBehaviorConverter implements SimpleRegistry.Provider<Item, 
 	@Override
 	public void onRegister(Runnable invalidate) {
 		// invalidate if the blacklist tag might've changed
-		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener((TagsUpdatedEvent event) -> {
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener(TagsUpdatedEvent.class, (TagsUpdatedEvent event) -> {
 			if (event.shouldUpdateStaticData()) {
 				invalidate.run();
 			}

@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.simibubi.create.CreateClient;
 import com.simibubi.create.api.behaviour.display.DisplaySource;
 import com.simibubi.create.api.behaviour.display.DisplayTarget;
 import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageType;
@@ -22,7 +21,6 @@ import com.simibubi.create.api.registry.CreateRegistries;
 import com.simibubi.create.api.registry.registrate.SimpleBuilder;
 import com.simibubi.create.content.decoration.encasing.CasingConnectivity;
 import com.simibubi.create.content.fluids.VirtualFluid;
-import com.simibubi.create.foundation.block.connected.CTModel;
 import com.simibubi.create.foundation.block.connected.ConnectedTextureBehaviour;
 import com.simibubi.create.foundation.item.TooltipModifier;
 import com.tterrag.registrate.AbstractRegistrate;
@@ -36,7 +34,6 @@ import com.tterrag.registrate.util.nullness.NonNullFunction;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -289,30 +286,22 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 		return entry -> CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> registerCTBehviour(entry, behavior));
 	}
 
-	@Environment(EnvType.CLIENT)
-	private static <T extends Block> void registerCasingConnectivity(T entry,
-																	 BiConsumer<T, CasingConnectivity> consumer) {
-		consumer.accept(entry, CreateClient.CASING_CONNECTIVITY);
+	// Client-only bodies live in CreateRegistrateClient: lambdas inside @Environment(CLIENT) methods compile to
+	// unannotated synthetic methods that Fabric can't strip, and their BakedModel/CTModel references would then
+	// be verified (= loaded) on a dedicated server.
+	private static <T extends Block> void registerCasingConnectivity(T entry, BiConsumer<T, CasingConnectivity> consumer) {
+		CreateRegistrateClient.registerCasingConnectivity(entry, consumer);
 	}
 
-	@Environment(EnvType.CLIENT)
-	private static void registerBlockModel(Block entry,
-										   Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
-		CreateClient.MODEL_SWAPPER.getCustomBlockModels()
-			.register(RegisteredObjectsHelper.getKeyOrThrow(entry), func.get());
+	private static void registerBlockModel(Block entry, Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
+		CreateRegistrateClient.registerBlockModel(entry, func);
 	}
 
-	@Environment(EnvType.CLIENT)
-	private static void registerItemModel(Item entry,
-										  Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
-		CreateClient.MODEL_SWAPPER.getCustomItemModels()
-			.register(RegisteredObjectsHelper.getKeyOrThrow(entry), func.get());
+	private static void registerItemModel(Item entry, Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
+		CreateRegistrateClient.registerItemModel(entry, func);
 	}
 
-	@Environment(EnvType.CLIENT)
 	private static void registerCTBehviour(Block entry, Supplier<ConnectedTextureBehaviour> behaviorSupplier) {
-		ConnectedTextureBehaviour behavior = behaviorSupplier.get();
-		CreateClient.MODEL_SWAPPER.getCustomBlockModels()
-			.register(RegisteredObjectsHelper.getKeyOrThrow(entry), model -> new CTModel(model, behavior));
+		CreateRegistrateClient.registerCTBehviour(entry, behaviorSupplier);
 	}
 }

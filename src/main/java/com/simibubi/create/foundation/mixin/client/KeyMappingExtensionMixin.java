@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.simibubi.create.foundation.mixin.extension.KeyMappingExtension;
+import com.simibubi.create.foundation.extension.KeyMappingExtension;
 
 import net.minecraft.client.KeyMapping;
 

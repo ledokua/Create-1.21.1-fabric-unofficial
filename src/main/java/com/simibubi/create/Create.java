@@ -110,6 +110,7 @@ public class Create implements ModInitializer {
 		REGISTRATE.register();
 		onRegister();
 		CreateEventBus.BUS.post(new com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent());
+		com.simibubi.create.foundation.event.CreateEventHooks.postPackFinders();
 		// FMLCommonSetupEvent: upstream's own handler is init(); other subscribers listen for it on the bus.
 		init();
 		CreateEventBus.BUS.post(new com.simibubi.create.foundation.event.lifecycle.FMLCommonSetupEvent());

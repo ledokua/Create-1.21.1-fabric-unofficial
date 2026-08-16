@@ -24,7 +24,7 @@ public enum MountedItemStorageFallbackProvider implements SimpleRegistry.Provide
 
 	@Override
 	public void onRegister(Runnable invalidate) {
-		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener((TagsUpdatedEvent event) -> {
+		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener(TagsUpdatedEvent.class, (TagsUpdatedEvent event) -> {
 			if (event.shouldUpdateStaticData()) {
 				invalidate.run();
 			}

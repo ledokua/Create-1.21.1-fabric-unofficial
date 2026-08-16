@@ -87,6 +87,10 @@ public final class CreateClientEventHooks {
 		CoreShaderRegistrationCallback.EVENT.register(context ->
 			post(new RegisterShadersEvent(Minecraft.getInstance().getResourceManager(), context)));
 
+		// ---- tooltips ----
+		net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, flag, lines) ->
+			post(new com.simibubi.create.foundation.event.entity.player.ItemTooltipEvent(stack, Minecraft.getInstance().player, lines, flag, context)));
+
 		// ---- screens ----
 		ScreenEvents.AFTER_INIT.register((mc, screen, scaledWidth, scaledHeight) -> {
 			java.util.List<GuiEventListener> listeners = new java.util.ArrayList<>(screen.children());

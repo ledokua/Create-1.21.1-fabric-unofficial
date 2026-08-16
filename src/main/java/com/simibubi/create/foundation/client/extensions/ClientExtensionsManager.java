@@ -10,7 +10,7 @@ import net.minecraft.world.level.material.Fluid;
 /**
  * Registry behind {@code IClient*Extensions.of(...)}. Filled at client init by walking Create's registered
  * items/blocks/fluids and calling their {@code initializeClient} (interface-injected — see
- * {@code foundation/mixin/extension}); upstream gets the same from NeoForge's item/block extension points.
+ * {@code foundation/extension}); upstream gets the same from NeoForge's item/block extension points.
  * The Fabric-side hookups that *consume* these (BuiltinItemRendererRegistry, arm-pose/armor mixins,
  * break-particle mixins) are Phase 3.
  */

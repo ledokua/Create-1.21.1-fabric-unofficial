@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.simibubi.create.foundation.mixin.extension.BlockEntityExtension;
+import com.simibubi.create.foundation.extension.BlockEntityExtension;
 import com.simibubi.create.foundation.model.data.ModelData;
 
 import net.fabricmc.fabric.api.blockview.v2.RenderDataBlockEntity;

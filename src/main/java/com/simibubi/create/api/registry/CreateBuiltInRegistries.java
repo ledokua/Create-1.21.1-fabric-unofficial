@@ -30,6 +30,9 @@ import net.minecraft.resources.ResourceKey;
  * @see CreateRegistries
  */
 public class CreateBuiltInRegistries {
+	// declared first: the registry fields below add to it during class init
+	private static final java.util.List<Runnable> BAKE_CALLBACKS = new java.util.ArrayList<>();
+
 	public static final Registry<ArmInteractionPointType> ARM_INTERACTION_POINT_TYPE = simpleWithFreezeCallback(CreateRegistries.ARM_INTERACTION_POINT_TYPE, ArmInteractionPointType::init);
 	public static final Registry<FanProcessingType> FAN_PROCESSING_TYPE = simpleWithFreezeCallback(CreateRegistries.FAN_PROCESSING_TYPE, FanProcessingTypeRegistry::init);
 	public static final Registry<ItemAttributeType> ITEM_ATTRIBUTE_TYPE = simple(CreateRegistries.ITEM_ATTRIBUTE_TYPE);
@@ -67,8 +70,6 @@ public class CreateBuiltInRegistries {
 		BAKE_CALLBACKS.add(onBakeCallback);
 		return registry;
 	}
-
-	private static final java.util.List<Runnable> BAKE_CALLBACKS = new java.util.ArrayList<>();
 
 	/** Runs the NeoForge {@code onBake} callbacks; called once from {@code Create#init} after registration. */
 	@Internal

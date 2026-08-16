@@ -37,10 +37,10 @@ public final class CreateEventBus {
 			// initialize now: side check passed, and static handlers may rely on the class's static init
 			try {
 				Class.forName(className, true, CreateEventBus.class.getClassLoader());
-			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException(e);
+				BUS.register(clazz);
+			} catch (ClassNotFoundException | RuntimeException | LinkageError e) {
+				throw new IllegalStateException("Failed to register event subscriber " + className + " on side " + env, e);
 			}
-			BUS.register(clazz);
 			count++;
 		}
 		Create.LOGGER.debug("Registered {} event subscriber classes for side {}", count, env);

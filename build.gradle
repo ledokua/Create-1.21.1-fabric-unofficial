@@ -75,16 +75,25 @@ dependencies {
     modCompileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-core-api:${project.cc_tweaked_version}"
 }
 
+// See buildSrc/EnvironmentLambdaStripper: make Fabric strip the lambda bodies of @Environment methods too.
+compileJava.doLast {
+    EnvironmentLambdaStripper.process(destinationDirectory.get().asFile)
+}
+
 processResources {
     inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
     inputs.property "loader_version", project.loader_version
     filteringCharset "UTF-8"
 
+    // Plain token replacement instead of Groovy template expansion: the injected-interfaces block contains
+    // intermediary names with '$' (e.g. class_4970$class_4971) which the template engine would choke on.
     filesMatching("fabric.mod.json") {
-        expand "version": project.version,
-                "minecraft_version": project.minecraft_version,
-                "loader_version": project.loader_version
+        filter { String line ->
+            line.replace('${version}', project.version.toString())
+                .replace('${minecraft_version}', project.minecraft_version.toString())
+                .replace('${loader_version}', project.loader_version.toString())
+        }
     }
 }
 

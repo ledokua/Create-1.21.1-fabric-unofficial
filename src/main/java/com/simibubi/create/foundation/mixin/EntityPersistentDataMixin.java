@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.simibubi.create.foundation.mixin.extension.EntityExtension;
+import com.simibubi.create.foundation.extension.EntityExtension;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
