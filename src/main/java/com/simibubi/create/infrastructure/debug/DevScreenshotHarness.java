@@ -72,7 +72,10 @@ public final class DevScreenshotHarness {
 			switch (phase) {
 				case 0 -> { if (tick >= 40) { build(mc); probeBuffers(mc); phase = 1; tick = 0; } }
 				case 1 -> { if (tick == 5) mc.player.getInventory().selected = 0; if (tick >= 140) { screenshot(mc, "overview"); teleport(mc, 8.5, 150.0, 1.5, 90, 22, false); phase = 2; tick = 0; } }
-				case 2 -> { if (tick >= 60) { screenshot(mc, "goggles"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
+				case 2 -> { if (tick >= 60) { screenshot(mc, "goggles"); teleport(mc, 22.5, 154.5, 3.5, 0, 35, false); phase = 5; tick = 0; } }
+				case 5 -> { if (tick >= 60) { screenshot(mc, "contraption"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get()); phase = 6; tick = 0; } }
+				case 6 -> { if (tick >= 30) { screenshot(mc, "creative-base"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.PALETTES_CREATIVE_TAB.get()); phase = 7; tick = 0; } }
+				case 7 -> { if (tick >= 30) { screenshot(mc, "creative-palettes"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
 				case 3 -> {
 					if (tick == 60) screenshot(mc, "ponder-1");
 					if (tick == 160) screenshot(mc, "ponder-2");
@@ -109,6 +112,13 @@ public final class DevScreenshotHarness {
 		if (id == null)
 			return AllBlocks.COGWHEEL.asStack();
 		return new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(id)));
+	}
+
+	private static void openCreativeTab(Minecraft mc, net.minecraft.world.item.CreativeModeTab tab) {
+		net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen screen =
+			new net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen(mc.player, mc.player.connection.enabledFeatures(), true);
+		mc.setScreen(screen);
+		((com.simibubi.create.foundation.mixin.accessor.CreativeModeInventoryScreenAccessor) screen).create$selectTab(tab);
 	}
 
 	private static void screenshot(Minecraft mc, String name) {
@@ -202,7 +212,14 @@ public final class DevScreenshotHarness {
 			place.accept(new Object[] { 17, 0, 9, AllBlocks.STOCK_TICKER.getDefaultState() });
 			place.accept(new Object[] { 19, 0, 9, AllBlocks.ROSE_QUARTZ_LAMP.getDefaultState() });
 			place.accept(new Object[] { 20, 0, 9, AllBlocks.REDSTONE_LINK.getDefaultState() });
-			place.accept(new Object[] { 22, 0, 9, AllBlocks.MECHANICAL_BEARING.getDefaultState() });
+			// spinning bearing contraption (motor under the floor → bearing → planks + cog + glass + casing)
+			place.accept(new Object[] { 22, -1, 9, AllBlocks.CREATIVE_MOTOR.getDefaultState().setValue(BlockStateProperties.FACING, Direction.UP) });
+			place.accept(new Object[] { 22, 0, 9, AllBlocks.MECHANICAL_BEARING.getDefaultState().setValue(BlockStateProperties.FACING, Direction.UP) });
+			place.accept(new Object[] { 22, 1, 9, Blocks.OAK_PLANKS.defaultBlockState() });
+			place.accept(new Object[] { 23, 1, 9, AllBlocks.COGWHEEL.getDefaultState() });
+			place.accept(new Object[] { 21, 1, 9, AllPaletteBlocks.FRAMED_GLASS.getDefaultState() });
+			place.accept(new Object[] { 22, 1, 10, AllBlocks.ANDESITE_CASING.getDefaultState() });
+			place.accept(new Object[] { 22, 2, 9, AllBlocks.SHAFT.getDefaultState() });
 			// block entity data
 			if (level.getBlockEntity(BASE.offset(14, 0, 5)) instanceof CopycatBlockEntity copycat)
 				copycat.setMaterial(Blocks.SPRUCE_PLANKS.defaultBlockState());

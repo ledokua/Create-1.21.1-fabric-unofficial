@@ -207,7 +207,13 @@ Done in Phase 3 so far (all runtime-tested by boot + gametests, client-side ones
 - **Screenshot harness** (`infrastructure/debug/DevScreenshotHarness`): `CREATE_HARNESS=showcase ./gradlew runClient
   --args="--quickPlaySingleplayer 'New World (1)'"` builds a showcase of Create blocks in the loaded world, saves
   `run/screenshots/create-harness-{overview,goggles,ponder}.png` and quits — the only automated way to eyeball rendering
-  (no client gametest API for 1.21.1). Extend the showcase when touching rendering.
+  (no client gametest API for 1.21.1). Extend the showcase when touching rendering. Options: `CREATE_HARNESS_PONDER=<item id>`
+  picks the Ponder scene; shots: overview, goggles, contraption (spinning bearing rig), creative-base/palettes (creative
+  tab selection still lands on vanilla's first page — TODO switch pages), ponder-1..4.
+- **Virtual model data**: on Fabric only Flywheel's `VirtualBlockGetter` (SuperByteBuffer baking) counts as "virtual"
+  (`FabricModelBridge.isVirtualLevel`); Ponder levels/contraption worlds must not, or bracketed kinetic blocks draw twice.
+  User reported "moving parts doubled in Ponder" on the build *before* this fix — re-check with them; if it persists, find
+  which block (harness `CREATE_HARNESS_PONDER=`) and compare static-section vs BE-renderer output.
 - Sodium compat (reflective SpriteUtil), Catnip now comes from the Ponder-Fabric jar (vendored copy removed).
 
 Next (roughly by user impact):
