@@ -43,6 +43,10 @@ repositories {
     maven { url = "https://maven.blamejared.com" } // JEI
     maven { url = "https://maven.squiddev.cc" } // CC: Tweaked
     maven { url = "https://maven.terraformersmc.com/releases" } // Mod Menu
+    exclusiveContent { // Modrinth maven (Sodium for dev-runtime testing only)
+        forRepository { maven { url = "https://api.modrinth.com/maven" } }
+        filter { includeGroup "maven.modrinth" }
+    }
 }
 
 dependencies {
@@ -85,6 +89,8 @@ dependencies {
     // Dev runtime only: exercise the JEI plugin and Mod Menu config screen while testing (not published deps).
     modLocalRuntime "mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}"
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
+    if (project.hasProperty("withSodium")) // ./gradlew runClient -PwithSodium — Sodium has its own FRAPI/lighting paths worth smoke-testing
+        modLocalRuntime "maven.modrinth:sodium:${project.sodium_version}"
 }
 
 // See buildSrc/EnvironmentLambdaStripper: make Fabric strip the lambda bodies of @Environment methods too.
