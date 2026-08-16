@@ -17,7 +17,7 @@ import net.minecraft.world.entity.Entity;
  * {@code NeoForgeData} — the same key NeoForge uses, so worlds moved between loaders keep the data.
  */
 @Mixin(Entity.class)
-public class EntityPersistentDataMixin implements EntityExtension {
+public class EntityPersistentDataMixin implements EntityExtension, com.simibubi.create.foundation.extension.EntityExtension.PersistentDataHolder {
 
 	@Unique
 	private static final String CREATE$PERSISTENT_DATA_KEY = "NeoForgeData";
@@ -25,8 +25,10 @@ public class EntityPersistentDataMixin implements EntityExtension {
 	@Unique
 	private CompoundTag create$persistentData;
 
+	// Deliberately NOT named getPersistentData(): several Fabric mods add an Entity#getPersistentData() of their own via
+	// mixin, and two mixins adding the same method make Mixin skip one of them. The interface default routes here.
 	@Override
-	public CompoundTag getPersistentData() {
+	public CompoundTag create$persistentData() {
 		if (create$persistentData == null)
 			create$persistentData = new CompoundTag();
 		return create$persistentData;

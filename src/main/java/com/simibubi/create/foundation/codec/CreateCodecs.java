@@ -56,7 +56,37 @@ public class CreateCodecs {
 		NeoForgeExtraCodecs.optionalFieldAlwaysWrite(ExtraCodecs.POSITIVE_INT, "amount", 1000).forGetter(SizedFluidIngredient::amount)
 	).apply(instance, (type, ingredient, amount) -> new SizedFluidIngredient(ingredient, amount)));
 
+	/**
+	 * Fabric port: the fluid-ingredient JSON of Create Fabric 0.5.x ({@code {"fluid": id | "fluidTag": tag, "amount": droplets}}),
+	 * still emitted by other Fabric mods' Create integrations (recipes under {@code <mod>:integration/create/...}).
+	 * Amounts are droplets (81000 per bucket) and are converted to mB. Decode-only in spirit; encoding writes the same shape.
+	 */
+	private record LegacyFluidJson(java.util.Optional<net.minecraft.resources.ResourceLocation> fluid, java.util.Optional<net.minecraft.resources.ResourceLocation> fluidTag, int droplets) {}
+
+	public static Codec<SizedFluidIngredient> LEGACY_FABRIC_SIZED_FLUID_INGREDIENT = RecordCodecBuilder.<LegacyFluidJson>create(instance -> instance.group(
+		net.minecraft.resources.ResourceLocation.CODEC.optionalFieldOf("fluid").forGetter(LegacyFluidJson::fluid),
+		net.minecraft.resources.ResourceLocation.CODEC.optionalFieldOf("fluidTag").forGetter(LegacyFluidJson::fluidTag),
+		ExtraCodecs.POSITIVE_INT.optionalFieldOf("amount", 81000).forGetter(LegacyFluidJson::droplets)
+	).apply(instance, LegacyFluidJson::new)).comapFlatMap(json -> {
+		FluidIngredient ingredient;
+		if (json.fluid().isPresent()) {
+			var holder = net.minecraft.core.registries.BuiltInRegistries.FLUID.getHolder(
+				net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.FLUID, json.fluid().get()));
+			if (holder.isEmpty())
+				return DataResult.error(() -> "Unknown fluid " + json.fluid().get());
+			ingredient = FluidIngredient.single(holder.get());
+		} else if (json.fluidTag().isPresent()) {
+			ingredient = FluidIngredient.tag(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.FLUID, json.fluidTag().get()));
+		} else {
+			return DataResult.error(() -> "Legacy fluid ingredient needs 'fluid' or 'fluidTag'");
+		}
+		return DataResult.success(new SizedFluidIngredient(ingredient, Math.max(1, json.droplets() / 81)));
+	}, sized -> new LegacyFluidJson(java.util.Optional.empty(), java.util.Optional.empty(), sized.amount() * 81));
+
 	@ScheduledForRemoval(inVersion = "1.21.1+ Port")
 	@Deprecated(since = "6.0.7", forRemoval = true)
-	public static Codec<SizedFluidIngredient> SIZED_FLUID_INGREDIENT = Codec.withAlternative(FLAT_SIZED_FLUID_INGREDIENT_WITH_TYPE, FluidIngredientOld.CODEC);
+	public static Codec<SizedFluidIngredient> SIZED_FLUID_INGREDIENT = Codec.withAlternative(
+		Codec.withAlternative(FLAT_SIZED_FLUID_INGREDIENT_WITH_TYPE, FluidIngredientOld.CODEC), LEGACY_FABRIC_SIZED_FLUID_INGREDIENT);
+
+
 }

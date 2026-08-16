@@ -59,6 +59,18 @@ public final class FluidStack implements DataComponentHolder {
 		DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(FluidStack::getComponentsPatch))
 		.apply(i, FluidStack::new)));
 
+	/**
+	 * Fabric port: also accept Create Fabric 0.5.x's stack JSON ({@code {"fluid": id, "amount": droplets, "nbt": {...}}}) as
+	 * used by other Fabric mods' Create integrations; droplets → mB, legacy NBT ignored. Encodes the current layout.
+	 */
+	public static final Codec<FluidStack> LEGACY_FABRIC_CODEC = RecordCodecBuilder.create(i -> i.group(
+		FLUID_NON_EMPTY_CODEC.fieldOf("fluid").forGetter(FluidStack::getFluidHolder),
+		ExtraCodecs.POSITIVE_INT.fieldOf("amount").forGetter(s -> s.getAmount() * 81))
+		.apply(i, (holder, droplets) -> new FluidStack(holder, Math.max(1, droplets / 81))));
+
+	/** {@link #CODEC}, falling back to {@link #LEGACY_FABRIC_CODEC} — use for data-driven inputs. */
+	public static final Codec<FluidStack> DATA_CODEC = Codec.withAlternative(CODEC, LEGACY_FABRIC_CODEC);
+
 	/** Like {@link #CODEC} but encodes/decodes {@link #EMPTY} as an empty map. */
 	public static final Codec<FluidStack> OPTIONAL_CODEC = ExtraCodecs.optionalEmptyMap(CODEC)
 		.xmap(o -> o.orElse(EMPTY), s -> s.isEmpty() ? Optional.empty() : Optional.of(s));

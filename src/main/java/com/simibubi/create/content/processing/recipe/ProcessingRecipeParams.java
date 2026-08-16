@@ -44,7 +44,7 @@ public class ProcessingRecipeParams {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Codec.either(CreateCodecs.SIZED_FLUID_INGREDIENT, Ingredient.CODEC).listOf().fieldOf("ingredients")
 				.forGetter(ProcessingRecipeParams::ingredients),
-			Codec.either(FluidStack.CODEC, ProcessingOutput.CODEC).listOf().fieldOf("results")
+			Codec.either(FluidStack.DATA_CODEC, ProcessingOutput.CODEC).listOf().fieldOf("results")
 				.forGetter(ProcessingRecipeParams::results),
 			Codec.INT.optionalFieldOf("processing_time", 0)
 				.forGetter(ProcessingRecipeParams::processingDuration),

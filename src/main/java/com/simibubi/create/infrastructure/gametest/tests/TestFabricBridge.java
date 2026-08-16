@@ -79,4 +79,19 @@ public class TestFabricBridge {
 			helper.assertTrue(com.simibubi.create.foundation.transfer.capability.Capabilities.FluidHandler.BLOCK.find(helper.getLevel(), helper.absolutePos(tank), Direction.UP) != null, "fluid tank exposes no fluid handler");
 		});
 	}
+
+	/** Other Fabric mods' Create integrations use Create Fabric 0.5.x's fluid JSON (droplets, "fluid"/"fluidTag" keys). */
+	@GameTest(template = "empty", timeoutTicks = 20)
+	public static void legacyFabricFluidJson(CreateGameTestHelper helper) {
+		com.google.gson.JsonObject stack = com.google.gson.JsonParser.parseString("{\"amount\":81000,\"fluid\":\"minecraft:water\",\"nbt\":{}}").getAsJsonObject();
+		com.simibubi.create.foundation.transfer.fluid.FluidStack decoded = com.simibubi.create.foundation.transfer.fluid.FluidStack.DATA_CODEC
+			.parse(com.mojang.serialization.JsonOps.INSTANCE, stack).getOrThrow();
+		helper.assertTrue(decoded.getFluid() == net.minecraft.world.level.material.Fluids.WATER && decoded.getAmount() == 1000, "legacy stack decoded to " + decoded);
+		com.google.gson.JsonObject ing = com.google.gson.JsonParser.parseString("{\"amount\":40500,\"fluidTag\":\"c:milk\"}").getAsJsonObject();
+		com.simibubi.create.foundation.transfer.fluid.crafting.SizedFluidIngredient sized = com.simibubi.create.foundation.codec.CreateCodecs.SIZED_FLUID_INGREDIENT
+			.parse(com.mojang.serialization.JsonOps.INSTANCE, ing).getOrThrow();
+		helper.assertTrue(sized.amount() == 500, "legacy ingredient amount " + sized.amount());
+		helper.assertTrue(sized.ingredient().test(new com.simibubi.create.foundation.transfer.fluid.FluidStack(com.simibubi.create.foundation.transfer.fluid.CommonFluids.MILK.get(), 500)), "legacy tag ingredient does not match milk");
+		helper.succeed();
+	}
 }

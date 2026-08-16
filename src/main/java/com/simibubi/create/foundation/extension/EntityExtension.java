@@ -5,9 +5,14 @@ import net.minecraft.nbt.CompoundTag;
 /** Injected onto {@code net.minecraft.world.entity.Entity}; implemented by {@code EntityPersistentDataMixin}. */
 public interface EntityExtension {
 
+	/** Storage duck implemented by EntityPersistentDataMixin (uniquely named to avoid mixin method clashes with other mods). */
+	interface PersistentDataHolder {
+		CompoundTag create$persistentData();
+	}
+
 	/** Mod-private NBT that persists with the entity (NeoForge's {@code Entity#getPersistentData()}). */
 	default CompoundTag getPersistentData() {
-		throw new AbstractMethodError("EntityExtension#getPersistentData not implemented by mixin");
+		return ((PersistentDataHolder) this).create$persistentData();
 	}
 
 	/**
