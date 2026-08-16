@@ -152,7 +152,7 @@ public interface IBlockExtension {
 		return state.isRedstoneConductor(level, pos);
 	}
 
-	/** NeoForge lets blocks decide push reaction per state; null = use the state's configured reaction. TODO(Phase 3): route vanilla's BlockStateBase#getPistonPushReaction through this. */
+	/** NeoForge lets blocks decide push reaction per state; null = use the state's configured reaction (consulted by BlockStateBaseHooksMixin). */
 	@Nullable
 	default net.minecraft.world.level.material.PushReaction getPistonPushReaction(BlockState state) {
 		return null;

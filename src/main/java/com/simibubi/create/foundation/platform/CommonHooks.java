@@ -26,6 +26,25 @@ public final class CommonHooks {
 
 	private static final ThreadLocal<Player> CRAFTING_PLAYER = new ThreadLocal<>();
 
+	/** Client-side registry access provider (set by CreateClient: the current client level's registries), null on servers. */
+	@Nullable
+	public static java.util.function.Supplier<net.minecraft.core.RegistryAccess> clientRegistryAccess;
+
+	/**
+	 * NeoForge's {@code CommonHooks#resolveLookup}: the best available registry lookup for {@code key} — the running
+	 * server's, else the connected client level's, else null.
+	 */
+	@Nullable
+	public static <T> net.minecraft.core.HolderLookup.RegistryLookup<T> resolveLookup(net.minecraft.resources.ResourceKey<? extends net.minecraft.core.Registry<? extends T>> key) {
+		net.minecraft.server.MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+		net.minecraft.core.RegistryAccess access = server != null ? server.registryAccess() : clientRegistryAccess != null ? clientRegistryAccess.get() : null;
+		if (access == null)
+			return null;
+		@SuppressWarnings("unchecked")
+		net.minecraft.resources.ResourceKey<? extends net.minecraft.core.Registry<T>> castKey = (net.minecraft.resources.ResourceKey<? extends net.minecraft.core.Registry<T>>) (net.minecraft.resources.ResourceKey<?>) key;
+		return access.registry(castKey).<net.minecraft.core.HolderLookup.RegistryLookup<T>>map(net.minecraft.core.Registry::asLookup).orElse(null);
+	}
+
 	public static void setCraftingPlayer(@Nullable Player player) {
 		CRAFTING_PLAYER.set(player);
 	}

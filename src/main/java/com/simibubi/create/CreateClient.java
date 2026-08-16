@@ -66,6 +66,7 @@ public class CreateClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		com.simibubi.create.foundation.event.CreateClientEventHooks.register();
+		com.simibubi.create.foundation.platform.CommonHooks.clientRegistryAccess = () -> net.minecraft.client.Minecraft.getInstance().level != null ? net.minecraft.client.Minecraft.getInstance().level.registryAccess() : null;
 		com.simibubi.create.foundation.entity.ComplexSpawnPayload.registerClientReceiver();
 		com.simibubi.create.foundation.datamap.DataMapSyncPayload.registerClientReceiver();
 		// NeoForge: Item/Block/FluidType#initializeClient during client setup

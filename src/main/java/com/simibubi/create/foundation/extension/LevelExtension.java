@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 /** Injected onto {@code BlockGetter} (so it reaches Level, LevelReader and virtual worlds): assorted NeoForge Level patch-methods. */
 public interface LevelExtension {
 	default AuxiliaryLightManager getAuxLightManager(BlockPos pos) {
-		return AuxiliaryLightManager.NONE;
+		return this instanceof net.minecraft.world.level.Level level ? AuxiliaryLightManager.of(level) : AuxiliaryLightManager.NONE;
 	}
 
 	/** NeoForge's {@code Level#invalidateCapabilities(pos)}; Fabric caches re-resolve on their own. No-op. */

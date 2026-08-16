@@ -78,6 +78,7 @@
 		"hooks.BlockStateBaseHooksMixin",
 		"hooks.CustomItemEntityMixin",
 		"hooks.EnchantPowerBonusMixin",
+		"hooks.EnchantmentHelperHooksMixin",
 		"hooks.EntitySoundTypeMixin",
 		"hooks.ExplosionResistanceMixin",
 		"hooks.FireBlockFlammabilityMixin",
