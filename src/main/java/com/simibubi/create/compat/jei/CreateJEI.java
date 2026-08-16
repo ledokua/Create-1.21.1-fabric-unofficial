@@ -394,7 +394,7 @@ public class CreateJEI implements IModPlugin {
 
 			potionFluids.add(PotionFluid.of(1000, potionContents, PotionFluid.BottleType.REGULAR));
 		}
-		registration.addExtraIngredients(CreateJeiIngredientTypes.FLUID_STACK, potionFluids);
+		registration.addExtraIngredients(CreateJeiIngredientTypes.FLUID_STACK, CreateJeiIngredientTypes.toJei(potionFluids));
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})

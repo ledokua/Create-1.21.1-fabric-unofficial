@@ -47,7 +47,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 	}
 
 	public static void consumeRecipes(Consumer<RecipeHolder<FillingRecipe>> consumer, IIngredientManager ingredientManager) {
-		Collection<FluidStack> fluidStacks = ingredientManager.getAllIngredients(CreateJeiIngredientTypes.FLUID_STACK);
+		Collection<FluidStack> fluidStacks = ingredientManager.getAllIngredients(CreateJeiIngredientTypes.FLUID_STACK).stream().map(CreateJeiIngredientTypes::fromJei).toList();
 		for (ItemStack stack : ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK)) {
 			if (PotionFluidHandler.isPotionItem(stack)) {
 				FluidStack fluidFromPotionItem = PotionFluidHandler.getFluidFromPotionItem(stack);

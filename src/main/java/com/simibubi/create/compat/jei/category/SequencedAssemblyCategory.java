@@ -89,7 +89,7 @@ public class SequencedAssemblyCategory extends CreateRecipeCategory<SequencedAss
 				for (SizedFluidIngredient fluidIngredient : sequencedRecipe.getRecipe()
 					.getFluidIngredients())
 					builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
-						.addIngredients(CreateJeiIngredientTypes.FLUID_STACK, Arrays.asList(fluidIngredient.getFluids()));
+						.addIngredients(CreateJeiIngredientTypes.FLUID_STACK, CreateJeiIngredientTypes.toJei(Arrays.asList(fluidIngredient.getFluids())));
 			}
 		}
 	}

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.fluids.potion.PotionFluid.BottleType;
 
+import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.core.component.DataComponents;
@@ -16,9 +17,10 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 
 /* From JEI's Potion item subtype interpreter */
-public class PotionFluidSubtypeInterpreter implements ISubtypeInterpreter<FluidStack> {
+public class PotionFluidSubtypeInterpreter implements ISubtypeInterpreter<IJeiFluidIngredient> {
 	@Override
-	public @Nullable Object getSubtypeData(FluidStack ingredient, UidContext context) {
+	public @Nullable Object getSubtypeData(IJeiFluidIngredient jeiIngredient, UidContext context) {
+		FluidStack ingredient = CreateJeiIngredientTypes.fromJei(jeiIngredient);
 		if (ingredient.getComponentsPatch().isEmpty())
 			return null;
 
@@ -43,7 +45,7 @@ public class PotionFluidSubtypeInterpreter implements ISubtypeInterpreter<FluidS
 	}
 
 	@Override
-	public String getLegacyStringSubtypeInfo(FluidStack ingredient, UidContext context) {
+	public String getLegacyStringSubtypeInfo(IJeiFluidIngredient ingredient, UidContext context) {
 		return "";
 	}
 }

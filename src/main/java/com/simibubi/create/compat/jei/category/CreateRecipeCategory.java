@@ -171,8 +171,8 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 		int amount = ingredient.amount();
 		return builder.addSlot(RecipeIngredientRole.INPUT, x, y)
 			.setBackground(getRenderedSlot(), -1, -1)
-			.addIngredients(CreateJeiIngredientTypes.FLUID_STACK, Arrays.asList(ingredient.getFluids()))
-			.setFluidRenderer(amount, false, 16, 16) // make fluid take up the full slot
+			.addIngredients(CreateJeiIngredientTypes.FLUID_STACK, CreateJeiIngredientTypes.toJei(Arrays.asList(ingredient.getFluids())))
+			.setFluidRenderer(CreateJeiIngredientTypes.toDroplets(amount), false, 16, 16) // make fluid take up the full slot
 			.addTooltipCallback(CreateRecipeCategory::addPotionTooltip);
 	}
 
@@ -180,8 +180,8 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 	public static IRecipeSlotBuilder addFluidSlot(IRecipeLayoutBuilder builder, int x, int y, FluidStack stack) {
 		return builder.addSlot(RecipeIngredientRole.OUTPUT, x, y)
 			.setBackground(getRenderedSlot(), -1, -1)
-			.addIngredient(CreateJeiIngredientTypes.FLUID_STACK, stack)
-			.setFluidRenderer(stack.getAmount(), false, 16, 16) // make fluid take up the full slot
+			.addIngredient(CreateJeiIngredientTypes.FLUID_STACK, CreateJeiIngredientTypes.toJei(stack))
+			.setFluidRenderer(CreateJeiIngredientTypes.toDroplets(stack.getAmount()), false, 16, 16) // make fluid take up the full slot
 			.addTooltipCallback(CreateRecipeCategory::addPotionTooltip);
 	}
 
@@ -189,7 +189,7 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 	// get added to the bottom. This looks terrible for potion fluids, and doesn't match how potion items look.
 	// https://github.com/mezz/JustEnoughItems/issues/3931
 	private static void addPotionTooltip(IRecipeSlotView view, List<Component> tooltip) {
-		Optional<FluidStack> displayed = view.getDisplayedIngredient(CreateJeiIngredientTypes.FLUID_STACK);
+		Optional<FluidStack> displayed = view.getDisplayedIngredient(CreateJeiIngredientTypes.FLUID_STACK).map(CreateJeiIngredientTypes::fromJei);
 		if (displayed.isEmpty())
 			return;
 
