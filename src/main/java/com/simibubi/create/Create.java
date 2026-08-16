@@ -115,6 +115,7 @@ public class Create implements ModInitializer {
 		com.simibubi.create.foundation.event.CreateEventHooks.postPackFinders();
 		// FMLCommonSetupEvent: upstream's own handler is init(); other subscribers listen for it on the bus.
 		init();
+		com.simibubi.create.compat.Mods.TRINKETS.executeIfInstalled(() -> com.simibubi.create.compat.trinkets.TrinketsCompat::init);
 		CreateEventBus.BUS.post(new com.simibubi.create.foundation.event.lifecycle.FMLCommonSetupEvent());
 		if (net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.SERVER)
 			CreateEventBus.BUS.post(new com.simibubi.create.foundation.event.lifecycle.FMLLoadCompleteEvent()); // client posts it after client setup

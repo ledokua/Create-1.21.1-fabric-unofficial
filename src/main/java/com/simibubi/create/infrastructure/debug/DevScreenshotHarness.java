@@ -176,6 +176,16 @@ public final class DevScreenshotHarness {
 		});
 	}
 
+	/** Breaks a block the way a player does (ServerPlayerGameMode#destroyBlock). */
+	private static void breakBlockAsPlayer(Minecraft mc, BlockPos pos) {
+		MinecraftServer server = mc.getSingleplayerServer();
+		server.execute(() -> {
+			ServerPlayer player = server.getPlayerList().getPlayer(mc.player.getUUID());
+			Create.LOGGER.info("[harness] breaking {} at {}", server.overworld().getBlockState(pos).getBlock().getName().getString(), pos);
+			player.gameMode.destroyBlock(pos);
+		});
+	}
+
 	private static void openCreativeTab(Minecraft mc, net.minecraft.world.item.CreativeModeTab tab) {
 		net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen screen =
 			new net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen(mc.player, mc.player.connection.enabledFeatures(), true);
