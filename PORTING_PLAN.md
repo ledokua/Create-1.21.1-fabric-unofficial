@@ -152,7 +152,7 @@ foundation rest + api → infrastructure → content by subsystem), run the mech
 drag in unported subsystems get their imports satisfied by porting the dependency, not by stubbing it —
 stubs are only used for datagen (Phase 0b decision).
 
-## >>> RESUME HERE (Phase 3 well underway: gametests green, JEI loads; next = play-testing + Phase 11/12) <<<
+## >>> RESUME HERE (Phase 3 well underway: gametests green, JEI loads, OBJ models render; next = play-testing + Phase 11/12) <<<
 
 State: `./gradlew runServer` boots; `./gradlew runClient` boots and plays; **`./gradlew runGameTest` runs upstream's 65
 gametests and they all pass** (contraptions, fluids, items, processing, misc, regressions). JEI (dev runtime) loads Create's
@@ -198,7 +198,17 @@ Done in Phase 3 so far (all runtime-tested by boot + gametests, client-side ones
 - Client commands (`foundation/client/command/ClientCommandHandler`, NeoForge semantics; `/create util …`, `/c`).
 - Networking: ComplexSpawnPayload wired, data-map client sync (`DataMapSyncPayload`).
 - Registry aliases (RemapHelper via Fabric `addAlias`, incl. neoforge:/minecraft: milk → create:milk), ModMenu + JEI entrypoints,
-  `c:milk` fluid tag (convert-resources EXTRA_FILES), capabilities: vanilla Container BEs → InvWrapper/SidedInvWrapper.
+  `c:milk` fluid tag (scripts/extra-resources), capabilities: vanilla Container BEs → InvWrapper/SidedInvWrapper.
+- **Model loaders** (`foundation/model/loader/*`): Create's vendored model JSONs use NeoForge's `"loader": "neoforge:obj"`
+  (43 models: trains/bogeys, water wheels, flywheel, chain conveyor, blaze burner, crushing wheel, valve handle) and
+  `neoforge:composite` (7). Reimplemented on Fabric's model-loading API (`CreateModelLoaders`, `ObjModel`, `CompositeModel`,
+  `LoaderBakedModel`), incl. NeoForge's geometry inheritance (a plain child model of an obj model bakes the obj with itself
+  as texture owner — `BlockModelGeometryMixin`). Before this those blocks were invisible in inventory / partly unrendered.
+- **Screenshot harness** (`infrastructure/debug/DevScreenshotHarness`): `CREATE_HARNESS=showcase ./gradlew runClient
+  --args="--quickPlaySingleplayer 'New World (1)'"` builds a showcase of Create blocks in the loaded world, saves
+  `run/screenshots/create-harness-{overview,goggles,ponder}.png` and quits — the only automated way to eyeball rendering
+  (no client gametest API for 1.21.1). Extend the showcase when touching rendering.
+- Sodium compat (reflective SpriteUtil), Catnip now comes from the Ponder-Fabric jar (vendored copy removed).
 
 Next (roughly by user impact):
 1. **Human play-test** of client-side systems the gametests can't see: ponder scenes, goggles overlay, schematics/schematicannon,
@@ -220,6 +230,8 @@ scripts/list-event-subscribers.sh         # regenerate CreateEventSubscribers.CL
 ./gradlew runServer --args="nogui"        # run/ is gitignored; eula.txt already accepted
 ./gradlew runGameTest                     # upstream's 65 gametests (build/run/gameTest); ~1 min incl. gradle
 ./gradlew runClient --args="--quickPlaySingleplayer 'New World (1)'"   # auto-joins a world (client smoke test)
+CREATE_HARNESS=showcase ./gradlew runClient --args="--quickPlaySingleplayer 'New World (1)'"  # + screenshots, then quits
+./gradlew runClient -PwithSodium ...      # dev runtime with Sodium (modrinth maven)
 ```
 
 ## Phases (continued)
