@@ -75,7 +75,8 @@ public final class DevScreenshotHarness {
 				case 2 -> { if (tick >= 60) { screenshot(mc, "goggles"); teleport(mc, 22.5, 154.5, 3.5, 0, 35, false); phase = 5; tick = 0; } }
 				case 5 -> { if (tick >= 60) { screenshot(mc, "contraption"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get()); phase = 6; tick = 0; } }
 				case 6 -> { if (tick >= 30) { screenshot(mc, "creative-base"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.PALETTES_CREATIVE_TAB.get()); phase = 7; tick = 0; } }
-				case 7 -> { if (tick >= 30) { screenshot(mc, "creative-palettes"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
+				case 7 -> { if (tick >= 30) { screenshot(mc, "creative-palettes"); mc.setScreen(new net.createmod.catnip.config.ui.BaseConfigScreen(null, Create.ID)); phase = 8; tick = 0; } }
+				case 8 -> { if (tick >= 30) { screenshot(mc, "config"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
 				case 3 -> {
 					if (tick == 60) screenshot(mc, "ponder-1");
 					if (tick == 160) screenshot(mc, "ponder-2");
