@@ -109,6 +109,7 @@ public class Create implements ModInitializer {
 		// NeoForge: fired once per registry after the mod constructors ran. Here: the Registrate flush.
 		REGISTRATE.register();
 		onRegister();
+		com.simibubi.create.infrastructure.RemapHelper.remap(); // legacy id aliases (Fabric addAlias)
 		CreateEventBus.BUS.post(new com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent());
 		com.simibubi.create.foundation.event.CreateEventHooks.postPackFinders();
 		// FMLCommonSetupEvent: upstream's own handler is init(); other subscribers listen for it on the bus.

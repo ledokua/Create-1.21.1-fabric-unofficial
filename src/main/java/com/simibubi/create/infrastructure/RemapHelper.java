@@ -59,6 +59,7 @@ import com.simibubi.create.foundation.data.recipe.CommonMetal;
 
 import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
@@ -232,9 +233,32 @@ public class RemapHelper {
 	}
 
 	/**
-	 * Fabric port: NeoForge registry aliases ({@code Registry#addAlias}) have no Fabric equivalent, so legacy
-	 * id remapping isn't wired yet. TODO(Phase 13): implement via a Fabric-side alias mechanism (e.g. a
-	 * datafixer or a missing-id hook) using the {@code reMap} table above.
+	 * Registers legacy-id aliases via Fabric's {@code FabricRegistry#addAlias} (interface-injected on every registry).
+	 * Called once after registration ({@link com.simibubi.create.Create#onInitialize()}).
 	 */
-	public static void remap(RegisterEvent event) {}
+	public static void remap() {
+		reMap.forEach((string, resourceLocation) -> {
+			alias(BuiltInRegistries.BLOCK, asResource(string), resourceLocation);
+			alias(BuiltInRegistries.ITEM, asResource(string), resourceLocation);
+		});
+		// (milk: upstream aliases create:milk -> neoforge:milk; here Create's own milk *is* create:milk)
+		alias(BuiltInRegistries.BLOCK_ENTITY_TYPE, asResource("copper_backtank"), AllBlockEntityTypes.BACKTANK.getId());
+		alias(BuiltInRegistries.BLOCK_ENTITY_TYPE, asResource("adjustable_pulley"), AllBlockEntityTypes.ADJUSTABLE_CHAIN_GEARSHIFT.getId());
+	}
+
+	private static void alias(Registry<?> registry, ResourceLocation old, ResourceLocation newId) {
+		if (registry.containsKey(old) || !registry.containsKey(newId))
+			return;
+		try {
+			registry.addAlias(old, newId);
+		} catch (IllegalArgumentException e) {
+			Create.LOGGER.warn("Could not alias {} -> {} in {}: {}", old, newId, registry.key().location(), e.getMessage());
+		}
+	}
+
+	/** @deprecated kept for source compatibility; use {@link #remap()}. */
+	@Deprecated
+	public static void remap(RegisterEvent event) {
+		remap();
+	}
 }

@@ -43,8 +43,7 @@ public class SchematicProcessor extends StructureProcessor {
 		return info;
 	}
 
-	// NeoForge-only StructureProcessor hook; vanilla has no entity processing pass. Fabric: invoked from Create's
-	// own schematic entity placement path (see PORTING_PLAN.md, Phase 2 runtime).
+	// NeoForge-only StructureProcessor hook; on Fabric invoked by StructureTemplateEntityProcessorMixin.
 	@Nullable
 	public StructureTemplate.StructureEntityInfo processEntity(LevelReader world, BlockPos pos, StructureTemplate.StructureEntityInfo rawInfo,
 			StructureTemplate.StructureEntityInfo info, StructurePlaceSettings settings, StructureTemplate template) {
