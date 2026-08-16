@@ -86,3 +86,4 @@ accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
 accessible class net/minecraft/world/level/entity/PersistentEntitySectionManager$Callback
 accessible class net/minecraft/world/level/entity/TransientEntitySectionManager$Callback
 accessible field net/minecraft/client/renderer/entity/ItemRenderer blockEntityRenderer Lnet/minecraft/client/renderer/BlockEntityWithoutLevelRenderer;
+accessible field net/minecraft/client/gui/MapRenderer decorationTextures Lnet/minecraft/client/resources/MapDecorationTextureManager;

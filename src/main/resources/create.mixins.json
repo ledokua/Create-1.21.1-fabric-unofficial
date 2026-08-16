@@ -142,6 +142,7 @@
 		"hooks.client.ItemDecoratorsMixin",
 		"hooks.client.ItemInHandReequipMixin",
 		"hooks.client.ItemRendererTransformMixin",
+		"hooks.client.MapDecorationRenderersMixin",
 		"hooks.client.MultiPlayerGameModeHooksMixin",
 		"hooks.client.PickBlockHooksMixin"
 	],
