@@ -102,8 +102,8 @@ public final class CreateClientEventHooks {
 		});
 
 		// ---- commands ----
-		// TODO(Phase 12): Create's client commands are built on CommandSourceStack (NeoForge's ClientCommandSourceStack);
-		// Fabric client commands use FabricClientCommandSource, so RegisterClientCommandsEvent stays unposted for now.
+		// RegisterClientCommandsEvent is posted per connection by foundation.client.command.ClientCommandHandler
+		// (driven from ClientCommandsMixin when the server's command tree arrives).
 
 		// ---- one-shot registration events (each self-registers into the Fabric API on use) ----
 		post(new RegisterKeyMappingsEvent());

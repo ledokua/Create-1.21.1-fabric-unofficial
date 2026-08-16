@@ -7,9 +7,8 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 
 /**
- * Client command registration. NOTE: Fabric client commands use {@code FabricClientCommandSource}, not
- * {@code CommandSourceStack}, so Create's client command trees need adapting in Phase 13 (commands); until
- * then this is posted with a throwaway dispatcher so handlers run but nothing is registered.
+ * Client command registration, posted by {@code foundation.client.command.ClientCommandHandler} each time the server's
+ * command tree arrives (NeoForge semantics: the dispatcher is a {@code CommandSourceStack} one, run locally).
  */
 public class RegisterClientCommandsEvent extends Event {
 
