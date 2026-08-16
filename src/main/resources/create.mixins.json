@@ -91,7 +91,9 @@
 		"hooks.LightEngineLevelMixin",
 		"hooks.LivingEntityScaffoldingMixin",
 		"hooks.LivingEntitySwingMixin",
+		"hooks.MinecartRailHooksMixin",
 		"hooks.PathTypeHooksMixin",
+		"hooks.RailStateSlopesMixin",
 		"hooks.RedStoneWireConnectionMixin",
 		"hooks.RunningEffectsMixin",
 		"hooks.ServerPlayerGameModeHooksMixin"

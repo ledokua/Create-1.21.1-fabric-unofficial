@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.simibubi.create.foundation.transfer.item.IItemHandler;
+import com.simibubi.create.foundation.transfer.item.IItemHandlerModifiable;
 
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage;
@@ -18,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
  * inventories). Slot-accurate when the storage is {@link SlottedStorage} (the common case); otherwise slots
  * are the storage's views in iteration order and inserts go to the storage as a whole.
  */
-public class StorageItemHandler implements IItemHandler {
+public class StorageItemHandler implements IItemHandlerModifiable {
 
 	public static IItemHandler of(Storage<ItemVariant> storage) {
 		if (storage instanceof ItemHandlerStorage wrapped)
@@ -123,6 +124,29 @@ public class StorageItemHandler implements IItemHandler {
 			return true;
 		try (Transaction tx = Transactions.open()) {
 			return single.insert(ItemVariant.of(stack), 1, tx) > 0;
+		}
+	}
+
+	/**
+	 * Fabric storages have no "set" primitive; emulate NeoForge's {@code setStackInSlot} by clearing the slot and inserting
+	 * the new stack in one transaction (filters still apply, unlike a raw container write).
+	 */
+	@Override
+	public void setStackInSlot(int slot, ItemStack stack) {
+		StorageView<ItemVariant> view = view(slot);
+		if (view == null)
+			return;
+		try (Transaction tx = Transactions.open()) {
+			if (!view.isResourceBlank())
+				view.extract(view.getResource(), view.getAmount(), tx);
+			if (!stack.isEmpty()) {
+				ItemVariant variant = ItemVariant.of(stack);
+				if (view instanceof SingleSlotStorage<ItemVariant> single)
+					single.insert(variant, stack.getCount(), tx);
+				else
+					storage.insert(variant, stack.getCount(), tx);
+			}
+			tx.commit();
 		}
 	}
 

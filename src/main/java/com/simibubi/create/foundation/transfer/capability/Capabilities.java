@@ -21,7 +21,14 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import com.simibubi.create.foundation.transfer.item.wrapper.InvWrapper;
+import com.simibubi.create.foundation.transfer.item.wrapper.SidedInvWrapper;
 
 /**
  * The item/fluid handler capability lookups Create's code is written against. Create-owned facade (see
@@ -46,6 +53,17 @@ public final class Capabilities {
 
 		static {
 			BLOCK.registerFallback((level, pos, state, be, side) -> {
+				// Vanilla containers: wrap the Container directly (NeoForge's vanilla providers do the same), so the handler is
+				// an IItemHandlerModifiable with exact vanilla slot semantics (mounted storage on contraptions relies on it).
+				if (be instanceof Container container && be.getType() != null
+					&& "minecraft".equals(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()).getNamespace())) {
+					if (be instanceof ChestBlockEntity && state.getBlock() instanceof ChestBlock chest) {
+						Container doubleChest = ChestBlock.getContainer(chest, state, level, pos, true);
+						if (doubleChest != null)
+							container = doubleChest;
+					}
+					return container instanceof WorldlyContainer worldly && side != null ? new SidedInvWrapper(worldly, side) : new InvWrapper(container);
+				}
 				Storage<ItemVariant> storage = ItemStorage.SIDED.find(level, pos, state, be, side);
 				return storage == null ? null : StorageItemHandler.of(storage);
 			});

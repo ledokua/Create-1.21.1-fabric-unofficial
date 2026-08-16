@@ -105,6 +105,7 @@ public class Create implements ModInitializer {
 		// NeoForge scans @EventBusSubscriber classes at mod construction; we do the same before anything is posted.
 		CreateEventBus.registerSubscribers();
 		com.simibubi.create.foundation.event.CreateEventHooks.register();
+		com.simibubi.create.foundation.platform.ServerLifecycleHooks.init();
 		onCtor(CreateEventBus.BUS);
 		// NeoForge: fired once per registry after the mod constructors ran. Here: the Registrate flush.
 		REGISTRATE.register();

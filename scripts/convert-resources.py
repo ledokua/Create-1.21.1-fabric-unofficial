@@ -19,6 +19,7 @@ Conversions:
     (fluid ingredients keep their "type": Create's FluidIngredient registry accepts the neoforge:* aliases)
   * data/create/neoforge/biome_modifier/** dropped (AllBiomeModifiers uses Fabric BiomeModifications in code)
   * data/neoforge/data_maps/** kept as-is (foundation.datamap.DataMapLoader reads NeoForge's layout)
+  * EXTRA_FILES written afterwards: things NeoForge itself provides (c:milk fluid tag for Create's own milk fluid)
 """
 import json
 import os
@@ -31,6 +32,11 @@ UPSTREAM = sys.argv[1] if len(sys.argv) > 1 else "/home/ledok/Projects/Mods/Crea
 OUT = os.path.join(REPO, "src/main/resources")
 
 stats = {}
+
+# Files NeoForge (not upstream Create) provides and that Fabric lacks; written after vendoring.
+EXTRA_FILES = {
+    "data/c/tags/fluid/milk.json": {"replace": False, "values": ["create:milk", "create:flowing_milk"]},
+}
 
 
 def bump(k):
@@ -132,6 +138,13 @@ def main():
                     json.dump(j, fh, indent=2)
                     fh.write("\n")
                 bump("files changed")
+    for rel, content in EXTRA_FILES.items():
+        path = os.path.join(OUT, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as fh:
+            json.dump(content, fh, indent=2)
+            fh.write("\n")
+        bump("extra files")
     for k in sorted(stats):
         print(f"{stats[k]:6d}  {k}")
 

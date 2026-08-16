@@ -80,7 +80,16 @@ public interface IBlockExtension {
 		return true;
 	}
 
+	/** NeoForge's {@code canConnectRedstone}; the default mirrors vanilla {@code RedStoneWireBlock#shouldConnectTo} (incl. NeoForge's wire/repeater/observer overrides). */
 	default boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+		if (state.is(net.minecraft.world.level.block.Blocks.REDSTONE_WIRE))
+			return true;
+		if (state.is(net.minecraft.world.level.block.Blocks.REPEATER)) {
+			Direction facing = state.getValue(net.minecraft.world.level.block.RepeaterBlock.FACING);
+			return facing == direction || facing.getOpposite() == direction;
+		}
+		if (state.is(net.minecraft.world.level.block.Blocks.OBSERVER))
+			return direction == state.getValue(net.minecraft.world.level.block.ObserverBlock.FACING);
 		return state.isSignalSource() && direction != null;
 	}
 
@@ -107,7 +116,14 @@ public interface IBlockExtension {
 		return null;
 	}
 
-	default void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {}
+	/**
+	 * NeoForge's "a neighbour's comparator-relevant state changed" hook. NeoForge overrides it in ComparatorBlock (which
+	 * re-reads its input); vanilla has no such override, so the default replicates that patch here.
+	 */
+	default void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
+		if (this instanceof net.minecraft.world.level.block.ComparatorBlock && pos.getY() == neighbor.getY() && level instanceof Level l && !l.isClientSide())
+			state.handleNeighborChanged(l, pos, l.getBlockState(neighbor).getBlock(), neighbor, false);
+	}
 
 	default boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState, Direction dir) {
 		return false;
@@ -117,8 +133,9 @@ public interface IBlockExtension {
 		return !state.canOcclude();
 	}
 
+	/** NeoForge's {@code getWeakChanges}: true for redstone dust (NeoForge overrides it in RedStoneWireBlock). */
 	default boolean getWeakChanges(BlockState state, LevelReader level, BlockPos pos) {
-		return false;
+		return this instanceof net.minecraft.world.level.block.RedStoneWireBlock;
 	}
 
 	default boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, net.minecraft.world.level.material.FluidState fluid) {
