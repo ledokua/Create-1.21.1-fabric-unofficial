@@ -157,53 +157,49 @@ foundation rest + api → infrastructure → content by subsystem), run the mech
 drag in unported subsystems get their imports satisfied by porting the dependency, not by stubbing it —
 stubs are only used for datagen (Phase 0b decision).
 
-## >>> RESUME HERE (Phase 1 compiles; Phase 2 = boot + resources next) <<<
+## >>> RESUME HERE (Phase 2: server + client boot and play; Phase 3 = runtime gaps) <<<
 
-State at the last checkpoint: **`./gradlew compileJava` is green** (6,242 → 0 errors). Everything is committed.
-Nothing has been *run* yet — the next milestone is a booting dedicated server, then client.
+State: `./gradlew runServer` boots; `./gradlew runClient` boots, creates a world, blocks/items render, kinetics animate
+(after the BE-sync fix). Everything is committed. Resources are vendored by `scripts/convert-resources.py` (re-runnable).
 
-Next steps, in order:
-1. **Vendor resources**: copy upstream `src/main/resources/{assets,data}` and `src/generated/resources/**` into
-   `src/main/resources` (keep our `fabric.mod.json`, `create.mixins.json`, `create.accesswidener`; drop
-   `META-INF/neoforge.mods.toml`, `pack.mcmeta` → Fabric doesn't need one). Convert `data/create/data_maps/**`
-   as needed by `foundation/datamap/DataMapLoader` (already reads NeoForge layout). Recipe JSON that uses
-   `neoforge:*` ingredient/condition types: `FluidIngredient` already accepts `neoforge:*` aliases; item
-   `CompoundIngredient` too; conditions (`neoforge:mod_loaded`…) → map onto Fabric resource conditions in
-   `foundation/platform/conditions` (or strip at load via a `RecipeManager` mixin).
-2. **Event wiring**: write `foundation/event/CreateEventHooks` (Fabric callbacks + small mixins posting the
-   bridge events; log the ones left unwired), call `CreateEventBus.registerSubscribers()` from `Create#onInitialize`
-   and post `FMLCommonSetupEvent`/`FMLClientSetupEvent`/`FMLLoadCompleteEvent`/`RegisterCapabilitiesEvent`
-   after the Registrate flush. `OneTimeEventReceiver` (Registrate) already listens on `CreateEventBus.BUS` for
-   `FMLClientSetupEvent` — so that post is required for BE/entity visualizers.
-3. `./gradlew runServer` → fix boot-time crashes (registry order, `CreateBuiltInRegistries.runBakeCallbacks()` must
-   be called from `Create#init`, attachment types, data maps, `AllConfigs` via Forge Config API Port).
-4. `./gradlew runClient` → render/model issues (Phase 3 items: FRAPI model data consumers, `getCustomRenderer()`
-   via `BuiltinItemRendererRegistry`, `ClientExtensionsManager` walk of items/blocks calling `initializeClient`,
-   armor/arm-pose/break-particle mixins, `ShapedRecipePatternMixin` for 9x9 mechanical crafting).
+Infrastructure notes learned while booting (keep in mind for new code):
+- **Client classes in common code**: Fabric's dev launcher refuses to load client classes on the server. Lambdas
+  inside `@Environment(CLIENT)` methods are NOT stripped by Fabric → `buildSrc/EnvironmentLambdaStripper` (runs in
+  `compileJava.doLast`) propagates the annotation to lambdas referenced only from annotated methods. Anything else
+  that references client types (e.g. passing `Minecraft.player` (LocalPlayer) to a `Player` param, `BakedModel`
+  return-type assignability) must live in a client-only class (`CreateRegistrateClient` pattern).
+- **Event bus** scans `@SubscribeEvent` via ASM (`EventBus.scanHandlers`) instead of `getDeclaredMethods()` — mirrors
+  Fabric's `@Environment` stripping so client-only handlers in common classes are ignored on the server.
+- Classes in the mixin package (`foundation.mixin.*`) can't be referenced from normal code — extension interfaces
+  live in `foundation.extension`, duck interfaces (`DropCapture`) in `foundation.event`.
+- Vanilla lambdas have intermediary names (`method_XXXXX`) even in the mojmap dev env — target them with
+  `remap = false` (see `ShapedRecipePatternDataMixin`, `BlockEntityDataPacketMixin`, `LevelChunkUpdateTagMixin`).
+- Fabric API mixin conflicts: `BlockEntityExtensionMixin#getRenderData` needs `@Overwrite` + priority 2000.
+- `fabric.mod.json` is token-replaced (not Groovy-expanded) because the injected-interfaces block contains `$`.
+- Registrate: re-registering the same name overwrites (upstream semantics; WindowGen relies on it).
 
-Things stubbed during Phase 1 that must be revisited (grep the marker comments):
-- `SchematicProcessor#processEntity` no longer overrides anything (NeoForge-only hook) — needs a call from Create's
-  schematic entity placement path or a `StructureTemplate` mixin.
-- `PotionMixingRecipes`: modded `IBrewingRecipe` loop removed (vanilla `PotionBrewing.Mix` only).
-- `AllRecipeTypes`: `ShapedRecipePattern.setCraftingSize(9, 9)` dropped → mixin.
-- `AllEntityTypes`: no per-type "send velocity updates" flag on Fabric.
-- `MilkEffectHandler`: `removeEffectsCuredBy(EffectCures.MILK)` → `removeAllEffects()`.
-- `ItemEntity.lifespan` assignments commented (vanilla default is 6000 anyway).
-- `FarmersDelightCompat` stub returns true; `ClientEvents` config screen → ModMenu entrypoint (Phase 12).
-- `ProcessingRecipeBuilder`/`SequencedAssemblyRecipeBuilder`: recipe conditions dropped from `RecipeOutput.accept`.
-- `RuntimeDataGenerator`: `Recipe.CONDITIONAL_CODEC` → `Recipe.CODEC`.
-- `TagGen.getOrCreateRawBuilder` returns a detached `TagBuilder` (datagen shell).
-- `AllCreativeModeTabs`: `withTabsBefore` dropped (tab ordering).
-- `BlockSnapshot.isRestoring(level)` replaces `Level#restoringBlockSnapshots` (only true inside our own restores).
-- `EntityExtension#isAddedToLevel` approximated via `level.getEntity(id) == this`.
-- `MinecartController`: `isActivatorRail()` → `is(Blocks.ACTIVATOR_RAIL)`.
-- Loom cache gotcha: a stale remapped flywheel jar (`.gradle/loom-cache/remapped_mods/remapped/dev/engine-room`)
-  produced bogus "incompatible parameter types in lambda" errors; deleting it fixed it.
+Next (Phase 3 — runtime gaps, roughly by user impact):
+1. Verify in-game: kinetics rotate (BE sync fix), belts, fluids (tank rendering, pipes), contraptions, trains,
+   ponder scenes, JEI (needs `CreateJEI` on the Fabric JEI plugin path — check `mezz.jei.api.JeiPlugin` service).
+2. Model data consumers: CT/copycat/… models via FRAPI (`FabricModelBridge`, `ModelDataContext`), block-model
+   `getRenderTypes`, `IClientBlockExtensions.addHitEffects/addDestroyEffects` (particle mixins),
+   `getCustomRenderer()` → `BuiltinItemRendererRegistry`, item decorators (`GuiGraphics#renderItemDecorations`).
+3. Block/state extension hooks vanilla doesn't consult (`IBlockExtension`: `getSoundType(state,level,pos,entity)`,
+   `canHarvestBlock`, `getFriction`, `canStickTo`, `getExplosionResistance`, `onCaughtFire`, `getEnchantPowerBonus`,
+   `isScaffolding`, `getBeaconColorMultiplier`, `isFlammable/getFlammability`, `collisionExtendsVertically`,
+   `getPickupSound`…) — audit `foundation/extension/*` for methods Create overrides and add mixins that call them.
+4. Networking: entity spawn payload (`ComplexSpawnPayload`), data-map client sync, `IEntityWithComplexSpawn`.
+5. Client commands (`/create util …`) on Fabric's ClientCommandRegistrationCallback (FabricClientCommandSource).
+6. `ProjectileUtilMixin` (disabled), `SchematicProcessor#processEntity`, `RemapHelper` aliases, ModMenu config
+   screen, `LivingDropsEvent` semantics check (captured drops), `PotionMixingRecipes` modded brewing.
+7. Datagen shell (Phase 11) and compat modules (Phase 12) later.
 
 Useful commands:
 ```
 ./gradlew compileJava --console=plain 2>&1 | awk '/^FAILURE/{exit}{print}' > /tmp/c.log; grep -c 'error:' /tmp/c.log
-scripts/list-event-subscribers.sh   # regenerate CreateEventSubscribers.CLASSES after adding/removing @EventBusSubscriber classes
+scripts/convert-resources.py            # re-vendor upstream resources (wipes assets/ + data/)
+scripts/list-event-subscribers.sh       # regenerate CreateEventSubscribers.CLASSES
+./gradlew runServer --args="nogui"      # run/ is gitignored; eula.txt already accepted
 ```
 
 ## Phases (continued)
