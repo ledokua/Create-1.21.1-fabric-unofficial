@@ -237,8 +237,15 @@ Next (roughly by user impact):
 2. Client-side hooks not yet verified in game: BlockDestructionProgress extra positions, RenderHighlight, tooltips (Font ctx),
    fog/camera events, GameRenderer hooks.
 3. Datagen shell (Phase 11) — needed only to regenerate resources on Fabric; runtime uses vendored upstream data.
-4. Compat modules (Phase 12): CC:Tweaked, Farmer's Delight stub, train map mods (FTB Chunks / Journey / Xaero stubs),
-   Sodium/Iris/FTB library, `PotionMixingRecipes` modded brewing is fine (Fabric uses vanilla PotionBrewing.Builder).
+4. Compat modules (Phase 12): done — CC:Tweaked (PeripheralLookup), Farmer's Delight (rich soil by id), Sodium (sprite
+   ticking), Trinkets (goggles head/face + backtank chest/back, `-PwithTrinkets` dev runtime), JEI plugin, Mod Menu.
+   Open: train map mods (FTB Chunks / Journey / Xaero stubs), **native EMI plugin** (users can install JEI next to EMI —
+   EMI's JEMI layer runs Create's JEI plugin), Iris-specific checks.
+5. Field reports from the first server deployment (398-mod pack): other Fabric mods' Create recipes use Create-Fabric
+   0.5.x fluid JSON (now accepted: `CreateCodecs.LEGACY_FABRIC_SIZED_FLUID_INGREDIENT`, `FluidStack.DATA_CODEC`);
+   Entity#getPersistentData mixin clashes with other mods (now a uniquely named duck); reported "many break sounds" when
+   breaking a large water wheel — not reproducible in dev (1 sound), likely a sound-mod interaction; reported FPS drop near
+   rails/moving kinetics — need client log + `/flywheel backend` output.
 5. Publishing: `modLocalRuntime` JEI/ModMenu are dev-only; check the built jar's fabric.mod.json depends block before release.
 
 Useful commands:

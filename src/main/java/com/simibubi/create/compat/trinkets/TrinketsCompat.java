@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Trinkets counterpart of upstream's Curios compat: goggles worn in a trinket slot count as worn (and render on the
  * head), backtanks in trinket slots supply air. Slot assignment comes from data
- * ({@code data/trinkets/tags/item/head/hat.json}, {@code chest/back.json}).
+ * ({@code data/trinkets/tags/item/head/face.json}, {@code chest/back.json}).
  */
 public class TrinketsCompat {
 
