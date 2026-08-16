@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "Create",
   "description": "Technology that empowers the player. (Unofficial Fabric port)",
-  "authors": [],
+  "authors": ["simibubi", "Create Mod Team", "Fabric port: LeDok"],
   "contact": {},
   "license": "MIT",
   "environment": "*",
@@ -64,6 +64,13 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
-    "minecraft": "${minecraft_version}"
+    "minecraft": "${minecraft_version}",
+    "flywheel": "*",
+    "ponder": "*",
+    "forgeconfigapiport": "*"
+  },
+  "suggests": {
+    "jei": "*",
+    "modmenu": "*"
   }
 }

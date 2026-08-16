@@ -45,18 +45,13 @@ re-discovering it.
       `build.gradle`/`gradle.properties`. Mod bootstrap moved to `com.simibubi.create.Create` /
       `com.simibubi.create.CreateClient` (logging only, no registration yet). Mixin configs repointed.
       `./gradlew build` succeeds. (Catnip dropped as a prebuilt dep — see ecosystem findings above.)
-- [x] **Phase 0a — Catnip, vendored from source.** `net.createmod.catnip.*` (187 files) copied from
-      `Creators-of-Create/Ponder` (`common/src/main/java/net/createmod/catnip` +
-      `fabric/src/main/java/net/createmod/catnip`, commit `8981929` / 2026-06-20 — that repo's build
-      publishes both `Ponder-Fabric` and the (stale) `Catnip-Fabric` artifacts from this same living source,
-      it just hasn't republished Catnip's own jar/POM since Dec 2024; the source itself is current) into
-      `src/main/java/net/createmod/catnip` + `src/main/resources/META-INF/services/net.createmod.catnip.*`
-      here. Compiles clean (`./gradlew build` green) against our flywheel 1.0.6-44 + Ponder-Fabric deps, plus
-      two added direct deps (`javax.annotation-api`, `jsr305` — upstream only declares these
-      non-transitively). `CatnipServices` logs via `net.createmod.ponder.Ponder.LOGGER`, which we get for
-      free from the `Ponder-Fabric` dependency already in `build.gradle` — no extra vendoring needed for
-      that coupling. **To pull upstream Catnip updates later:** diff against a fresh clone of that repo's
-      `mc1.21.1/dev` branch, same two directories.
+- [x] **Phase 0a — Catnip.** Initially vendored from source (`net.createmod.catnip.*`, 187 files from
+      `Creators-of-Create/Ponder` commit `8981929`); **later removed again (Phase 3)**: the official
+      `Ponder-Fabric-1.21.1` jar already bundles the compiled Catnip (same source snapshot, no Porting-Lib
+      references, incl. `META-INF/services/net.createmod.catnip.*`), so Create now compiles against Ponder's copy
+      via `modImplementation Ponder-Fabric`. Shipping our own duplicate would have raced Ponder's classes at
+      runtime. (The stale standalone `Catnip-Fabric` maven artifact is still not used.) `CatnipServices` logs via
+      `net.createmod.ponder.Ponder.LOGGER`.
 - [x] **Phase 0b — Registration layer.** Purpose-built Fabric-native reimplementation of
       `com.tterrag.registrate` (40 files, ~1.6k lines, under `src/main/java/com/tterrag/registrate`), same
       package/class names and public signatures as upstream so ported Create code needs zero import changes.
