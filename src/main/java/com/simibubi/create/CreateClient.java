@@ -66,6 +66,8 @@ public class CreateClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		com.simibubi.create.foundation.event.CreateClientEventHooks.register();
+		com.simibubi.create.foundation.entity.ComplexSpawnPayload.registerClientReceiver();
+		com.simibubi.create.foundation.datamap.DataMapSyncPayload.registerClientReceiver();
 		// NeoForge: Item/Block/FluidType#initializeClient during client setup
 		com.simibubi.create.foundation.client.extensions.ClientExtensionsInit.init();
 		onCtorClient();

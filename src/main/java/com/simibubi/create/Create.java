@@ -139,6 +139,8 @@ public class Create implements ModInitializer {
 		AllStructureProcessorTypes.register(modEventBus);
 		AllEntityDataSerializers.register(modEventBus);
 		AllPackets.register();
+		com.simibubi.create.foundation.entity.ComplexSpawnPayload.register();
+		com.simibubi.create.foundation.datamap.DataMapSyncPayload.register();
 		AllFeatures.register(modEventBus);
 		AllPlacementModifiers.register(modEventBus);
 		com.simibubi.create.infrastructure.worldgen.AllBiomeModifiers.register();

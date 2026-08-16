@@ -118,7 +118,11 @@
 		"event.client.ModelBakeryEventsMixin",
 		"event.client.MouseHandlerEventsMixin",
 		"event.client.PlayerRendererEventsMixin",
-		"event.client.TransientEntitySectionChangeMixin"
+		"event.client.TransientEntitySectionChangeMixin",
+		"hooks.client.BlockHitEffectsMixin",
+		"hooks.client.BlockParticleEffectsMixin",
+		"hooks.client.HelmetOverlayMixin",
+		"hooks.client.ItemDecoratorsMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

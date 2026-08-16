@@ -27,7 +27,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
  * Loads every registered {@link DataMapType} from {@code data/<ns>/data_maps/<registry>/<id>.json}, same
  * layout and JSON shape as NeoForge ({@code values} keyed by entry id or {@code #tag}, optional
  * {@code replace}/{@code remove}), so upstream's generated files work unchanged. Registered as a
- * server-data reload listener; TODO(Phase 13): sync to clients of dedicated servers like NeoForge does.
+ * server-data reload listener; synced to clients by {@link DataMapSyncPayload}.
  */
 public final class DataMapLoader extends SimplePreparableReloadListener<Map<DataMapType<?, ?>, List<JsonObject>>> implements IdentifiableResourceReloadListener {
 
