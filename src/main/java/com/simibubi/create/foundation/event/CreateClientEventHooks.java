@@ -87,6 +87,15 @@ public final class CreateClientEventHooks {
 		CoreShaderRegistrationCallback.EVENT.register(context ->
 			post(new RegisterShadersEvent(Minecraft.getInstance().getResourceManager(), context)));
 
+		// ---- HUD layers (RegisterGuiLayersEvent) ----
+		net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback.EVENT.register((graphics, tickCounter) -> {
+			Minecraft mc = Minecraft.getInstance();
+			if (mc.options.hideGui)
+				return;
+			for (net.minecraft.client.gui.LayeredDraw.Layer layer : com.simibubi.create.foundation.event.client.CreateGuiLayers.layers().values())
+				layer.render(graphics, tickCounter);
+		});
+
 		// ---- tooltips ----
 		net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, flag, lines) ->
 			post(new com.simibubi.create.foundation.event.entity.player.ItemTooltipEvent(stack, Minecraft.getInstance().player, lines, flag, context)));
