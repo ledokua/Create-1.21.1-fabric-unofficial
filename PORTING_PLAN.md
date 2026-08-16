@@ -238,9 +238,12 @@ Next (roughly by user impact):
    fog/camera events, GameRenderer hooks.
 3. Datagen shell (Phase 11) — needed only to regenerate resources on Fabric; runtime uses vendored upstream data.
 4. Compat modules (Phase 12): done — CC:Tweaked (PeripheralLookup), Farmer's Delight (rich soil by id), Sodium (sprite
-   ticking), Trinkets (goggles head/face + backtank chest/back, `-PwithTrinkets` dev runtime), JEI plugin, Mod Menu.
-   Open: train map mods (FTB Chunks / Journey / Xaero stubs), **native EMI plugin** (users can install JEI next to EMI —
-   EMI's JEMI layer runs Create's JEI plugin), Iris-specific checks.
+   ticking), Trinkets (goggles head/face + backtank chest/back, `-PwithTrinkets` dev runtime), JEI plugin, Mod Menu,
+   **native EMI plugin** (`compat/emi`, entrypoint `emi`; categories/recipes come from the viewer-neutral
+   `compat/recipeViewer` layer shared with JEI; transfer handlers for crafting blueprint + stock keeper; ghost-ingredient
+   drop on filter/schedule/requester screens; JEI plugin defers when EMI is loaded; `-PwithEmi` dev runtime, harness phases
+   emi-1..3). Open: train map mods (FTB Chunks / Journey / Xaero stubs), Iris-specific checks, EMI tag translations for
+   `c:tools/wrench`, `c:buckets/chocolate`, `c:drinks/tea`, `c:foods/chocolate` (only "Untranslated tag" warnings).
 5. Field reports from the first server deployment (398-mod pack): other Fabric mods' Create recipes use Create-Fabric
    0.5.x fluid JSON (now accepted: `CreateCodecs.LEGACY_FABRIC_SIZED_FLUID_INGREDIENT`, `FluidStack.DATA_CODEC`);
    Entity#getPersistentData mixin clashes with other mods (now a uniquely named duck); reported "many break sounds" when

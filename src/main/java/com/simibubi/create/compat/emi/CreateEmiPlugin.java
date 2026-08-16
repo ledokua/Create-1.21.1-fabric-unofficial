@@ -85,6 +85,10 @@ public class CreateEmiPlugin implements EmiPlugin {
 				EmiStack.of(holder.value().getResultItem(net.minecraft.client.Minecraft.getInstance().level.registryAccess())),
 				holder.id(), true)));
 
+		// recipe "fill" buttons: crafting blueprint assignment, stock keeper craft requests
+		registry.addRecipeHandler(com.simibubi.create.AllMenuTypes.CRAFTING_BLUEPRINT.get(), new BlueprintEmiRecipeHandler());
+		registry.addRecipeHandler(com.simibubi.create.AllMenuTypes.STOCK_KEEPER_REQUEST.get(), new StockKeeperEmiRecipeHandler());
+
 		// keep EMI's panels off Create's side widgets
 		registry.addGenericExclusionArea((screen, consumer) -> {
 			if (screen instanceof AbstractSimiContainerScreen<?> simi)
