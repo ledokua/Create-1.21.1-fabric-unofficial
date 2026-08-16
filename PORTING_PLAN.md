@@ -182,6 +182,15 @@ Infrastructure notes learned while booting (keep in mind for new code):
 - NeoForge patched-vanilla behaviour that lives in NeoForge overrides of *vanilla* classes (ComparatorBlock#onNeighborChange,
   RedStoneWireBlock#getWeakChanges, RedStoneWireBlock/Repeater/Observer canConnectRedstone) has to be replicated in the
   extension-interface *defaults*, because our hook mixins only route through the extension for classes that override it.
+- **Production ≠ dev (two traps found by running the built jar outside Loom):** (1) Loom's `loom:injected_interfaces`
+  exist only at compile time — every injected interface needs a runtime mixin that `implements`/`extends` it
+  (`foundation/mixin/extension/*`, one per target; add one whenever you add an injected interface, or you get
+  NoSuchMethodError in a real launcher). (2) Flywheel-Fabric is `environment: client` and is never loaded on dedicated
+  servers, but Create's common code uses Flywheel API/lib → the `flywheel-server-stub` subproject (nested jar,
+  `environment: server`) ships Flywheel's API+lib classes plus no-op impls of `FlwApiLink`/`FlwLibLink`/`FlwLibXplat`.
+  `depends` therefore lists Ponder + Forge Config API Port only, `recommends` flywheel (Ponder JiJs an old Flywheel).
+  Smoke test: `./gradlew remapJar`, then run `build/libs/Create-*.jar` + Fabric API + Ponder-Fabric on a stock
+  Fabric server launcher (see scratch `prod-server` recipe in this session's notes: eula, `nogui`).
 - Reference jars in the loom cache: mojmap vanilla `~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-merged/1.21.1-loom.mappings.1_21_1.layered+hash.2198-v2/*.jar`
   and a **NeoForge-patched** mojmap jar `~/.gradle/caches/fabric-loom/1.21.1/neoforge/21.1.209/minecraft-merged-mojang-patched.jar`
   — `javap -p -c` on the latter shows exactly where NeoForge calls each hook.

@@ -86,6 +86,8 @@ dependencies {
     modCompileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-fabric-api:${project.cc_tweaked_version}"
     modCompileOnly "cc.tweaked:cc-tweaked-${project.minecraft_version}-core-api:${project.cc_tweaked_version}"
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}" // config screen entrypoint (compat/modmenu)
+    // Server-only nested jar with Flywheel API/lib + no-op service impls (Flywheel-Fabric is client-only; see the subproject).
+    include project(":flywheel-server-stub")
     // Dev runtime only: exercise the JEI plugin and Mod Menu config screen while testing (not published deps).
     modLocalRuntime "mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}"
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"

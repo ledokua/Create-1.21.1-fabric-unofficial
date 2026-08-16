@@ -65,9 +65,11 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
-    "flywheel": "*",
     "ponder": "*",
     "forgeconfigapiport": "*"
+  },
+  "recommends": {
+    "flywheel": "*"
   },
   "suggests": {
     "jei": "*",

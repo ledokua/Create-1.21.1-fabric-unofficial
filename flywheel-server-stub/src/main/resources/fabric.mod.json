@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "create_flywheel_server",
+  "version": "${version}",
+  "name": "Create: Flywheel server stub",
+  "description": "Flywheel API/lib classes and no-op service implementations for dedicated servers (Flywheel-Fabric itself is client-only). Bundled with Create for Fabric.",
+  "license": "MIT",
+  "environment": "server",
+  "depends": {
+    "fabricloader": ">=0.15.0"
+  }
+}

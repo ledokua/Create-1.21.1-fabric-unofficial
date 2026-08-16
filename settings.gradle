@@ -7,3 +7,5 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+include 'flywheel-server-stub'

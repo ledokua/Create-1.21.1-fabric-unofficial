@@ -1,0 +1,43 @@
+// Server-only companion jar (nested into Create's jar, see root build.gradle `include project(...)`).
+//
+// Flywheel-Fabric declares "environment": "client", so dedicated servers never load it — but Create's common code
+// (kinetics, contraption actors, movement behaviours) references Flywheel API/lib types and calls
+// VisualizationManager/VisualizationHelper on both sides (NeoForge Flywheel loads on servers). This jar carries
+// Flywheel's API + lib classes (MIT, from the flywheel-fabric-api artifact) plus no-op implementations of its three
+// internal service links, and `provides: flywheel` so Create's dependency resolves on servers.
+plugins {
+    id 'fabric-loom'
+}
+
+version = project.flywheel_version.split('-')[0] // e.g. 1.0.6 — what "provides: flywheel" reports
+group = 'com.simibubi.create'
+base { archivesName = 'create-flywheel-server-stub' }
+
+repositories {
+    maven { url = "https://maven.createmod.net" }
+}
+
+configurations { flywheelApi }
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modCompileOnly("dev.engine-room.flywheel:flywheel-fabric-api-${project.minecraft_version}:${project.flywheel_version}") { transitive = false }
+    flywheelApi("dev.engine-room.flywheel:flywheel-fabric-api-${project.minecraft_version}:${project.flywheel_version}") { transitive = false }
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") { expand "version": project.version }
+}
+
+// Shade the (already intermediary-mapped) API + lib classes into the stub jar; remapJar leaves them untouched.
+jar {
+    from({ configurations.flywheelApi.collect { zipTree(it) } }) {
+        include "dev/engine_room/flywheel/api/**", "dev/engine_room/flywheel/lib/**", "META-INF/LICENSE.md"
+        rename "LICENSE.md", "LICENSE_flywheel.md"
+    }
+}
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
