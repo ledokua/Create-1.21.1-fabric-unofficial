@@ -29,7 +29,8 @@ public interface IClientItemExtensions {
 	}
 
 	static IClientItemExtensions of(Item item) {
-		return ClientExtensionsManager.ITEM_EXTENSIONS.getOrDefault(item, DEFAULT);
+		IClientItemExtensions ext = ClientExtensionsManager.itemExtension(item);
+		return ext == null ? DEFAULT : ext;
 	}
 
 	@Nullable

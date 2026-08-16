@@ -148,9 +148,8 @@ public class RenderTypes extends RenderStateShard {
 
 		@SubscribeEvent
 		public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
-			ResourceProvider resourceProvider = event.getResourceProvider();
-			event.registerShader(new ShaderInstance(resourceProvider, Create.asResource("glowing_shader").toString(),
-				DefaultVertexFormat.NEW_ENTITY), shader -> glowingShader = shader);
+			// Fabric: vanilla's ShaderInstance(String) can't take a namespaced name; Fabric's core-shader registry builds it
+			event.registerShader(Create.asResource("glowing_shader"), DefaultVertexFormat.NEW_ENTITY, shader -> glowingShader = shader);
 		}
 	}
 }

@@ -21,7 +21,8 @@ public class RegisterClientReloadListenersEvent extends Event {
 	private int counter;
 
 	public void registerReloadListener(PreparableReloadListener listener) {
-		ResourceLocation id = Create.asResource("client_reload_" + counter++ + "_" + listener.getClass().getSimpleName().toLowerCase());
+		String name = listener.getClass().getSimpleName().toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_");
+		ResourceLocation id = Create.asResource("client_reload_" + counter++ + "_" + name);
 		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
 			@Override
 			public ResourceLocation getFabricId() {

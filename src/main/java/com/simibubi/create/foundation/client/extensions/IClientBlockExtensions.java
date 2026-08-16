@@ -17,7 +17,8 @@ public interface IClientBlockExtensions {
 	}
 
 	static IClientBlockExtensions of(Block block) {
-		return ClientExtensionsManager.BLOCK_EXTENSIONS.getOrDefault(block, DEFAULT);
+		IClientBlockExtensions ext = ClientExtensionsManager.blockExtension(block);
+		return ext == null ? DEFAULT : ext;
 	}
 
 	/** Return true to suppress vanilla's hit (crack) particles. */

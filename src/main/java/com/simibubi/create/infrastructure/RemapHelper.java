@@ -63,12 +63,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 
-import com.simibubi.create.foundation.event.bus.SubscribeEvent;
-import com.simibubi.create.foundation.event.bus.EventBusSubscriber;
 import com.simibubi.create.foundation.transfer.fluid.CommonFluids;
 import com.simibubi.create.foundation.registry.RegisterEvent;
 
-@EventBusSubscriber
 public class RemapHelper {
 	private static final Map<String, ResourceLocation> reMap = new HashMap<>();
 

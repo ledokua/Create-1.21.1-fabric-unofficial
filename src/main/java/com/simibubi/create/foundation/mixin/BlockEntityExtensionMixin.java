@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * {@link BlockEntityExtension#getPersistentData()} (saved under {@code NeoForgeData}, NeoForge's key, so
  * worlds moved between loaders keep the data).
  */
-@Mixin(BlockEntity.class)
+@Mixin(value = BlockEntity.class, priority = 2000)
 public class BlockEntityExtensionMixin implements BlockEntityExtension, RenderDataBlockEntity {
 
 	@Unique
@@ -28,7 +28,14 @@ public class BlockEntityExtensionMixin implements BlockEntityExtension, RenderDa
 	@Unique
 	private CompoundTag create$persistentData;
 
-	@Override
+	/**
+	 * Fabric API's rendering-data mixin already writes a (null-returning) getRenderData into BlockEntity; this config
+	 * applies after it (priority 1100) and replaces it so FRAPI sees Create's NeoForge-shaped model data.
+	 *
+	 * @author Create Fabric port
+	 * @reason expose {@link #getModelData()} as Fabric render data
+	 */
+	@org.spongepowered.asm.mixin.Overwrite(remap = false)
 	public Object getRenderData() {
 		ModelData data = getModelData();
 		return data == ModelData.EMPTY ? null : data;

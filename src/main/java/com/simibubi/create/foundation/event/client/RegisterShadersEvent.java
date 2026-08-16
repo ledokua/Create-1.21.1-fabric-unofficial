@@ -28,6 +28,15 @@ public class RegisterShadersEvent extends Event {
 		return resourceProvider;
 	}
 
+	/** Fabric-side variant: the shader is created by Fabric's core shader registry (vanilla's ShaderInstance can't take a namespaced name). */
+	public void registerShader(net.minecraft.resources.ResourceLocation id, com.mojang.blaze3d.vertex.VertexFormat format, Consumer<ShaderInstance> onLoaded) {
+		try {
+			context.register(id, format, onLoaded);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to register shader " + id, e);
+		}
+	}
+
 	public void registerShader(ShaderInstance shaderInstance, Consumer<ShaderInstance> onLoaded) {
 		try {
 			context.register(net.minecraft.resources.ResourceLocation.parse(shaderInstance.getName()), shaderInstance.getVertexFormat(), onLoaded);

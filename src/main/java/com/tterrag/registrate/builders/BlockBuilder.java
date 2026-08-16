@@ -101,12 +101,12 @@ public class BlockBuilder<T extends Block, P> extends AbstractBuilder<Block, T, 
 	/** Client extension registration (particles etc.); stored in ClientExtensionsManager after the block resolves. */
 	public BlockBuilder<T, P> clientExtension(NonNullSupplier<Supplier<com.simibubi.create.foundation.client.extensions.IClientBlockExtensions>> clientExtension) {
 		return onRegister(block -> RegistrateEnv.runOnClient(() -> () ->
-			com.simibubi.create.foundation.client.extensions.ClientExtensionsManager.register(block, clientExtension.get().get())));
+			com.simibubi.create.foundation.client.extensions.ClientExtensionsManager.register(block, () -> clientExtension.get().get())));
 	}
 
 	public BlockBuilder<T, P> clientExtension(java.util.function.Function<T, NonNullSupplier<Supplier<com.simibubi.create.foundation.client.extensions.IClientBlockExtensions>>> clientExtension) {
 		return onRegister(block -> RegistrateEnv.runOnClient(() -> () ->
-			com.simibubi.create.foundation.client.extensions.ClientExtensionsManager.register(block, clientExtension.apply(block).get().get())));
+			com.simibubi.create.foundation.client.extensions.ClientExtensionsManager.register(block, () -> clientExtension.apply(block).get().get())));
 	}
 
 	/** Block color handler (client). Registered via Fabric's ColorProviderRegistry after the block resolves. */

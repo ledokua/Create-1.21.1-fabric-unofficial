@@ -6,10 +6,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import org.joml.Quaternionf;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import com.simibubi.create.foundation.event.bus.CreateEventBus;
 import com.simibubi.create.foundation.event.client.RenderFrameEvent;
 import com.simibubi.create.foundation.event.client.ViewportEvent;
@@ -35,16 +34,21 @@ public abstract class GameRendererEventsMixin {
 	}
 
 	/**
-	 * NeoForge's ComputeCameraAngles: fired right after {@code Camera#setup} in renderLevel; the returned yaw/pitch are
-	 * written back into the camera and the roll rotates the pose stack (both are what vanilla reads afterwards).
+	 * NeoForge's ComputeCameraAngles: fired in renderLevel after camera setup + view bobbing, right where vanilla reads
+	 * {@code camera.rotation()} to build the view matrix. Yaw/pitch are written back into the camera; the roll is folded
+	 * into the returned quaternion (equivalent to NeoForge's {@code poseStack.mulPose(ZP.rotationDegrees(roll))} on the
+	 * projection stack: view = rotZ(roll) * conj(q)  <=>  q' = q * rotZ(-roll)).
 	 */
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.AFTER),
-		locals = LocalCapture.CAPTURE_FAILHARD)
-	private void create$onCameraSetup(DeltaTracker deltaTracker, CallbackInfo ci, float partialTick, boolean bl, Camera camera, PoseStack poseStack) {
+	@ModifyExpressionValue(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;rotation()Lorg/joml/Quaternionf;", ordinal = 0))
+	private Quaternionf create$onCameraSetup(Quaternionf original, DeltaTracker deltaTracker) {
+		Camera camera = mainCamera;
 		ViewportEvent.ComputeCameraAngles event = CreateEventBus.BUS.post(new ViewportEvent.ComputeCameraAngles((GameRenderer) (Object) this, camera,
-			partialTick, camera.getYRot(), camera.getXRot(), 0));
-		camera.setRotation(event.getYaw(), event.getPitch());
+			deltaTracker.getGameTimeDeltaPartialTick(true), camera.getYRot(), camera.getXRot(), 0));
+		if (event.getYaw() != camera.getYRot() || event.getPitch() != camera.getXRot())
+			camera.setRotation(event.getYaw(), event.getPitch());
+		Quaternionf rotation = new Quaternionf(camera.rotation());
 		if (event.getRoll() != 0)
-			poseStack.mulPose(Axis.ZP.rotationDegrees(event.getRoll()));
+			rotation.rotateZ((float) Math.toRadians(-event.getRoll()));
+		return rotation;
 	}
 }

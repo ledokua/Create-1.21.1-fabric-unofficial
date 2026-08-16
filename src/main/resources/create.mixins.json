@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "priority": 1000,
+  "priority": 1100,
   "package": "com.simibubi.create.foundation.mixin",
   "plugin": "com.simibubi.create.foundation.mixin.CreateMixinPlugin",
   "compatibilityLevel": "JAVA_21",
@@ -23,8 +23,8 @@
     "MapItemSavedDataMixin",
     "MobMixin",
     "PlayerMixin",
-    "ProjectileUtilMixin",
     "ServerEntityComplexSpawnMixin",
+    "ShapedRecipePatternDataMixin",
     "SmithingMenuMixin",
     "WaterWheelFluidSpreadMixin",
     "accessor.BlockBehaviourAccessor",
