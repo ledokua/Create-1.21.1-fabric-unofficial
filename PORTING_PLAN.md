@@ -157,10 +157,11 @@ foundation rest + api → infrastructure → content by subsystem), run the mech
 drag in unported subsystems get their imports satisfied by porting the dependency, not by stubbing it —
 stubs are only used for datagen (Phase 0b decision).
 
-## >>> RESUME HERE (Phase 2: server + client boot and play; Phase 3 = runtime gaps) <<<
+## >>> RESUME HERE (Phase 3 well underway: gametests green, JEI loads; next = play-testing + Phase 11/12) <<<
 
-State: `./gradlew runServer` boots; `./gradlew runClient` boots, creates a world, blocks/items render, kinetics animate
-(after the BE-sync fix). Everything is committed. Resources are vendored by `scripts/convert-resources.py` (re-runnable).
+State: `./gradlew runServer` boots; `./gradlew runClient` boots and plays; **`./gradlew runGameTest` runs upstream's 65
+gametests and they all pass** (contraptions, fluids, items, processing, misc, regressions). JEI (dev runtime) loads Create's
+plugin cleanly; Mod Menu shows the config screen entrypoint. Everything is committed.
 
 Infrastructure notes learned while booting (keep in mind for new code):
 - **Client classes in common code**: Fabric's dev launcher refuses to load client classes on the server. Lambdas
@@ -168,46 +169,62 @@ Infrastructure notes learned while booting (keep in mind for new code):
   `compileJava.doLast`) propagates the annotation to lambdas referenced only from annotated methods. Anything else
   that references client types (e.g. passing `Minecraft.player` (LocalPlayer) to a `Player` param, `BakedModel`
   return-type assignability) must live in a client-only class (`CreateRegistrateClient` pattern).
-- **Event bus** scans `@SubscribeEvent` via ASM (`EventBus.scanHandlers`) instead of `getDeclaredMethods()` — mirrors
-  Fabric's `@Environment` stripping so client-only handlers in common classes are ignored on the server.
+- `ExtensionOverrides.overrides(...)` (which hook mixins use to only route overriding blocks/items through the
+  NeoForge-shaped methods) scans class bytecode with ASM — reflection (`getMethod`) resolves every signature and
+  explodes on the server for classes with `@Environment(CLIENT)` methods.
+- **Event bus** scans `@SubscribeEvent` via ASM (`EventBus.scanHandlers`) instead of `getDeclaredMethods()`.
 - Classes in the mixin package (`foundation.mixin.*`) can't be referenced from normal code — extension interfaces
   live in `foundation.extension`, duck interfaces (`DropCapture`) in `foundation.event`.
 - Vanilla lambdas have intermediary names (`method_XXXXX`) even in the mojmap dev env — target them with
   `remap = false` (see `ShapedRecipePatternDataMixin`, `BlockEntityDataPacketMixin`, `LevelChunkUpdateTagMixin`).
+- Interface default methods (e.g. `SignalGetter#getSignal`) need an *interface* mixin (`LevelSignalHooksMixin`).
 - Fabric API mixin conflicts: `BlockEntityExtensionMixin#getRenderData` needs `@Overwrite` + priority 2000.
 - `fabric.mod.json` is token-replaced (not Groovy-expanded) because the injected-interfaces block contains `$`.
 - Registrate: re-registering the same name overwrites (upstream semantics; WindowGen relies on it).
+- **`scripts/check-mixin-targets.py`**: static javap-based check that every mixin's `method=` overload exists and every
+  `@At(INVOKE/FIELD target=…)` occurs in that overload's bytecode. Run it after touching mixins — it catches almost
+  everything the game would report as "Mixin apply failed" without booting.
+- NeoForge patched-vanilla behaviour that lives in NeoForge overrides of *vanilla* classes (ComparatorBlock#onNeighborChange,
+  RedStoneWireBlock#getWeakChanges, RedStoneWireBlock/Repeater/Observer canConnectRedstone) has to be replicated in the
+  extension-interface *defaults*, because our hook mixins only route through the extension for classes that override it.
+- Reference jars in the loom cache: mojmap vanilla `~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-merged/1.21.1-loom.mappings.1_21_1.layered+hash.2198-v2/*.jar`
+  and a **NeoForge-patched** mojmap jar `~/.gradle/caches/fabric-loom/1.21.1/neoforge/21.1.209/minecraft-merged-mojang-patched.jar`
+  — `javap -p -c` on the latter shows exactly where NeoForge calls each hook.
 
-Last session ended mid-Phase-3 (see below). **Just added, compiles, NOT yet runtime-tested**: `foundation/mixin/hooks/*`
-(piston push reaction, face hiding, weak-power, friction, step/place sound type, light emission, flammability,
-max stack size, onEntitySwing, onEntityItemUpdate, custom item entities, supportsEnchantment→Fabric
-canBeEnchantedWith), `ClientExtensionsInit` (walks registries calling `initializeClient`, registers builtin item
-renderers) and `BlockEntityExtension#requestModelDataUpdate` (re-mesh). First thing next time: `./gradlew runClient`,
-check for mixin apply errors in the log, then verify wrench/zapper item models, copycats, packages (custom entity),
-cardboard armor. If any hook mixin misbehaves, drop it from `create.mixins.json` (each is independent).
+Done in Phase 3 so far (all runtime-tested by boot + gametests, client-side ones by boot only):
+- Hook mixins (`foundation/mixin/hooks/*`, client ones in `hooks/client/*`): piston push reaction, face hiding, weak power,
+  friction, step/place sound type, light emission (+ AuxiliaryLightManager for copycat glow), flammability, max stack size,
+  onEntitySwing, onEntityItemUpdate, custom item entities, supportsEnchantment, canConnectRedstone, path type, scaffolding,
+  explosion resistance, canHarvestBlock/onDestroyedByPlayer, enchant power bonus, onNeighborChange, landing/running effects,
+  isBookEnchantable, pick block (getCloneItemStack 5-arg / getPickedResult), reequip animation, BakedModel#applyTransform,
+  doesSneakBypassUse (both sides), onItemUseFirst (via UseBlockCallback), item-provided enchantments (diving helmet),
+  item decorators, hit/destroy particle effects, helmet overlay, minecart onMinecartPass/canMakeSlopes, ProjectileUtil
+  contraption hits, StructureTemplate processEntity, FRAPI AO material.
+- Client commands (`foundation/client/command/ClientCommandHandler`, NeoForge semantics; `/create util …`, `/c`).
+- Networking: ComplexSpawnPayload wired, data-map client sync (`DataMapSyncPayload`).
+- Registry aliases (RemapHelper via Fabric `addAlias`, incl. neoforge:/minecraft: milk → create:milk), ModMenu + JEI entrypoints,
+  `c:milk` fluid tag (convert-resources EXTRA_FILES), capabilities: vanilla Container BEs → InvWrapper/SidedInvWrapper.
 
-Next (Phase 3 — runtime gaps, roughly by user impact):
-1. Verify in-game: kinetics rotate (BE sync fix), belts, fluids (tank rendering, pipes), contraptions, trains,
-   ponder scenes, JEI (needs `CreateJEI` on the Fabric JEI plugin path — check `mezz.jei.api.JeiPlugin` service).
-2. Model data consumers: CT/copycat/… models via FRAPI (`FabricModelBridge`, `ModelDataContext`), block-model
-   `getRenderTypes`, `IClientBlockExtensions.addHitEffects/addDestroyEffects` (particle mixins),
-   `getCustomRenderer()` → `BuiltinItemRendererRegistry`, item decorators (`GuiGraphics#renderItemDecorations`).
-3. Block/state extension hooks vanilla doesn't consult (`IBlockExtension`: `getSoundType(state,level,pos,entity)`,
-   `canHarvestBlock`, `getFriction`, `canStickTo`, `getExplosionResistance`, `onCaughtFire`, `getEnchantPowerBonus`,
-   `isScaffolding`, `getBeaconColorMultiplier`, `isFlammable/getFlammability`, `collisionExtendsVertically`,
-   `getPickupSound`…) — audit `foundation/extension/*` for methods Create overrides and add mixins that call them.
-4. Networking: entity spawn payload (`ComplexSpawnPayload`), data-map client sync, `IEntityWithComplexSpawn`.
-5. Client commands (`/create util …`) on Fabric's ClientCommandRegistrationCallback (FabricClientCommandSource).
-6. `ProjectileUtilMixin` (disabled), `SchematicProcessor#processEntity`, `RemapHelper` aliases, ModMenu config
-   screen, `LivingDropsEvent` semantics check (captured drops), `PotionMixingRecipes` modded brewing.
-7. Datagen shell (Phase 11) and compat modules (Phase 12) later.
+Next (roughly by user impact):
+1. **Human play-test** of client-side systems the gametests can't see: ponder scenes, goggles overlay, schematics/schematicannon,
+   trains + track placement, JEI transfer handlers, all GUIs, copycats/CT rendering, packages/factory gauges, item models
+   (wrench/zapper/potato cannon), cardboard armor, sound/particles. Log anything odd and fix.
+2. Client-side hooks not yet verified in game: BlockDestructionProgress extra positions, RenderHighlight, tooltips (Font ctx),
+   fog/camera events, GameRenderer hooks.
+3. Datagen shell (Phase 11) — needed only to regenerate resources on Fabric; runtime uses vendored upstream data.
+4. Compat modules (Phase 12): CC:Tweaked, Farmer's Delight stub, train map mods (FTB Chunks / Journey / Xaero stubs),
+   Sodium/Iris/FTB library, `PotionMixingRecipes` modded brewing is fine (Fabric uses vanilla PotionBrewing.Builder).
+5. Publishing: `modLocalRuntime` JEI/ModMenu are dev-only; check the built jar's fabric.mod.json depends block before release.
 
 Useful commands:
 ```
 ./gradlew compileJava --console=plain 2>&1 | awk '/^FAILURE/{exit}{print}' > /tmp/c.log; grep -c 'error:' /tmp/c.log
-scripts/convert-resources.py            # re-vendor upstream resources (wipes assets/ + data/)
-scripts/list-event-subscribers.sh       # regenerate CreateEventSubscribers.CLASSES
-./gradlew runServer --args="nogui"      # run/ is gitignored; eula.txt already accepted
+scripts/check-mixin-targets.py            # static mixin target check (run after editing mixins)
+scripts/convert-resources.py              # re-vendor upstream resources (wipes assets/ + data/, re-adds EXTRA_FILES)
+scripts/list-event-subscribers.sh         # regenerate CreateEventSubscribers.CLASSES
+./gradlew runServer --args="nogui"        # run/ is gitignored; eula.txt already accepted
+./gradlew runGameTest                     # upstream's 65 gametests (build/run/gameTest); ~1 min incl. gradle
+./gradlew runClient --args="--quickPlaySingleplayer 'New World (1)'"   # auto-joins a world (client smoke test)
 ```
 
 ## Phases (continued)
