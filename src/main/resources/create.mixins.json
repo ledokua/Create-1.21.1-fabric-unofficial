@@ -70,20 +70,30 @@
 		"event.PlayerTickMixin",
 		"event.ProjectileImpactEventMixin",
 		"event.TrackedEntityStartTrackingMixin",
+		"hooks.AnvilBookEnchantableMixin",
 		"hooks.BlockFaceHidingMixin",
 		"hooks.BlockItemSoundTypeMixin",
 		"hooks.BlockLightEmissionMixin",
 		"hooks.BlockSoundFrictionLightMixin",
 		"hooks.BlockStateBaseHooksMixin",
 		"hooks.CustomItemEntityMixin",
+		"hooks.EnchantPowerBonusMixin",
 		"hooks.EntitySoundTypeMixin",
+		"hooks.ExplosionResistanceMixin",
 		"hooks.FireBlockFlammabilityMixin",
 		"hooks.ItemEnchantmentHooksMixin",
 		"hooks.ItemEntityHooksMixin",
 		"hooks.ItemStackMaxStackSizeMixin",
+		"hooks.LandingEffectsMixin",
+		"hooks.LevelNeighborChangeMixin",
 		"hooks.LevelSignalHooksMixin",
 		"hooks.LightEngineLevelMixin",
-		"hooks.LivingEntitySwingMixin"
+		"hooks.LivingEntityScaffoldingMixin",
+		"hooks.LivingEntitySwingMixin",
+		"hooks.PathTypeHooksMixin",
+		"hooks.RedStoneWireConnectionMixin",
+		"hooks.RunningEffectsMixin",
+		"hooks.ServerPlayerGameModeHooksMixin"
 	],
 	"client": [
 		"accessor.AgeableListModelAccessor",
@@ -124,7 +134,11 @@
 		"hooks.client.BlockHitEffectsMixin",
 		"hooks.client.BlockParticleEffectsMixin",
 		"hooks.client.HelmetOverlayMixin",
-		"hooks.client.ItemDecoratorsMixin"
+		"hooks.client.ItemDecoratorsMixin",
+		"hooks.client.ItemInHandReequipMixin",
+		"hooks.client.ItemRendererTransformMixin",
+		"hooks.client.MultiPlayerGameModeHooksMixin",
+		"hooks.client.PickBlockHooksMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

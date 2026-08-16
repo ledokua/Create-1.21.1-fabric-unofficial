@@ -48,7 +48,8 @@ public final class FabricModelBridge {
 		ChunkRenderTypeSet renderTypes = model.getRenderTypes(state, randomSupplier.get(), data);
 		QuadEmitter emitter = context.getEmitter();
 		for (RenderType renderType : renderTypes) {
-			RenderMaterial material = material(renderType, false);
+			net.fabricmc.fabric.api.util.TriState ao = model.useAmbientOcclusion(state, data, renderType);
+			RenderMaterial material = material(renderType, false, ao);
 			RenderMaterial emissive = null;
 			for (Direction side : SIDES_AND_NULL) {
 				if (side != null && context.isFaceCulled(side))
@@ -57,7 +58,7 @@ public final class FabricModelBridge {
 				for (BakedQuad quad : quads) {
 					boolean fullBright = isFullBright(quad);
 					if (fullBright && emissive == null)
-						emissive = material(renderType, true);
+						emissive = material(renderType, true, ao);
 					emitter.fromVanilla(quad, fullBright ? emissive : material, side);
 					if (fullBright)
 						emitter.lightmap(FULL_BRIGHT, FULL_BRIGHT, FULL_BRIGHT, FULL_BRIGHT);
@@ -67,10 +68,11 @@ public final class FabricModelBridge {
 		}
 	}
 
-	private static RenderMaterial material(RenderType renderType, boolean emissive) {
+	private static RenderMaterial material(RenderType renderType, boolean emissive, net.fabricmc.fabric.api.util.TriState ambientOcclusion) {
 		return RendererAccess.INSTANCE.getRenderer().materialFinder()
 			.blendMode(BlendMode.fromRenderLayer(renderType))
 			.emissive(emissive)
+			.ambientOcclusion(ambientOcclusion)
 			.find();
 	}
 

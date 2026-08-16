@@ -143,6 +143,14 @@ public final class CreateEventHooks {
 		// closest (Create only uses them to suppress the block interaction while it handles the click itself).
 		if (event.getUseBlock() == net.fabricmc.fabric.api.util.TriState.FALSE || event.getUseItem() == net.fabricmc.fabric.api.util.TriState.FALSE)
 			return InteractionResult.FAIL;
+		// NeoForge's Item#onItemUseFirst: runs before the block's use handler, on both sides (cogwheels, linked controller)
+		net.minecraft.world.item.ItemStack stack = player.getItemInHand(hand);
+		if (!player.isSpectator() && com.simibubi.create.foundation.extension.ExtensionOverrides.overrides(stack.getItem(),
+			com.simibubi.create.foundation.extension.ItemExtension.class, "onItemUseFirst", net.minecraft.world.item.ItemStack.class, net.minecraft.world.item.context.UseOnContext.class)) {
+			InteractionResult result = stack.getItem().onItemUseFirst(stack, new net.minecraft.world.item.context.UseOnContext(player, hand, hitResult));
+			if (result != InteractionResult.PASS)
+				return result;
+		}
 		return InteractionResult.PASS;
 	}
 
