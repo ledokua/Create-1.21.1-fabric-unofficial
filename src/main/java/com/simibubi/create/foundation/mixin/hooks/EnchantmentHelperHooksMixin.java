@@ -42,10 +42,11 @@ public class EnchantmentHelperHooksMixin {
 	}
 
 	@WrapOperation(method = "runIterationOnItem(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/enchantment/EnchantmentHelper$EnchantmentInSlotVisitor;)V",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getOrDefault(Lnet/minecraft/core/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;"))
-	private static Object create$allEnchantmentsInSlot(ItemStack stack, DataComponentType<?> type, Object fallback, Operation<Object> original,
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;get(Lnet/minecraft/core/component/DataComponentType;)Ljava/lang/Object;"))
+	private static Object create$allEnchantmentsInSlot(ItemStack stack, DataComponentType<?> type, Operation<Object> original,
 		ItemStack argStack, EquipmentSlot slot, LivingEntity entity) {
-		return create$resolve(stack, original.call(stack, type, fallback), entity.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
+		Object vanilla = original.call(stack, type);
+		return create$resolve(stack, vanilla == null ? ItemEnchantments.EMPTY : vanilla, entity.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
 	}
 
 	private static Object create$resolve(ItemStack stack, Object vanilla, HolderLookup.RegistryLookup<Enchantment> lookup) {

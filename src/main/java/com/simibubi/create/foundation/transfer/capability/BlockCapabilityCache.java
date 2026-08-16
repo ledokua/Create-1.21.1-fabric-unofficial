@@ -37,7 +37,7 @@ public final class BlockCapabilityCache<T, C> {
 	private boolean resolvedOnce;
 
 	private BlockCapabilityCache(BlockCapability<T, C> capability, ServerLevel level, BlockPos pos, C context, BooleanSupplier isValid, Runnable invalidationListener) {
-		this.cache = BlockApiCache.create(capability, level, pos.immutable());
+		this.cache = BlockApiCache.create(capability.fabricLookup(), level, pos.immutable());
 		this.capability = capability;
 		this.pos = pos.immutable();
 		this.context = context;

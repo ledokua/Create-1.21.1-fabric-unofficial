@@ -4,7 +4,7 @@ import com.simibubi.create.foundation.event.bus.Event;
 
 /**
  * Lifecycle event: register game test classes. Fabric's gametest API discovers tests via the
- * {@code fabric-gametest} entrypoint instead; kept so upstream's handler compiles (Phase 13 wires tests).
+ * {@code fabric-gametest} entrypoint (see fabric.mod.json → CreateGameTests) instead; kept so upstream's handler compiles.
  */
 public class RegisterGameTestsEvent extends Event {
 

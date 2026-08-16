@@ -10,6 +10,16 @@ base {
     archivesName = project.archives_base_name
 }
 
+// Upstream's gametests (infrastructure/gametest, ~70 tests) run through Fabric's gametest server: `./gradlew runGametest`.
+// The "fabric-gametest" entrypoint in fabric.mod.json points at CreateGameTests (its @GameTestGenerator is honoured by
+// vanilla's GameTestRegistry, which Fabric API feeds).
+fabricApi {
+    configureTests {
+        createSourceSet = false
+        eula = true
+    }
+}
+
 loom {
     // Translated from upstream's META-INF/accesstransformer.cfg — see the file's header comment.
     accessWidenerPath = file("src/main/resources/create.accesswidener")

@@ -241,7 +241,12 @@ public class RemapHelper {
 			alias(BuiltInRegistries.BLOCK, asResource(string), resourceLocation);
 			alias(BuiltInRegistries.ITEM, asResource(string), resourceLocation);
 		});
-		// (milk: upstream aliases create:milk -> neoforge:milk; here Create's own milk *is* create:milk)
+		// Milk: upstream aliases create:milk -> neoforge:milk; here Create's own milk *is* create:milk, so alias the
+		// NeoForge/vanilla-namespaced ids (schematics, gametest structures) onto it instead.
+		for (String ns : new String[] { "neoforge", "minecraft" }) {
+			alias(BuiltInRegistries.FLUID, ResourceLocation.fromNamespaceAndPath(ns, "milk"), CommonFluids.MILK.getId());
+			alias(BuiltInRegistries.FLUID, ResourceLocation.fromNamespaceAndPath(ns, "flowing_milk"), CommonFluids.FLOWING_MILK.getId());
+		}
 		alias(BuiltInRegistries.BLOCK_ENTITY_TYPE, asResource("copper_backtank"), AllBlockEntityTypes.BACKTANK.getId());
 		alias(BuiltInRegistries.BLOCK_ENTITY_TYPE, asResource("adjustable_pulley"), AllBlockEntityTypes.ADJUSTABLE_CHAIN_GEARSHIFT.getId());
 	}

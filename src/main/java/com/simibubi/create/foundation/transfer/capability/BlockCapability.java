@@ -10,4 +10,7 @@ import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
  * declarations and generic signatures read the same.
  */
 public interface BlockCapability<T, C> extends BlockApiLookup<T, C> {
+
+	/** The real Fabric lookup behind this facade (Fabric's {@code BlockApiCache} only accepts its own implementations). */
+	BlockApiLookup<T, C> fabricLookup();
 }

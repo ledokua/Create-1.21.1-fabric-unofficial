@@ -13,6 +13,11 @@ import net.minecraft.world.level.block.state.BlockState;
 record DelegatingBlockCapability<T, C>(BlockApiLookup<T, C> lookup) implements BlockCapability<T, C> {
 
 	@Override
+	public BlockApiLookup<T, C> fabricLookup() {
+		return lookup;
+	}
+
+	@Override
 	public T find(Level world, BlockPos pos, BlockState state, BlockEntity blockEntity, C context) {
 		return lookup.find(world, pos, state, blockEntity, context);
 	}
