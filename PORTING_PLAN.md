@@ -178,6 +178,14 @@ Infrastructure notes learned while booting (keep in mind for new code):
 - `fabric.mod.json` is token-replaced (not Groovy-expanded) because the injected-interfaces block contains `$`.
 - Registrate: re-registering the same name overwrites (upstream semantics; WindowGen relies on it).
 
+Last session ended mid-Phase-3 (see below). **Just added, compiles, NOT yet runtime-tested**: `foundation/mixin/hooks/*`
+(piston push reaction, face hiding, weak-power, friction, step/place sound type, light emission, flammability,
+max stack size, onEntitySwing, onEntityItemUpdate, custom item entities, supportsEnchantment→Fabric
+canBeEnchantedWith), `ClientExtensionsInit` (walks registries calling `initializeClient`, registers builtin item
+renderers) and `BlockEntityExtension#requestModelDataUpdate` (re-mesh). First thing next time: `./gradlew runClient`,
+check for mixin apply errors in the log, then verify wrench/zapper item models, copycats, packages (custom entity),
+cardboard armor. If any hook mixin misbehaves, drop it from `create.mixins.json` (each is independent).
+
 Next (Phase 3 — runtime gaps, roughly by user impact):
 1. Verify in-game: kinetics rotate (BE sync fix), belts, fluids (tank rendering, pipes), contraptions, trains,
    ponder scenes, JEI (needs `CreateJEI` on the Fabric JEI plugin path — check `mezz.jei.api.JeiPlugin` service).

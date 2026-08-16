@@ -66,6 +66,8 @@ public class CreateClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		com.simibubi.create.foundation.event.CreateClientEventHooks.register();
+		// NeoForge: Item/Block/FluidType#initializeClient during client setup
+		com.simibubi.create.foundation.client.extensions.ClientExtensionsInit.init();
 		onCtorClient();
 		clientInit();
 		com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.post(new com.simibubi.create.foundation.event.lifecycle.FMLClientSetupEvent());

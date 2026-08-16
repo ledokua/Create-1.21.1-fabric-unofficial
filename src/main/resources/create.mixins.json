@@ -67,7 +67,21 @@
     "event.PackRepositoryMixin",
     "event.PlayerTickMixin",
     "event.ProjectileImpactEventMixin",
-    "event.TrackedEntityStartTrackingMixin"
+    "event.TrackedEntityStartTrackingMixin",
+    "hooks.BlockFaceHidingMixin",
+    "hooks.BlockItemSoundTypeMixin",
+    "hooks.BlockLightEmissionMixin",
+    "hooks.BlockSoundFrictionLightMixin",
+    "hooks.BlockStateBaseHooksMixin",
+    "hooks.CustomItemEntityMixin",
+    "hooks.EntitySoundTypeMixin",
+    "hooks.FireBlockFlammabilityMixin",
+    "hooks.ItemEnchantmentHooksMixin",
+    "hooks.ItemEntityHooksMixin",
+    "hooks.ItemStackMaxStackSizeMixin",
+    "hooks.LevelSignalHooksMixin",
+    "hooks.LightEngineLevelMixin",
+    "hooks.LivingEntitySwingMixin"
   ],
   "client": [
     "accessor.AgeableListModelAccessor",

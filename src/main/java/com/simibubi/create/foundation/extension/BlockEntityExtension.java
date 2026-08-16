@@ -17,7 +17,13 @@ public interface BlockEntityExtension {
 	}
 
 	/** NeoForge: re-query model data + rebuild chunk. Fabric re-reads render data on chunk rebuild anyway. */
-	default void requestModelDataUpdate() {}
+	/** NeoForge: refresh this block entity's model data. Fabric/FRAPI reads render data at chunk rebuild, so re-mesh the block. */
+	default void requestModelDataUpdate() {
+		net.minecraft.world.level.block.entity.BlockEntity self = (net.minecraft.world.level.block.entity.BlockEntity) this;
+		net.minecraft.world.level.Level level = self.getLevel();
+		if (level != null && level.isClientSide)
+			com.simibubi.create.foundation.platform.ClientHooks.markBlockForRerender(self.getBlockPos());
+	}
 
 	/** Mod-private NBT that persists with the block entity (NeoForge's {@code BlockEntity#getPersistentData()}). */
 	default net.minecraft.nbt.CompoundTag getPersistentData() {

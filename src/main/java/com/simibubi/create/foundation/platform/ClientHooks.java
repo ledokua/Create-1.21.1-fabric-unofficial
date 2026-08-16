@@ -40,4 +40,11 @@ public final class ClientHooks {
 		});
 		return components;
 	}
+
+	/** Re-mesh the chunk section containing pos (used for BlockEntity#requestModelDataUpdate). */
+	public static void markBlockForRerender(net.minecraft.core.BlockPos pos) {
+		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+		if (mc.levelRenderer != null)
+			mc.levelRenderer.setBlocksDirty(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+	}
 }
