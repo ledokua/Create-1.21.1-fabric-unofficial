@@ -19,6 +19,7 @@ Conversions:
     (fluid ingredients keep their "type": Create's FluidIngredient registry accepts the neoforge:* aliases)
   * data/create/neoforge/biome_modifier/** dropped (AllBiomeModifiers uses Fabric BiomeModifications in code)
   * data/neoforge/data_maps/** kept as-is (foundation.datamap.DataMapLoader reads NeoForge's layout)
+  * scripts/extra-lang/<locale>.json merged into assets/create/lang/<locale>.json (Fabric-only keys, e.g. EMI tag names)
   * scripts/extra-resources/** copied over afterwards: things NeoForge itself provides (c:milk fluid tag for Create's
     own milk fluid) and Fabric-port-only files (bridge gametest templates)
 """
@@ -36,6 +37,28 @@ stats = {}
 
 # Files NeoForge (not upstream Create) provides and that Fabric lacks, plus Fabric-port-only resources; copied after vendoring.
 EXTRA_RESOURCES = os.path.join(HERE, "extra-resources")
+# Lang keys merged into Create's own lang files (Fabric-only: EMI tag translations for c:/trinkets:/curios: tags).
+EXTRA_LANG = os.path.join(HERE, "extra-lang")
+
+
+def merge_extra_lang():
+    if not os.path.isdir(EXTRA_LANG):
+        return
+    for f in os.listdir(EXTRA_LANG):
+        if not f.endswith(".json"):
+            continue
+        with open(os.path.join(EXTRA_LANG, f)) as fh:
+            extra = json.load(fh)
+        target = os.path.join(OUT, "assets/create/lang", f)
+        lang = {}
+        if os.path.isfile(target):
+            with open(target) as fh:
+                lang = json.load(fh)
+        lang.update(extra)
+        with open(target, "w") as fh:
+            json.dump(dict(sorted(lang.items())), fh, indent=2, ensure_ascii=False)
+            fh.write("\n")
+        stats["lang keys merged"] = stats.get("lang keys merged", 0) + len(extra)
 
 
 def bump(k):
@@ -138,6 +161,7 @@ def main():
                     fh.write("\n")
                 bump("files changed")
     copy_tree(EXTRA_RESOURCES, OUT)
+    merge_extra_lang()
     for root, _, files in os.walk(EXTRA_RESOURCES):
         for _ in files:
             bump("extra files")

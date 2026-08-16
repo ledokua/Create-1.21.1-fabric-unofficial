@@ -242,8 +242,9 @@ Next (roughly by user impact):
    **native EMI plugin** (`compat/emi`, entrypoint `emi`; categories/recipes come from the viewer-neutral
    `compat/recipeViewer` layer shared with JEI; transfer handlers for crafting blueprint + stock keeper; ghost-ingredient
    drop on filter/schedule/requester screens; JEI plugin defers when EMI is loaded; `-PwithEmi` dev runtime, harness phases
-   emi-1..3). Open: train map mods (FTB Chunks / Journey / Xaero stubs), Iris-specific checks, EMI tag translations for
-   `c:tools/wrench`, `c:buckets/chocolate`, `c:drinks/tea`, `c:foods/chocolate` (only "Untranslated tag" warnings).
+   emi-1..3). EMI tag names for
+   c:/trinkets:/curios: tags live in `scripts/extra-lang/en_us.json` (merged into Create's lang by convert-resources.py).
+   Open: train map mods (FTB Chunks / Journey / Xaero stubs), Iris-specific checks.
 5. Field reports from the first server deployment (398-mod pack): other Fabric mods' Create recipes use Create-Fabric
    0.5.x fluid JSON (now accepted: `CreateCodecs.LEGACY_FABRIC_SIZED_FLUID_INGREDIENT`, `FluidStack.DATA_CODEC`);
    Entity#getPersistentData mixin clashes with other mods (now a uniquely named duck); reported "many break sounds" when
