@@ -94,4 +94,17 @@ public class TestFabricBridge {
 		helper.assertTrue(sized.ingredient().test(new com.simibubi.create.foundation.transfer.fluid.FluidStack(com.simibubi.create.foundation.transfer.fluid.CommonFluids.MILK.get(), 500)), "legacy tag ingredient does not match milk");
 		helper.succeed();
 	}
+
+	/** 1-wide shaped patterns must keep all rows (EMI reads width*height ingredients). */
+	@GameTest(template = "empty", timeoutTicks = 20)
+	public static void shapedRecipeShape(CreateGameTestHelper helper) {
+		var manager = helper.getLevel().getServer().getRecipeManager();
+		for (String id : new String[] { "create:crafting/logistics/package_frogport", "create:crafting/kinetics/sticky_mechanical_piston" }) {
+			var holder = manager.byKey(net.minecraft.resources.ResourceLocation.parse(id)).orElseThrow();
+			net.minecraft.world.item.crafting.ShapedRecipe recipe = (net.minecraft.world.item.crafting.ShapedRecipe) holder.value();
+			com.simibubi.create.Create.LOGGER.info("[test] {} w={} h={} ingredients={}", id, recipe.getWidth(), recipe.getHeight(), recipe.getIngredients().size());
+			helper.assertTrue(recipe.getIngredients().size() == recipe.getWidth() * recipe.getHeight(), id + ": ingredient count " + recipe.getIngredients().size() + " != " + recipe.getWidth() + "x" + recipe.getHeight());
+		}
+		helper.succeed();
+	}
 }

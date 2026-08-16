@@ -101,8 +101,15 @@ public class CreateJEI implements IModPlugin {
 
 	public static IJeiRuntime runtime;
 
+	/** With EMI installed its JEMI layer would run this plugin too and duplicate the native EMI categories — stay quiet then. */
+	private static boolean deferToEmi() {
+		return com.simibubi.create.compat.Mods.EMI.isLoaded();
+	}
+
 	private void loadCategories() {
 		allCategories.clear();
+		if (deferToEmi())
+			return;
 		for (CreateRecipeCategory<?> category : CreateRecipeCategories.create(new JeiIngredientAccess(() -> ingredientManager)))
 			allCategories.add(new JeiCategoryAdapter<>(category));
 	}

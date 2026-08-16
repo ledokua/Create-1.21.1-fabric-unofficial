@@ -21,6 +21,9 @@
     "jei_mod_plugin": [
       "com.simibubi.create.compat.jei.CreateJEI"
     ],
+    "emi": [
+      "com.simibubi.create.compat.emi.CreateEmiPlugin"
+    ],
     "fabric-gametest": [
       "com.simibubi.create.infrastructure.gametest.CreateGameTests"
     ]
@@ -73,6 +76,7 @@
   },
   "suggests": {
     "jei": "*",
+    "emi": "*",
     "modmenu": "*"
   }
 }

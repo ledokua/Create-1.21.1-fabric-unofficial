@@ -1,6 +1,7 @@
 package com.simibubi.create.infrastructure.debug;
 
 import java.io.File;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -70,17 +71,21 @@ public final class DevScreenshotHarness {
 		tick++;
 		try {
 			switch (phase) {
-				case 0 -> { if (tick >= 40) { build(mc); probeBuffers(mc); probeItemModels(mc); phase = 1; tick = 0; } }
+				case 0 -> { if (tick >= 40) { build(mc); probeBuffers(mc); probeItemModels(mc); probeClientRecipes(mc); phase = 1; tick = 0; } }
 				case 1 -> { if (tick == 5) mc.player.getInventory().selected = 0; if (tick >= 140) { screenshot(mc, "overview"); teleport(mc, 5.5, 152.0, -1.5, 0, 46, false); phase = 2; tick = 0; } }
 				case 2 -> { if (tick >= 60) { screenshot(mc, "goggles"); teleport(mc, 22.5, 154.5, 3.5, 0, 35, false); phase = 5; tick = 0; } }
 				case 5 -> { if (tick >= 60) { screenshot(mc, "contraption"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get()); phase = 6; tick = 0; } }
 				case 6 -> { if (tick >= 30) { screenshot(mc, "creative-base"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.PALETTES_CREATIVE_TAB.get()); phase = 7; tick = 0; } }
 				case 7 -> { if (tick >= 30) { screenshot(mc, "creative-palettes"); mc.setScreen(new net.createmod.catnip.config.ui.BaseConfigScreen(null, Create.ID)); phase = 8; tick = 0; } }
-				case 8 -> { if (tick >= 30) { screenshot(mc, "config"); if (com.simibubi.create.compat.Mods.JEI.isLoaded() && JeiHarness.showRecipes(mc)) { phase = 9; } else { mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; } tick = 0; } }
+				case 8 -> { if (tick >= 30) { screenshot(mc, "config"); mc.setScreen(null); if (com.simibubi.create.compat.Mods.EMI.isLoaded() && EmiHarness.show(mc, 0)) phase = 13; else phase = 16; tick = 0; } }
+				case 16 -> { if (com.simibubi.create.compat.Mods.JEI.isLoaded() && JeiHarness.showRecipes(mc)) { phase = 9; } else { mc.setScreen(null); openMenuAt(mc, BASE.offset(24, 0, 12)); phase = 11; } tick = 0; }
 				case 9 -> { if (tick >= 40) { screenshot(mc, "jei-mixing"); JeiHarness.next(mc); phase = 10; tick = 0; } }
 				case 10 -> { if (tick >= 40) { screenshot(mc, "jei-next"); mc.setScreen(null); openMenuAt(mc, BASE.offset(24, 0, 12)); phase = 11; tick = 0; } }
 				case 11 -> { if (tick >= 40) { screenshot(mc, "menu-schematic-table"); mc.setScreen(null); openMenuAt(mc, BASE.offset(24, 0, 11)); phase = 12; tick = 0; } }
 				case 12 -> { if (tick >= 40) { screenshot(mc, "menu-schematicannon"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
+				case 13 -> { if (tick >= 40) { screenshot(mc, "emi-1"); EmiHarness.show(mc, 1); phase = 14; tick = 0; } }
+				case 14 -> { if (tick >= 40) { screenshot(mc, "emi-2"); EmiHarness.show(mc, 2); phase = 15; tick = 0; } }
+				case 15 -> { if (tick >= 40) { screenshot(mc, "emi-3"); mc.setScreen(null); phase = 16; tick = 0; } }
 				case 3 -> {
 					if (tick == 60) screenshot(mc, "ponder-1");
 					if (tick == 160) screenshot(mc, "ponder-2");
@@ -117,6 +122,17 @@ public final class DevScreenshotHarness {
 		Create.LOGGER.info("[harness] item models probed: {} total, {} empty", total, invisible);
 	}
 
+	private static void probeClientRecipes(Minecraft mc) {
+		for (String id : new String[] { "create:crafting/logistics/package_frogport", "create:crafting/kinetics/sticky_mechanical_piston", "minecraft:stick" }) {
+			var holder = mc.getConnection().getRecipeManager().byKey(net.minecraft.resources.ResourceLocation.parse(id)).orElse(null);
+			if (holder == null || !(holder.value() instanceof net.minecraft.world.item.crafting.ShapedRecipe recipe)) {
+				Create.LOGGER.info("[harness] client recipe {} = {}", id, holder == null ? null : holder.value().getClass().getSimpleName());
+				continue;
+			}
+			Create.LOGGER.info("[harness] client recipe {} w={} h={} ingredients={} class={}", id, recipe.getWidth(), recipe.getHeight(), recipe.getIngredients().size(), recipe.getClass().getName());
+		}
+	}
+
 	/** Logs whether Catnip's SuperByteBuffer path (Ponder / contraption rendering) produces geometry for a few models. */
 	private static void probeBuffers(Minecraft mc) {
 		BlockState[] states = { AllBlocks.COGWHEEL.getDefaultState(), AllBlocks.SHAFT.getDefaultState(), AllBlocks.LARGE_COGWHEEL.getDefaultState(),
@@ -138,6 +154,19 @@ public final class DevScreenshotHarness {
 		if (id == null)
 			return AllBlocks.COGWHEEL.asStack();
 		return new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(id)));
+	}
+
+	/** Separate class so EMI classes only load when EMI is present. */
+	private static final class EmiHarness {
+		static boolean show(Minecraft mc, int index) {
+			List<dev.emi.emi.api.recipe.EmiRecipeCategory> categories = dev.emi.emi.api.EmiApi.getRecipeManager().getCategories().stream()
+				.filter(c -> c.getId().getNamespace().equals(Create.ID)).toList();
+			Create.LOGGER.info("[harness] EMI create categories: {}", categories.stream().map(c -> c.getId().getPath()).toList());
+			if (categories.size() <= index)
+				return false;
+			dev.emi.emi.api.EmiApi.displayRecipeCategory(categories.get(index));
+			return true;
+		}
 	}
 
 	/** Separate class so JEI classes only load when JEI is present. */
