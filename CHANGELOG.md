@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+**Fixed**
+- Crash `IncompatibleClassChangeError: Conflicting default methods: ...ItemInjection.hasCustomEntity /
+  ...ItemExtension.hasCustomEntity` whenever an item entity joined the world alongside a mod bundling Porting Lib's
+  `entity` module (e.g. Twilight Forest). `Item#hasCustomEntity` / `#createEntity` now have concrete bodies on `Item`
+  so both interfaces are satisfied.
+- `PackageEntity` had no default attributes registered (upstream's `EntityAttributeCreationEvent` listener was never
+  wired), so every dropped package threw an NPE in `LivingEntity#<init>`.
+
 ## 6.0.11-fabric.1
 
 First build of the unofficial Fabric port of Create 6.0.11.

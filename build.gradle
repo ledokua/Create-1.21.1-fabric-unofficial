@@ -121,6 +121,7 @@ dependencies {
     modCompileOnly("maven.modrinth:journeymap:${project.journeymap_version}") { transitive = false }
     mapModJars("maven.modrinth:journeymap:${project.journeymap_version}") { transitive = false }
     compileOnly fileTree(dir: layout.buildDirectory.dir("nestedMapModApis"), include: "*.jar")
+        .builtBy(tasks.named("extractJourneyMapApi")) // else remapSourcesJar sees an undeclared task output
     modCompileOnly("dev.ftb.mods:ftb-chunks-fabric:${project.ftb_chunks_version}") { transitive = false }
     modCompileOnly("dev.ftb.mods:ftb-library-fabric:${project.ftb_library_version}") { transitive = false }
     // Server-only nested jar with Flywheel API/lib + no-op service impls (Flywheel-Fabric is client-only; see the subproject).
@@ -147,7 +148,6 @@ dependencies {
 }
 
 // See buildSrc/EnvironmentLambdaStripper: make Fabric strip the lambda bodies of @Environment methods too.
-compileJava.dependsOn tasks.named("extractJourneyMapApi")
 compileJava.doLast {
     EnvironmentLambdaStripper.process(destinationDirectory.get().asFile)
 }

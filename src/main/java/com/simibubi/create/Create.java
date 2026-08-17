@@ -110,6 +110,10 @@ public class Create implements ModInitializer {
 		// NeoForge: fired once per registry after the mod constructors ran. Here: the Registrate flush.
 		REGISTRATE.register();
 		onRegister();
+		// NeoForge: modEventBus.addListener(AllEntityTypes::registerEntityAttributes) — EntityAttributeCreationEvent fires after
+		// the registry events. Without this PackageEntity has no AttributeSupplier and every dropped package NPEs in
+		// LivingEntity#<init> (AttributeMap.supplier == null).
+		AllEntityTypes.registerEntityAttributes(new com.simibubi.create.foundation.event.entity.EntityAttributeCreationEvent());
 		com.simibubi.create.infrastructure.RemapHelper.remap(); // legacy id aliases (Fabric addAlias)
 		CreateEventBus.BUS.post(new com.simibubi.create.foundation.transfer.capability.RegisterCapabilitiesEvent());
 		com.simibubi.create.foundation.event.CreateEventHooks.postPackFinders();
