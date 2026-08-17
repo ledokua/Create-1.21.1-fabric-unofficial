@@ -52,6 +52,22 @@ repositories {
         filter { includeGroup "maven.modrinth" }
     }
     maven { url = "https://maven.ladysnake.org/releases" } // Cardinal Components (Trinkets dependency)
+    maven { url = "https://maven.ftb.dev/releases" } // FTB Chunks / FTB Library (train map overlay)
+    maven { url = "https://maven.architectury.dev" } // Architectury (FTB Chunks dependency, dev runtime only)
+}
+
+// JourneyMap ships its API as a jar-in-jar; Loom does not put nested jars on the compile classpath, so extract it.
+// Not remapped: the only API members Create touches (UIState#ui/#active/#blockSize) are plain types.
+configurations {
+    mapModJars
+}
+tasks.register("extractJourneyMapApi", Copy) {
+    from({ configurations.mapModJars.collect { zipTree(it) } }) {
+        include "META-INF/jars/journeymap-api-*.jar"
+    }
+    into layout.buildDirectory.dir("nestedMapModApis")
+    includeEmptyDirs = false
+    eachFile { it.path = it.name }
 }
 
 dependencies {
@@ -97,6 +113,16 @@ dependencies {
     modCompileOnly("maven.modrinth:trinkets:${project.trinkets_version}") { transitive = false } // goggles/backtank in trinket slots (compat/trinkets)
     modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
     modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
+    // Map mods for the train map overlay (compat/trainmap). Compile-only; each integration is gated behind
+    // Mods.<id>.isLoaded() and its mixins behind CreateMixinPlugin.
+    // Xaero's World Map only; its xaerolib jar-in-jar is deliberately NOT on the classpath, so XaeroTrainMap
+    // reaches Screen members through casts instead of importing xaero.lib.client.gui.ScreenBase.
+    modCompileOnly("maven.modrinth:xaeros-world-map:${project.xaero_worldmap_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:journeymap:${project.journeymap_version}") { transitive = false }
+    mapModJars("maven.modrinth:journeymap:${project.journeymap_version}") { transitive = false }
+    compileOnly fileTree(dir: layout.buildDirectory.dir("nestedMapModApis"), include: "*.jar")
+    modCompileOnly("dev.ftb.mods:ftb-chunks-fabric:${project.ftb_chunks_version}") { transitive = false }
+    modCompileOnly("dev.ftb.mods:ftb-library-fabric:${project.ftb_library_version}") { transitive = false }
     // Server-only nested jar with Flywheel API/lib + no-op service impls (Flywheel-Fabric is client-only; see the subproject).
     include project(":flywheel-server-stub")
     // Dev runtime only: exercise the JEI plugin and Mod Menu config screen while testing (not published deps).
@@ -104,6 +130,15 @@ dependencies {
     modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
     if (project.hasProperty("withSodium")) // ./gradlew runClient -PwithSodium — Sodium has its own FRAPI/lighting paths worth smoke-testing
         modLocalRuntime "maven.modrinth:sodium:${project.sodium_version}"
+    // Xaero's World Map and JourneyMap have no dev runtime flag: both need libraries that exist only as jar-in-jars
+    // (xaerolib, commonnetworking) which Loom does not expose, so to test those overlays in dev drop the mod jars
+    // themselves into run/mods.
+    if (project.hasProperty("withFtbChunks")) { // ./gradlew runClient -PwithFtbChunks
+        modLocalRuntime "dev.ftb.mods:ftb-chunks-fabric:${project.ftb_chunks_version}"
+        modLocalRuntime "dev.ftb.mods:ftb-library-fabric:${project.ftb_library_version}"
+        modLocalRuntime "dev.ftb.mods:ftb-teams-fabric:${project.ftb_teams_version}"
+        modLocalRuntime "maven.modrinth:architectury-api:${project.architectury_version}"
+    }
     if (project.hasProperty("withTrinkets")) { // ./gradlew runClient -PwithTrinkets — exercises compat/trinkets
         modLocalRuntime "maven.modrinth:trinkets:${project.trinkets_version}"
         modLocalRuntime "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
@@ -112,6 +147,7 @@ dependencies {
 }
 
 // See buildSrc/EnvironmentLambdaStripper: make Fabric strip the lambda bodies of @Environment methods too.
+compileJava.dependsOn tasks.named("extractJourneyMapApi")
 compileJava.doLast {
     EnvironmentLambdaStripper.process(destinationDirectory.get().asFile)
 }

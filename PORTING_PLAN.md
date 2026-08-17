@@ -244,7 +244,14 @@ Next (roughly by user impact):
    drop on filter/schedule/requester screens; JEI plugin defers when EMI is loaded; `-PwithEmi` dev runtime, harness phases
    emi-1..3). EMI tag names for
    c:/trinkets:/curios: tags live in `scripts/extra-lang/en_us.json` (merged into Create's lang by convert-resources.py).
-   Open: train map mods (FTB Chunks / Journey / Xaero stubs), Iris-specific checks.
+   **Train map overlays** (`compat/trainmap`): Xaero's World Map, JourneyMap and FTB Chunks all draw Create's train
+   network + toggle widget (verified in the harness — screenshots `create-harness-trainmap-{xaero,journeymap,ftbchunks}`).
+   Fabric specifics: Xaero's screen base and JourneyMap's API live in jar-in-jars Loom does not expose, so XaeroTrainMap
+   goes through `Object`/`Screen` casts (plus reflection for `ScreenBase#parent`) and the JourneyMap API jar is extracted
+   from the mod jar by the `extractJourneyMapApi` Gradle task; the render hooks are mixins under
+   `foundation/mixin/compat/{xaeros,journeymap,ftbchunks}`, gated by `CreateMixinPlugin`. To test in dev: FTB Chunks via
+   `-PwithFtbChunks`; Xaero/JourneyMap by dropping their jars into `run/mods` (their libraries are JiJ-only).
+   Open: Iris-specific checks.
 5. Field reports from the first server deployment (398-mod pack): other Fabric mods' Create recipes use Create-Fabric
    0.5.x fluid JSON (now accepted: `CreateCodecs.LEGACY_FABRIC_SIZED_FLUID_INGREDIENT`, `FluidStack.DATA_CODEC`);
    Entity#getPersistentData mixin clashes with other mods (now a uniquely named duck); reported "many break sounds" when

@@ -55,6 +55,7 @@ public final class DevScreenshotHarness {
 	private static final BlockPos BASE = new BlockPos(0, 150, 0);
 	private static int tick = -1;
 	private static int phase = 0;
+	private static boolean openedMap = false;
 	private static boolean done;
 
 	public static void init() {
@@ -82,10 +83,14 @@ public final class DevScreenshotHarness {
 				case 9 -> { if (tick >= 40) { screenshot(mc, "jei-mixing"); JeiHarness.next(mc); phase = 10; tick = 0; } }
 				case 10 -> { if (tick >= 40) { screenshot(mc, "jei-next"); mc.setScreen(null); openMenuAt(mc, BASE.offset(24, 0, 12)); phase = 11; tick = 0; } }
 				case 11 -> { if (tick >= 40) { screenshot(mc, "menu-schematic-table"); mc.setScreen(null); openMenuAt(mc, BASE.offset(24, 0, 11)); phase = 12; tick = 0; } }
-				case 12 -> { if (tick >= 40) { screenshot(mc, "menu-schematicannon"); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
+				case 12 -> { if (tick >= 40) { screenshot(mc, "menu-schematicannon"); mc.setScreen(null); openedMap = com.simibubi.create.compat.Mods.XAEROWORLDMAP.isLoaded() && MapHarness.openXaero(mc); phase = 17; tick = 0; } }
 				case 13 -> { if (tick >= 40) { screenshot(mc, "emi-1"); EmiHarness.show(mc, 1); phase = 14; tick = 0; } }
 				case 14 -> { if (tick >= 40) { screenshot(mc, "emi-2"); EmiHarness.show(mc, 2); phase = 15; tick = 0; } }
 				case 15 -> { if (tick >= 40) { screenshot(mc, "emi-3"); mc.setScreen(null); phase = 16; tick = 0; } }
+				// train map overlays (compat/trainmap) — each only if that map mod is installed
+				case 17 -> { if (tick >= 40) { if (openedMap) screenshot(mc, "trainmap-xaero"); mc.setScreen(null); openedMap = com.simibubi.create.compat.Mods.JOURNEYMAP.isLoaded() && MapHarness.openJourneyMap(mc); phase = 18; tick = 0; } }
+				case 18 -> { if (tick >= 40) { if (openedMap) screenshot(mc, "trainmap-journeymap"); mc.setScreen(null); openedMap = com.simibubi.create.compat.Mods.FTBCHUNKS.isLoaded() && MapHarness.openFtbChunks(mc); phase = 19; tick = 0; } }
+				case 19 -> { if (tick >= 40) { if (openedMap) screenshot(mc, "trainmap-ftbchunks"); mc.setScreen(null); mc.setScreen(PonderUI.of(ponderTarget())); phase = 3; tick = 0; } }
 				case 3 -> {
 					if (tick == 60) screenshot(mc, "ponder-1");
 					if (tick == 160) screenshot(mc, "ponder-2");
@@ -166,6 +171,40 @@ public final class DevScreenshotHarness {
 				return false;
 			dev.emi.emi.api.EmiApi.displayRecipeCategory(categories.get(index));
 			return true;
+		}
+	}
+
+	/** Separate class so the map mods' classes only load when they are present. */
+	private static final class MapHarness {
+		static boolean openXaero(Minecraft mc) {
+			try {
+				Object map = new xaero.map.gui.GuiMap(mc.screen, mc.screen,
+					xaero.map.WorldMapSession.getCurrentSession().getMapProcessor(), mc.player);
+				mc.setScreen((net.minecraft.client.gui.screens.Screen) map);
+				return true;
+			} catch (Throwable e) {
+				Create.LOGGER.error("[harness] could not open Xaero's world map", e);
+				return false;
+			}
+		}
+
+		static boolean openJourneyMap(Minecraft mc) {
+			try {
+				mc.setScreen(new journeymap.client.ui.fullscreen.Fullscreen());
+				return true;
+			} catch (Throwable e) {
+				Create.LOGGER.error("[harness] could not open JourneyMap's fullscreen map", e);
+				return false;
+			}
+		}
+
+		static boolean openFtbChunks(Minecraft mc) {
+			try {
+				return dev.ftb.mods.ftbchunks.client.gui.LargeMapScreen.openMap();
+			} catch (Throwable e) {
+				Create.LOGGER.error("[harness] could not open FTB Chunks' large map", e);
+				return false;
+			}
 		}
 	}
 
@@ -266,6 +305,11 @@ public final class DevScreenshotHarness {
 				BlockPos pos = BASE.offset((Integer) args[0], (Integer) args[1], (Integer) args[2]);
 				level.setBlockAndUpdate(pos, (BlockState) args[3]);
 			};
+			// a short stretch of train track, so the train map overlay (compat/trainmap) has a network to draw
+			for (int x = -2; x <= 25; x++)
+				level.setBlockAndUpdate(BASE.offset(x, 0, 12),
+					AllBlocks.TRACK.getDefaultState().setValue(com.simibubi.create.content.trains.track.TrackBlock.SHAPE,
+						com.simibubi.create.content.trains.track.TrackShape.XO));
 			// row A (z=1): kinetics
 			place.accept(new Object[] { 1, 0, 1, AllBlocks.CREATIVE_MOTOR.getDefaultState().setValue(BlockStateProperties.FACING, Direction.EAST) });
 			place.accept(new Object[] { 2, 0, 1, AllBlocks.SHAFT.getDefaultState().setValue(BlockStateProperties.AXIS, Direction.Axis.X) });

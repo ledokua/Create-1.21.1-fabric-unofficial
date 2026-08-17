@@ -21,8 +21,13 @@ public class CreateMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (mixinClassName.startsWith("com.simibubi.create.foundation.mixin.compat.xaeros") && !Mods.XAEROWORLDMAP.isLoaded())
-			return false;
+		// Map-mod integrations (compat/trainmap): their target classes only exist when the mod is installed.
+		if (mixinClassName.startsWith("com.simibubi.create.foundation.mixin.compat.xaeros"))
+			return Mods.XAEROWORLDMAP.isLoaded();
+		if (mixinClassName.startsWith("com.simibubi.create.foundation.mixin.compat.journeymap"))
+			return Mods.JOURNEYMAP.isLoaded();
+		if (mixinClassName.startsWith("com.simibubi.create.foundation.mixin.compat.ftbchunks"))
+			return Mods.FTBCHUNKS.isLoaded();
 		return true;
 	}
 
