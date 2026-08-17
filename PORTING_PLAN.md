@@ -286,22 +286,22 @@ CREATE_HARNESS=showcase ./gradlew runClient --args="--quickPlaySingleplayer 'New
 - [ ] **Phase 2 — Registry data classes.** `AllBlocks`, `AllItems`, `AllFluids`, `AllBlockEntityTypes`,
       `AllEntityTypes`, `AllRecipeTypes`, `AllSoundEvents`, `AllParticleTypes`, `AllCreativeModeTabs`,
       `AllTags`, `AllDataComponents`, etc. Mostly mechanical once Phase 0b/1 land.
-- [ ] **Phase 3 — Kinetics.** Shafts, cogwheels, stress system, Flywheel-backed kinetic rendering. The heart
+- [x] **Phase 3 — Kinetics.** Shafts, cogwheels, stress system, Flywheel-backed kinetic rendering. The heart
       of the mod.
-- [ ] **Phase 4 — Contraptions.** Movement, assembly, collision. Most complex subsystem; deep NeoForge
+- [x] **Phase 4 — Contraptions.** Movement, assembly, collision. Most complex subsystem; deep NeoForge
       entity/physics hooks to replace.
-- [ ] **Phase 5 — Processing.** Mixing, pressing, crushing, fans, spouts, deployers, recipes.
-- [ ] **Phase 6 — Logistics.** Packagers, redstone links, display links.
-- [ ] **Phase 7 — Trains & tracks.**
-- [ ] **Phase 8 — Decoration & palettes.** Mostly plain blocks — good throughput phase.
-- [ ] **Phase 9 — Equipment.** Tools, armor, potato cannon.
-- [ ] **Phase 10 — Ponder integration.** Engine dependency is already wired (Phase 0); this phase wires up
+- [x] **Phase 5 — Processing.** Mixing, pressing, crushing, fans, spouts, deployers, recipes.
+- [x] **Phase 6 — Logistics.** Packagers, redstone links, display links.
+- [x] **Phase 7 — Trains & tracks.**
+- [x] **Phase 8 — Decoration & palettes.** Mostly plain blocks — good throughput phase.
+- [x] **Phase 9 — Equipment.** Tools, armor, potato cannon.
+- [x] **Phase 10 — Ponder integration.** Engine dependency is already wired (Phase 0); this phase wires up
       Create's actual ponder scene registrations.
-- [ ] **Phase 11 — Datagen.** NeoForge datagen → Fabric data generation API (recipes, loot tables, tags,
+- [ ] **Phase 11 — Datagen.** (still open — runtime uses vendored upstream JSON) NeoForge datagen → Fabric data generation API (recipes, loot tables, tags,
       models).
-- [ ] **Phase 12 — Compat modules.** JEI, Curios, CC: Tweaked, Farmer's Delight, Sodium. Lowest priority,
+- [x] **Phase 12 — Compat modules.** JEI, Curios, CC: Tweaked, Farmer's Delight, Sodium. Lowest priority,
       mostly optional, do last.
-- [ ] **Phase 13 — Polish.** Sounds, lang, advancements, worldgen, mixin audit.
+- [x] **Phase 13 — Polish.** Sounds, lang, advancements, worldgen, mixin audit.
 
 ## Licensing note
 
