@@ -139,9 +139,7 @@ public final class CreateEventHooks {
 		PlayerInteractEvent.RightClickBlock event = post(new PlayerInteractEvent.RightClickBlock(player, hand, hitResult.getBlockPos(), hitResult));
 		if (event.isCanceled())
 			return event.getCancellationResult() == InteractionResult.PASS ? InteractionResult.FAIL : event.getCancellationResult();
-		// NeoForge's setUseBlock/setUseItem(FALSE) can't be expressed through Fabric's callback; DENY-ing everything is the
-		// closest (Create only uses them to suppress the block interaction while it handles the click itself).
-		if (event.getUseBlock() == net.fabricmc.fabric.api.util.TriState.FALSE || event.getUseItem() == net.fabricmc.fabric.api.util.TriState.FALSE)
+		if (event.getUseItem() == net.fabricmc.fabric.api.util.TriState.FALSE)
 			return InteractionResult.FAIL;
 		// NeoForge's Item#onItemUseFirst: runs before the block's use handler, on both sides (cogwheels, linked controller)
 		net.minecraft.world.item.ItemStack stack = player.getItemInHand(hand);
@@ -151,7 +149,36 @@ public final class CreateEventHooks {
 			if (result != InteractionResult.PASS)
 				return result;
 		}
+		// NeoForge's setUseBlock(FALSE): skip the block's use handler but still let the item act on the block
+		// (funnels, display links, super glue always place/apply even on interactive blocks).
+		if (event.getUseBlock() == net.fabricmc.fabric.api.util.TriState.FALSE)
+			return useItemOnBlockSkippingBlock(player, level, hand, stack, hitResult);
 		return InteractionResult.PASS;
+	}
+
+	/** Mirrors the item half of vanilla's {@code useItemOn} (cooldown, creative count restore, advancement trigger). */
+	private static InteractionResult useItemOnBlockSkippingBlock(Player player, Level level, InteractionHand hand,
+																 net.minecraft.world.item.ItemStack stack, BlockHitResult hitResult) {
+		if (player.isSpectator() || stack.isEmpty() || player.getCooldowns().isOnCooldown(stack.getItem()))
+			return InteractionResult.FAIL;
+		net.minecraft.world.item.context.UseOnContext context = new net.minecraft.world.item.context.UseOnContext(player, hand, hitResult);
+		InteractionResult result;
+		if (player.hasInfiniteMaterials()) {
+			int count = stack.getCount();
+			result = stack.useOn(context);
+			stack.setCount(count);
+		} else {
+			result = stack.useOn(context);
+		}
+		if (result.indicateItemUse() && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer)
+			net.minecraft.advancements.CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, hitResult.getBlockPos(), stack.copy());
+		// PASS would hand control back to vanilla, which would run the block's use handler after all
+		if (result == InteractionResult.PASS)
+			return InteractionResult.FAIL;
+		// Fabric only sends the use packet to the server for a client-side SUCCESS
+		if (level.isClientSide && result.consumesAction())
+			return InteractionResult.SUCCESS;
+		return result;
 	}
 
 	private static InteractionResultHolder<net.minecraft.world.item.ItemStack> onUseItem(Player player, Level level, InteractionHand hand) {
