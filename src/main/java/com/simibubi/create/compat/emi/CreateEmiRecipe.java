@@ -159,10 +159,15 @@ public class CreateEmiRecipe<T extends Recipe<?>> implements EmiRecipe {
 					return !slot.fluid || shown.isEmpty() ? Optional.empty() : Optional.of(EmiLayout.fromEmi(shown));
 				}
 			};
+			// JEI hands callbacks the full tooltip with the name at index 0, and Create's callbacks rely on that
+			// (tooltip.add(1, ...)), so seed a placeholder name line and drop it afterwards
+			Component namePlaceholder = Component.empty();
 			List<Component> lines = new ArrayList<>();
+			lines.add(namePlaceholder);
 			for (var callback : slot.tooltipCallbacks)
 				callback.addTooltip(view, lines);
-			// Create's callbacks may insert after the name (potion effects); the rest is appended
+			lines.removeIf(line -> line == namePlaceholder);
+			// everything Create adds goes right after EMI's name line
 			int insertAt = Math.min(1, tooltip.size());
 			List<ClientTooltipComponent> converted = lines.stream().map(Component::getVisualOrderText).map(ClientTooltipComponent::create).toList();
 			tooltip.addAll(insertAt, converted);
