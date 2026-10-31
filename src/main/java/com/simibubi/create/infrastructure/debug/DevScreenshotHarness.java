@@ -59,7 +59,13 @@ public final class DevScreenshotHarness {
 	private static boolean done;
 
 	public static void init() {
-		if (!"showcase".equals(System.getProperty("create.harness", System.getenv("CREATE_HARNESS"))))
+		String mode = System.getProperty("create.harness", System.getenv("CREATE_HARNESS"));
+		if ("items".equals(mode)) {
+			Create.LOGGER.info("[harness] held-item harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(ItemHarness::tick);
+			return;
+		}
+		if (!"showcase".equals(mode))
 			return;
 		Create.LOGGER.info("[harness] screenshot harness armed");
 		ClientTickEvents.END_CLIENT_TICK.register(DevScreenshotHarness::tick);
@@ -159,6 +165,97 @@ public final class DevScreenshotHarness {
 		if (id == null)
 			return AllBlocks.COGWHEEL.asStack();
 		return new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(id)));
+	}
+
+	/**
+	 * {@code -Dcreate.harness=items}: first-person (and third-person) screenshots of the custom-rendered handheld items
+	 * (potato cannon, extendo grip, wand of symmetry, wrench for reference), plus a log of their partial models.
+	 */
+	private static final class ItemHarness {
+		private static final String[] NAMES = { "wrench", "potato_cannon", "extendo_grip", "wand_of_symmetry" };
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			try {
+				if (phase == 0) {
+					if (tick < 40)
+						return;
+					setup(mc);
+					logPartials(mc);
+					phase = 1;
+					tick = 0;
+					return;
+				}
+				int slot = (phase - 1) / 2;
+				boolean thirdPerson = (phase - 1) % 2 == 1;
+				if (slot >= NAMES.length) {
+					Create.LOGGER.info("[harness] done");
+					done = true;
+					mc.stop();
+					return;
+				}
+				if (tick == 1) {
+					mc.player.getInventory().selected = slot;
+					mc.options.setCameraType(thirdPerson ? net.minecraft.client.CameraType.THIRD_PERSON_FRONT : net.minecraft.client.CameraType.FIRST_PERSON);
+				}
+				if (tick >= 40) {
+					screenshot(mc, "item-" + NAMES[slot] + (thirdPerson ? "-3p" : "-1p"));
+					phase++;
+					tick = 0;
+				}
+			} catch (Throwable t) {
+				Create.LOGGER.error("[harness] failed", t);
+				done = true;
+				mc.stop();
+			}
+		}
+
+		private static void setup(Minecraft mc) {
+			MinecraftServer server = mc.getSingleplayerServer();
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayer(mc.player.getUUID());
+				player.setGameMode(GameType.CREATIVE);
+				player.getAbilities().flying = true;
+				player.onUpdateAbilities();
+				level.setDayTime(6000);
+				for (int x = -3; x <= 3; x++)
+					for (int z = -3; z <= 3; z++)
+						level.setBlockAndUpdate(BASE.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
+				player.getInventory().clearContent();
+				ItemStack[] hotbar = { AllItems.WRENCH.asStack(), AllItems.POTATO_CANNON.asStack(), AllItems.EXTENDO_GRIP.asStack(),
+					AllItems.WAND_OF_SYMMETRY.asStack() };
+				for (int i = 0; i < hotbar.length; i++)
+					player.getInventory().setItem(i, hotbar[i]);
+				player.teleportTo(level, 0.5, 151.5, 0.5, 0, 10);
+			});
+		}
+
+		private static void logPartials(Minecraft mc) {
+			var missing = mc.getModelManager().getMissingModel();
+			for (String path : new String[] { "item/potato_cannon/cog", "item/extendo_grip/cog", "item/extendo_grip/thin_short",
+				"item/extendo_grip/wide_long", "item/wand_of_symmetry/bits", "item/wand_of_symmetry/core" }) {
+				var partial = dev.engine_room.flywheel.lib.model.baked.PartialModel.of(Create.asResource(path));
+				var model = partial.get();
+				int quads = 0;
+				if (model != null) {
+					quads += model.getQuads(null, null, net.minecraft.util.RandomSource.create(42)).size();
+					for (Direction d : Direction.values())
+						quads += model.getQuads(null, d, net.minecraft.util.RandomSource.create(42)).size();
+				}
+				Create.LOGGER.info("[harness] partial {} -> {} quads={}{}", path, model == null ? null : model.getClass().getSimpleName(), quads,
+					model == missing ? " MISSING" : "");
+			}
+			for (ItemStack stack : new ItemStack[] { AllItems.WRENCH.asStack(), AllItems.POTATO_CANNON.asStack(), AllItems.EXTENDO_GRIP.asStack(),
+				AllItems.WAND_OF_SYMMETRY.asStack() }) {
+				var model = mc.getItemRenderer().getModel(stack, mc.level, mc.player, 0);
+				Create.LOGGER.info("[harness] item {} -> {} custom={} bewlr={}", stack.getItem(), model.getClass().getName(), model.isCustomRenderer(),
+					com.simibubi.create.foundation.client.extensions.IClientItemExtensions.of(stack).getCustomRenderer().getClass().getName());
+			}
+		}
 	}
 
 	/** Separate class so EMI classes only load when EMI is present. */
