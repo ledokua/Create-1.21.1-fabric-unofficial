@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
+import com.simibubi.create.foundation.model.ChunkRenderTypeSet;
 
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.Minecraft;
@@ -84,6 +85,17 @@ public abstract class CopycatModel extends BakedModelWrapperWithData {
 			if (!Block.shouldRenderFace(material, level, pos, face, neighbourPos))
 				occlusionData.occlude(face);
 		}
+	}
+
+	// Fabric port: NeoForge registers all four copycat layers (BuilderTransformers.copycat), but Fabric's
+	// BlockRenderLayerMap keeps only one per block, so the layers have to come from the material instead
+	@Override
+	public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource rand, ModelData data) {
+		BlockState material = getMaterial(data);
+		ModelData wrappedData = data.get(WRAPPED_DATA_PROPERTY);
+		if (wrappedData == null)
+			wrappedData = ModelData.EMPTY;
+		return getModelOf(material).getRenderTypes(material, rand, wrappedData);
 	}
 
 	@Override
