@@ -12,6 +12,7 @@ import com.simibubi.create.foundation.render.BlockEntityRenderHelper;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.createmod.catnip.render.ShadedBlockSbbBuilder;
+import com.simibubi.create.foundation.render.SbbVertexConsumer;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.createmod.catnip.render.SuperRenderTypeBuffer;
 import net.minecraft.client.Minecraft;
@@ -95,37 +96,41 @@ public class SchematicRenderer {
 		SchematicLevel renderWorld = schematic;
 		BoundingBox bounds = renderWorld.getBounds();
 
-		ShadedBlockSbbBuilder sbbBuilder = objects.sbbBuilder;
-		sbbBuilder.begin();
+		SbbVertexConsumer sbbConsumer = objects.sbbConsumer;
+		sbbConsumer.begin();
 
 		renderWorld.renderMode = true;
 		ModelBlockRenderer.enableCaching();
-		for (BlockPos localPos : BlockPos.betweenClosed(bounds.minX(), bounds.minY(), bounds.minZ(), bounds.maxX(), bounds.maxY(), bounds.maxZ())) {
-			BlockPos pos = mutableBlockPos.setWithOffset(localPos, anchor);
-			BlockState state = renderWorld.getBlockState(pos);
+		try {
+			for (BlockPos localPos : BlockPos.betweenClosed(bounds.minX(), bounds.minY(), bounds.minZ(), bounds.maxX(), bounds.maxY(), bounds.maxZ())) {
+				BlockPos pos = mutableBlockPos.setWithOffset(localPos, anchor);
+				BlockState state = renderWorld.getBlockState(pos);
 
-			if (state.getRenderShape() == RenderShape.MODEL) {
-				BakedModel model = dispatcher.getBlockModel(state);
-				BlockEntity blockEntity = renderWorld.getBlockEntity(localPos);
-				ModelData modelData = blockEntity != null ? blockEntity.getModelData() : ModelData.EMPTY;
-				modelData = model.getModelData(renderWorld, pos, state, modelData);
-				long seed = state.getSeed(pos);
-				random.setSeed(seed);
-				if (model.getRenderTypes(state, random, modelData).contains(layer)) {
-					poseStack.pushPose();
-					poseStack.translate(localPos.getX(), localPos.getY(), localPos.getZ());
+				if (state.getRenderShape() == RenderShape.MODEL) {
+					BakedModel model = dispatcher.getBlockModel(state);
+					BlockEntity blockEntity = renderWorld.getBlockEntity(localPos);
+					ModelData modelData = blockEntity != null ? blockEntity.getModelData() : ModelData.EMPTY;
+					modelData = model.getModelData(renderWorld, pos, state, modelData);
+					long seed = state.getSeed(pos);
+					random.setSeed(seed);
+					if (model.getRenderTypes(state, random, modelData).contains(layer)) {
+						poseStack.pushPose();
+						poseStack.translate(localPos.getX(), localPos.getY(), localPos.getZ());
 
-					renderer.tesselateBlock(renderWorld, model, state, pos, poseStack, sbbBuilder, true,
-						random, seed, OverlayTexture.NO_OVERLAY, modelData, layer);
+						renderer.tesselateBlock(renderWorld, model, state, pos, poseStack, sbbConsumer, true,
+							random, seed, OverlayTexture.NO_OVERLAY, modelData, layer);
 
-					poseStack.popPose();
+						poseStack.popPose();
+					}
 				}
 			}
+		} finally {
+			sbbConsumer.release();
 		}
 		ModelBlockRenderer.clearCache();
 		renderWorld.renderMode = false;
 
-		return sbbBuilder.end();
+		return objects.sbb.end();
 	}
 
 	private static int getLayerCount() {
@@ -137,7 +142,8 @@ public class SchematicRenderer {
 		public final PoseStack poseStack = new PoseStack();
 		public final RandomSource random = RandomSource.createNewThreadLocalInstance();
 		public final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-		public final ShadedBlockSbbBuilder sbbBuilder = ShadedBlockSbbBuilder.create();
+		public final ShadedBlockSbbBuilder sbb = ShadedBlockSbbBuilder.create();
+		public final SbbVertexConsumer sbbConsumer = new SbbVertexConsumer(sbb);
 	}
 
 }

@@ -16,6 +16,7 @@ import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.render.ShadedBlockSbbBuilder;
+import com.simibubi.create.foundation.render.SbbVertexConsumer;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.createmod.catnip.render.SuperByteBufferCache;
 import net.minecraft.client.Minecraft;
@@ -60,29 +61,33 @@ public class ContraptionEntityRenderer<C extends AbstractContraptionEntity> exte
 		var clientContraption = contraption.getOrCreateClientContraptionLazy();
 		RenderedBlocks blocks = clientContraption.getRenderedBlocks();
 
-		ShadedBlockSbbBuilder sbbBuilder = objects.sbbBuilder;
-		sbbBuilder.begin();
+		SbbVertexConsumer sbbConsumer = objects.sbbConsumer;
+		sbbConsumer.begin();
 
 		ModelBlockRenderer.enableCaching();
-		for (BlockPos pos : blocks.positions()) {
-			BlockState state = blocks.lookup().apply(pos);
-			if (state.getRenderShape() == RenderShape.MODEL) {
-				BakedModel model = dispatcher.getBlockModel(state);
-				ModelData modelData = renderWorld.getModelData(pos);
-				modelData = model.getModelData(renderWorld, pos, state, modelData);
-				long randomSeed = state.getSeed(pos);
-				random.setSeed(randomSeed);
-				if (model.getRenderTypes(state, random, modelData).contains(layer)) {
-					poseStack.pushPose();
-					poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
-					renderer.tesselateBlock(renderWorld, model, state, pos, poseStack, sbbBuilder, true, random, randomSeed, OverlayTexture.NO_OVERLAY, modelData, layer);
-					poseStack.popPose();
+		try {
+			for (BlockPos pos : blocks.positions()) {
+				BlockState state = blocks.lookup().apply(pos);
+				if (state.getRenderShape() == RenderShape.MODEL) {
+					BakedModel model = dispatcher.getBlockModel(state);
+					ModelData modelData = renderWorld.getModelData(pos);
+					modelData = model.getModelData(renderWorld, pos, state, modelData);
+					long randomSeed = state.getSeed(pos);
+					random.setSeed(randomSeed);
+					if (model.getRenderTypes(state, random, modelData).contains(layer)) {
+						poseStack.pushPose();
+						poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+						renderer.tesselateBlock(renderWorld, model, state, pos, poseStack, sbbConsumer, true, random, randomSeed, OverlayTexture.NO_OVERLAY, modelData, layer);
+						poseStack.popPose();
+					}
 				}
 			}
+		} finally {
+			sbbConsumer.release();
 		}
 		ModelBlockRenderer.clearCache();
 
-		return sbbBuilder.end();
+		return objects.sbb.end();
 	}
 
 	@Override
@@ -171,6 +176,7 @@ public class ContraptionEntityRenderer<C extends AbstractContraptionEntity> exte
 	private static class ThreadLocalObjects {
 		public final PoseStack poseStack = new PoseStack();
 		public final RandomSource random = RandomSource.createNewThreadLocalInstance();
-		public final ShadedBlockSbbBuilder sbbBuilder = ShadedBlockSbbBuilder.create();
+		public final ShadedBlockSbbBuilder sbb = ShadedBlockSbbBuilder.create();
+		public final SbbVertexConsumer sbbConsumer = new SbbVertexConsumer(sbb);
 	}
 }

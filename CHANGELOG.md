@@ -1,5 +1,14 @@
 # Changelog
 
+## 6.0.11-fabric.3
+
+**Fixed**
+- Client crash `ShadedBlockSbbBuilder only supports putBulkData!` when a moving contraption (or a schematic preview)
+  holding one of Create's data-aware blocks (casings with connected textures, copycats, encased shafts, ...) was drawn
+  while Flywheel's backend is off, which it switches to under Iris shaders. Fabric's renderers (Sodium, Indigo) write
+  those blocks vertex by vertex, which Catnip's buffer builder rejected; the vertices now go into its underlying
+  buffer, with the per-quad shading kept.
+
 ## 6.0.11-fabric.2
 
 **Performance**

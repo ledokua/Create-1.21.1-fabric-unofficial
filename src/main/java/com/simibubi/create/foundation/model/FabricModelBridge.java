@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.foundation.model.data.ModelData;
+import com.simibubi.create.foundation.render.SbbVertexConsumer;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderHelper;
 
 import net.fabricmc.fabric.api.blockview.v2.FabricBlockView;
@@ -63,6 +64,8 @@ public final class FabricModelBridge {
 		ModelData data = model.getModelData(level, pos, state, modelDataAt(level, pos));
 		ChunkRenderTypeSet renderTypes = model.getRenderTypes(state, randomSupplier.get(), data);
 		QuadEmitter emitter = context.getEmitter();
+		// buffering into a ShadedBlockSbbBuilder (contraption/schematic, Flywheel off): it needs each quad's shade flag
+		SbbVertexConsumer sbb = SbbVertexConsumer.active();
 		for (RenderType renderType : renderTypes) {
 			net.fabricmc.fabric.api.util.TriState ao = model.useAmbientOcclusion(state, data, renderType);
 			RenderMaterial material = material(renderType, false, ao);
@@ -78,10 +81,14 @@ public final class FabricModelBridge {
 					emitter.fromVanilla(quad, fullBright ? emissive : material, side);
 					if (fullBright)
 						emitter.lightmap(FULL_BRIGHT, FULL_BRIGHT, FULL_BRIGHT, FULL_BRIGHT);
+					if (sbb != null)
+						sbb.setQuadShade(quad.isShade());
 					emitter.emit();
 				}
 			}
 		}
+		if (sbb != null)
+			sbb.setQuadShade(true);
 	}
 
 	private static RenderMaterial material(RenderType renderType, boolean emissive, net.fabricmc.fabric.api.util.TriState ambientOcclusion) {

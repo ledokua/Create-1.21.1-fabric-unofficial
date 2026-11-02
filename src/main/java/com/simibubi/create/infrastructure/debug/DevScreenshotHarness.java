@@ -81,7 +81,8 @@ public final class DevScreenshotHarness {
 				case 0 -> { if (tick >= 40) { build(mc); probeBuffers(mc); probeItemModels(mc); probeClientRecipes(mc); phase = 1; tick = 0; } }
 				case 1 -> { if (tick == 5) mc.player.getInventory().selected = 0; if (tick >= 140) { screenshot(mc, "overview"); teleport(mc, 5.5, 152.0, -1.5, 0, 46, false); phase = 2; tick = 0; } }
 				case 2 -> { if (tick >= 60) { screenshot(mc, "goggles"); teleport(mc, 22.5, 154.5, 3.5, 0, 35, false); phase = 5; tick = 0; } }
-				case 5 -> { if (tick >= 60) { screenshot(mc, "contraption"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get()); phase = 6; tick = 0; } }
+				case 5 -> { if (tick >= 60) { screenshot(mc, "contraption"); teleport(mc, 0.5, 152.0, -3.8, 0, 30, false); phase = 20; tick = 0; } }
+				case 20 -> { if (tick >= 60) { logContraptions(mc); screenshot(mc, "contraption-ct"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get()); phase = 6; tick = 0; } }
 				case 6 -> { if (tick >= 30) { screenshot(mc, "creative-base"); openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.PALETTES_CREATIVE_TAB.get()); phase = 7; tick = 0; } }
 				case 7 -> { if (tick >= 30) { screenshot(mc, "creative-palettes"); mc.setScreen(new net.createmod.catnip.config.ui.BaseConfigScreen(null, Create.ID)); phase = 8; tick = 0; } }
 				case 8 -> { if (tick >= 30) { screenshot(mc, "config"); mc.setScreen(null); if (com.simibubi.create.compat.Mods.EMI.isLoaded() && EmiHarness.show(mc, 0)) phase = 13; else phase = 16; tick = 0; } }
@@ -110,6 +111,14 @@ public final class DevScreenshotHarness {
 			done = true;
 			mc.stop();
 		}
+	}
+
+	private static void logContraptions(Minecraft mc) {
+		Create.LOGGER.info("[harness] block above CT bearing: {}", mc.level.getBlockState(BASE.offset(0, 1, -1)));
+		for (net.minecraft.world.entity.Entity e : mc.level.entitiesForRendering())
+			if (e instanceof com.simibubi.create.content.contraptions.AbstractContraptionEntity ace)
+				Create.LOGGER.info("[harness] contraption entity {} at {} blocks={}", e.getType(), e.blockPosition(),
+					ace.getContraption() == null ? null : ace.getContraption().getBlocks().values().stream().map(i -> i.state().getBlock().toString()).toList());
 	}
 
 	/** Logs every Create item whose baked model is empty (no quads, no custom renderer) — i.e. would render invisible. */
@@ -462,6 +471,11 @@ public final class DevScreenshotHarness {
 			place.accept(new Object[] { 24, 0, 11, AllBlocks.SCHEMATICANNON.getDefaultState() });
 			place.accept(new Object[] { 22, 0, 9, AllBlocks.MECHANICAL_BEARING.getDefaultState().setValue(BlockStateProperties.FACING, Direction.UP) });
 			place.accept(new Object[] { 22, 1, 9, Blocks.OAK_PLANKS.defaultBlockState() });
+			// second bearing carrying a connected-texture casing: a non-vanilla-adapter model in the contraption buffer
+			// (Flywheel-off path, ShadedBlockSbbBuilder)
+			place.accept(new Object[] { 0, -1, -1, AllBlocks.CREATIVE_MOTOR.getDefaultState().setValue(BlockStateProperties.FACING, Direction.UP) });
+			place.accept(new Object[] { 0, 0, -1, AllBlocks.MECHANICAL_BEARING.getDefaultState().setValue(BlockStateProperties.FACING, Direction.UP) });
+			place.accept(new Object[] { 0, 1, -1, AllBlocks.ANDESITE_CASING.getDefaultState() });
 			place.accept(new Object[] { 23, 1, 9, AllBlocks.COGWHEEL.getDefaultState() });
 			place.accept(new Object[] { 21, 1, 9, AllPaletteBlocks.FRAMED_GLASS.getDefaultState() });
 			place.accept(new Object[] { 22, 1, 10, AllBlocks.ANDESITE_CASING.getDefaultState() });
