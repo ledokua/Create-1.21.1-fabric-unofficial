@@ -60,7 +60,9 @@ public enum AllKeys {
 	@SubscribeEvent
 	public static void register(RegisterKeyMappingsEvent event) {
 		for (AllKeys key : values()) {
-			if (key.conflictSafe) {
+			// Fabric port: unregistered keys (activate_tool, read from the raw key state) are made conflict-safe too, as
+			// any KeyMapping enters vanilla's one-mapping-per-key table on construction and could take e.g. sprint's key.
+			if (key.conflictSafe || !key.modifiable) {
 				key.keybind = new ConflictSafeKeyMapping(key.description, key.key, Create.NAME);
 			} else {
 				key.keybind = new KeyMapping(key.description, key.key, Create.NAME);
@@ -79,7 +81,10 @@ public enum AllKeys {
 	public boolean isPressed() {
 		if (!modifiable)
 			return isKeyDown(key);
-		return keybind.isDown();
+		// Fabric port: vanilla gives each physical key to only one KeyMapping, so isDown() is false whenever another
+		// mapping shares the key (toolmenu/toolbelt both default to Left Alt; the conflict-safe modifiers never get it,
+		// see ConflictSafeKeyMappingMixin). NeoForge lets them share; the raw state of the bound key matches that.
+		return isBoundKeyDown(keybind);
 	}
 
 	public String getBoundKey() {
@@ -105,16 +110,25 @@ public enum AllKeys {
 			.getWindow(), button) == 1;
 	}
 
+	private static boolean isBoundKeyDown(KeyMapping mapping) {
+		InputConstants.Key bound = mapping.getKey();
+		return switch (bound.getType()) {
+			case KEYSYM -> bound.getValue() != InputConstants.UNKNOWN.getValue() && isKeyDown(bound.getValue());
+			case MOUSE -> isMouseButtonDown(bound.getValue());
+			case SCANCODE -> false;
+		};
+	}
+
 	public static boolean ctrlDown() {
-		return isKeyDown(CTRL_MODIFIER.keybind.getKey().getValue());
+		return isBoundKeyDown(CTRL_MODIFIER.keybind);
 	}
 
 	public static boolean shiftDown() {
-		return isKeyDown(SHIFT_MODIFIER.keybind.getKey().getValue());
+		return isBoundKeyDown(SHIFT_MODIFIER.keybind);
 	}
 
 	public static boolean altDown() {
-		return isKeyDown(ALT_MODIFIER.keybind.getKey().getValue());
+		return isBoundKeyDown(ALT_MODIFIER.keybind);
 	}
 
 }

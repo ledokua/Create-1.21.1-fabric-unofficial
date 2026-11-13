@@ -65,6 +65,63 @@ public final class DevScreenshotHarness {
 			ClientTickEvents.END_CLIENT_TICK.register(ItemHarness::tick);
 			return;
 		}
+		if ("gui".equals(mode)) {
+			Create.LOGGER.info("[harness] GUI item harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(GuiHarness::tick);
+			return;
+		}
+		if ("schematic".equals(mode)) {
+			Create.LOGGER.info("[harness] schematic tool menu harness armed");
+			// stay off the schematic slot until setup has put a valid schematic there
+			ClientTickEvents.START_CLIENT_TICK.register(mc -> { if (mc.player != null && phase == 0 && tick < 30) mc.player.getInventory().selected = 8; });
+			ClientTickEvents.END_CLIENT_TICK.register(SchematicKeyHarness::tick);
+			return;
+		}
+		if ("transfer".equals(mode)) {
+			Create.LOGGER.info("[harness] transfer benchmark armed");
+			ClientTickEvents.END_CLIENT_TICK.register(TransferBenchmark::tick);
+			return;
+		}
+		if ("drawers".equals(mode)) {
+			Create.LOGGER.info("[harness] drawer network benchmark armed");
+			ClientTickEvents.END_CLIENT_TICK.register(DrawerNetworkBenchmark::tick);
+			return;
+		}
+		if ("crumble".equals(mode)) {
+			Create.LOGGER.info("[harness] drawer crumbling harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(CrumbleHarness::tick);
+			return;
+		}
+		if ("machines".equals(mode)) {
+			Create.LOGGER.info("[harness] machine item harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(MachineItemsHarness::tick);
+			return;
+		}
+		if ("opac".equals(mode)) {
+			Create.LOGGER.info("[harness] OPAC claim protection harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(OpacHarness::tick);
+			return;
+		}
+		if ("gantry".equals(mode)) {
+			Create.LOGGER.info("[harness] moving gantry render harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(GantryRenderHarness::tick);
+			return;
+		}
+		if ("usekey".equals(mode)) {
+			Create.LOGGER.info("[harness] use key repeat harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(UseKeyHarness::tick);
+			return;
+		}
+		if ("emipotion".equals(mode)) {
+			Create.LOGGER.info("[harness] EMI potion lookup harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(EmiPotionHarness::tick);
+			return;
+		}
+		if ("keys".equals(mode)) {
+			Create.LOGGER.info("[harness] key mapping harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(KeyHarness::tick);
+			return;
+		}
 		if (!"showcase".equals(mode))
 			return;
 		Create.LOGGER.info("[harness] screenshot harness armed");
@@ -264,6 +321,1041 @@ public final class DevScreenshotHarness {
 				Create.LOGGER.info("[harness] item {} -> {} custom={} bewlr={}", stack.getItem(), model.getClass().getName(), model.isCustomRenderer(),
 					com.simibubi.create.foundation.client.extensions.IClientItemExtensions.of(stack).getCustomRenderer().getClass().getName());
 			}
+		}
+	}
+
+	/**
+	 * {@code -Dcreate.harness=gui}: Create's machine items in GUIs: the creative Create tab and a few EMI recipe pages
+	 * (if EMI is present). Screenshot names carry {@code CREATE_HARNESS_TAG} so runs under different setups don't collide.
+	 */
+	private static final class GuiHarness {
+		private static final String[] EMI_PAGES = { "mixing", "pressing", "deploying", "sequenced_assembly" };
+		private static final String TAG = System.getenv().getOrDefault("CREATE_HARNESS_TAG", "default");
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			try {
+				if (phase == 0) {
+					if (tick == 20) {
+						MinecraftServer server = mc.getSingleplayerServer();
+						server.execute(() -> server.getPlayerList().getPlayer(mc.player.getUUID()).setGameMode(GameType.CREATIVE));
+					}
+					if (tick < 40)
+						return;
+					Create.LOGGER.info("[harness] gui {}: flywheel backend={} supportsVisualization={}", TAG,
+						dev.engine_room.flywheel.api.backend.BackendManager.currentBackend(),
+						dev.engine_room.flywheel.api.visualization.VisualizationManager.supportsVisualization(mc.level));
+					probeVertices(com.simibubi.create.AllBlocks.MECHANICAL_PRESS.getDefaultState(), null);
+					probeVertices(com.simibubi.create.AllBlocks.BASIN.getDefaultState(), null);
+					probeVertices(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), null);
+					probeVertices(null, com.simibubi.create.AllPartialModels.MECHANICAL_PRESS_HEAD);
+					openCreativeTab(mc, com.simibubi.create.AllCreativeModeTabs.BASE_CREATIVE_TAB.get());
+					phase = 1;
+					tick = 0;
+					return;
+				}
+				if (phase == 1) {
+					if (tick >= 30) {
+						screenshot(mc, "gui-" + TAG + "-creative");
+						phase = 2;
+						tick = 0;
+					}
+					return;
+				}
+				int page = phase - 2;
+				boolean emi = com.simibubi.create.compat.Mods.EMI.isLoaded();
+				if (!emi || page >= EMI_PAGES.length) {
+					mc.setScreen(null);
+					Create.LOGGER.info("[harness] done");
+					done = true;
+					mc.stop();
+					return;
+				}
+				if (tick == 1 && !EmiPage.show(EMI_PAGES[page])) {
+					phase++;
+					tick = 0;
+					return;
+				}
+				if (tick >= 30) {
+					screenshot(mc, "gui-" + TAG + "-emi-" + EMI_PAGES[page]);
+					phase++;
+					tick = 0;
+				}
+			} catch (Throwable t) {
+				Create.LOGGER.error("[harness] failed", t);
+				done = true;
+				mc.stop();
+			}
+		}
+		/** Buffers a block model the way Catnip's GuiGameElement does and logs the first vertices' color/light/normal. */
+		private static void probeVertices(@Nullable BlockState state, @Nullable dev.engine_room.flywheel.lib.model.baked.PartialModel partial) {
+			Minecraft mc = Minecraft.getInstance();
+			BlockState blockState = state != null ? state : Blocks.AIR.defaultBlockState();
+			var model = partial != null ? partial.get() : mc.getBlockRenderer().getBlockModel(blockState);
+			String name = partial != null ? partial.modelLocation().toString() : blockState.toString();
+			int[] count = { 0 };
+			StringBuilder out = new StringBuilder();
+			net.createmod.catnip.client.render.model.ShadeSeparatedBufferSource source = (type, shade) -> new com.mojang.blaze3d.vertex.VertexConsumer() {
+				public com.mojang.blaze3d.vertex.VertexConsumer addVertex(float x, float y, float z) {
+					if (count[0]++ < 8) out.append(String.format("%n  [%s shade=%s] pos=(%.2f,%.2f,%.2f)", type, shade, x, y, z));
+					return this;
+				}
+				public com.mojang.blaze3d.vertex.VertexConsumer setColor(int r, int g, int b, int a) {
+					if (count[0] <= 8) out.append(String.format(" color=%d,%d,%d,%d", r, g, b, a));
+					return this;
+				}
+				public com.mojang.blaze3d.vertex.VertexConsumer setUv(float u, float v) { return this; }
+				public com.mojang.blaze3d.vertex.VertexConsumer setUv1(int u, int v) { return this; }
+				public com.mojang.blaze3d.vertex.VertexConsumer setUv2(int u, int v) {
+					if (count[0] <= 8) out.append(String.format(" light=%d,%d", u, v));
+					return this;
+				}
+				public com.mojang.blaze3d.vertex.VertexConsumer setNormal(float x, float y, float z) {
+					if (count[0] <= 8) out.append(String.format(" normal=%.2f,%.2f,%.2f", x, y, z));
+					return this;
+				}
+			};
+			var getter = dev.engine_room.flywheel.lib.model.baked.SinglePosVirtualBlockGetter.createFullBright().blockState(blockState);
+			net.createmod.catnip.client.render.model.BakedModelBufferer.bufferModel(model, BlockPos.ZERO, getter, blockState,
+				new com.mojang.blaze3d.vertex.PoseStack(), source);
+			Create.LOGGER.info("[harness] gui {} vertices {} model={} vanillaAdapter={} total={}{}", TAG, name, model.getClass().getSimpleName(),
+				((net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel) model).isVanillaAdapter(), count[0], out);
+		}
+	}
+
+	/** Separate class so EMI classes only load when EMI is present. */
+	private static final class EmiPage {
+		static boolean show(String path) {
+			for (var category : dev.emi.emi.api.EmiApi.getRecipeManager().getCategories())
+				if (category.getId().getNamespace().equals(Create.ID) && category.getId().getPath().equals(path)) {
+					dev.emi.emi.api.EmiApi.displayRecipeCategory(category);
+					return true;
+				}
+			Create.LOGGER.info("[harness] no EMI category create:{}", path);
+			return false;
+		}
+	}
+
+	/**
+	 * {@code -Dcreate.harness=schematic}: holds a schematic and presses/releases the Tool Menu key through vanilla's key
+	 * callback (bound to Left Alt, then Right Alt, then '.'), logging whether the tool selection focuses and unfocuses.
+	 */
+	private static final class SchematicKeyHarness {
+		private static final int[] KEYS = { org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_ALT, org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_ALT,
+			org.lwjgl.glfw.GLFW.GLFW_KEY_PERIOD };
+		private static com.mojang.blaze3d.platform.InputConstants.Key originalKey;
+		private static int failures;
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			try {
+				var toolMenu = com.simibubi.create.AllKeys.TOOL_MENU.getKeybind();
+				if (phase == 0) {
+					if (tick == 20)
+						setup(mc);
+					if (tick == 30)
+						mc.player.getInventory().selected = 0;
+					if (tick >= 60) {
+						originalKey = toolMenu.getKey();
+						Create.LOGGER.info("[harness] schematic active={}", field("active"));
+						phase = 1;
+						tick = 0;
+					}
+					return;
+				}
+				int index = (phase - 1) / 3, step = (phase - 1) % 3;
+				if (index >= KEYS.length) {
+					toolMenu.setKey(originalKey);
+					net.minecraft.client.KeyMapping.resetMapping();
+					Create.LOGGER.info("[harness] schematic done, failures={}", failures);
+					Create.LOGGER.info("[harness] done");
+					done = true;
+					mc.stop();
+					return;
+				}
+				int glfw = KEYS[index];
+				if (tick < 5)
+					return;
+				switch (step) {
+					case 0 -> {
+						toolMenu.setKey(com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM.getOrCreate(glfw));
+						net.minecraft.client.KeyMapping.resetMapping();
+						press(mc, glfw, org.lwjgl.glfw.GLFW.GLFW_PRESS);
+						press(mc, glfw, org.lwjgl.glfw.GLFW.GLFW_REPEAT);
+					}
+					case 1 -> {
+						check(toolMenu.getKey().getName() + " press -> focused", focused());
+						press(mc, glfw, org.lwjgl.glfw.GLFW.GLFW_RELEASE);
+					}
+					case 2 -> check(toolMenu.getKey().getName() + " release -> unfocused", !focused());
+				}
+				phase++;
+				tick = 0;
+			} catch (Throwable t) {
+				Create.LOGGER.error("[harness] failed", t);
+				done = true;
+				mc.stop();
+			}
+		}
+
+		private static void setup(Minecraft mc) {
+			MinecraftServer server = mc.getSingleplayerServer();
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayer(mc.player.getUUID());
+				player.setGameMode(GameType.CREATIVE);
+				ItemStack blueprint = AllItems.SCHEMATIC.asStack();
+				blueprint.set(com.simibubi.create.AllDataComponents.SCHEMATIC_DEPLOYED, false);
+				blueprint.set(com.simibubi.create.AllDataComponents.SCHEMATIC_OWNER, player.getGameProfile().getName());
+				blueprint.set(com.simibubi.create.AllDataComponents.SCHEMATIC_FILE, "harness.nbt");
+				blueprint.set(com.simibubi.create.AllDataComponents.SCHEMATIC_ANCHOR, BlockPos.ZERO);
+				blueprint.set(com.simibubi.create.AllDataComponents.SCHEMATIC_ROTATION, net.minecraft.world.level.block.Rotation.NONE);
+				blueprint.set(com.simibubi.create.AllDataComponents.SCHEMATIC_MIRROR, net.minecraft.world.level.block.Mirror.NONE);
+				blueprint.set(com.simibubi.create.AllDataComponents.SCHEMATIC_BOUNDS, new net.minecraft.core.Vec3i(3, 3, 3));
+				player.getInventory().setItem(0, blueprint);
+			});
+		}
+
+		private static void press(Minecraft mc, int glfwKey, int action) {
+			mc.keyboardHandler.keyPress(mc.getWindow().getWindow(), glfwKey, 0, action, 0);
+		}
+
+		private static boolean focused() throws ReflectiveOperationException {
+			Object screen = field("selectionScreen");
+			return ((com.simibubi.create.content.schematics.client.ToolSelectionScreen) screen).focused;
+		}
+
+		private static Object field(String name) throws ReflectiveOperationException {
+			var f = com.simibubi.create.content.schematics.client.SchematicHandler.class.getDeclaredField(name);
+			f.setAccessible(true);
+			return f.get(com.simibubi.create.CreateClient.SCHEMATIC_HANDLER);
+		}
+
+		private static void check(String what, boolean ok) {
+			if (!ok)
+				failures++;
+			Create.LOGGER.info("[harness] schematic {} {}", ok ? "PASS" : "FAIL", what);
+		}
+	}
+
+	/**
+	 * {@code -Dcreate.harness=transfer}: times Create's item handler calls against a big, full Fabric storage (like a
+	 * Tom's Storage network under a chute): a {@code CombinedStorage} of 50 double-chest-sized inventories (2700 slots)
+	 * full of stone, and the same as a slotted storage. Runs on the server thread.
+	 */
+	private static final class TransferBenchmark {
+		private static final BlockPos CHUTES = BASE.offset(40, 0, 40);
+		private static final int CHUTE_COUNT = 20;
+		private static net.fabricmc.fabric.api.transfer.v1.storage.Storage<net.fabricmc.fabric.api.transfer.v1.item.ItemVariant> network;
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			tick++;
+			MinecraftServer server = mc.getSingleplayerServer();
+			// micro benchmark, then 20 real chutes holding a diamond above the full network: average tick time with/without
+			switch (phase) {
+				case 0 -> { if (tick >= 40) { server.execute(() -> { try { run(); placeChutes(server, true); } catch (Throwable t) { Create.LOGGER.error("[harness] transfer failed", t); } }); phase = 1; tick = 0; } }
+				case 1 -> { if (tick >= 200) { server.execute(() -> Create.LOGGER.info("[harness] transfer {} chutes over the full network: avg tick {} ms", CHUTE_COUNT, String.format("%.2f", server.getAverageTickTimeNanos() / 1e6))); server.execute(() -> placeChutes(server, false)); phase = 2; tick = 0; } }
+				case 2 -> { if (tick >= 200) { server.execute(() -> Create.LOGGER.info("[harness] transfer no chutes: avg tick {} ms", String.format("%.2f", server.getAverageTickTimeNanos() / 1e6))); server.execute(() -> { placeChutes(server, true); for (int i = 0; i < CHUTE_COUNT; i++) server.overworld().setBlockAndUpdate(CHUTES.offset(i, 0, 0), Blocks.STONE.defaultBlockState()); }); phase = 4; tick = 0; } }
+				case 4 -> { if (tick >= 200) { server.execute(() -> Create.LOGGER.info("[harness] transfer {} chutes over plain stone: avg tick {} ms", CHUTE_COUNT, String.format("%.2f", server.getAverageTickTimeNanos() / 1e6))); server.execute(() -> placeChutes(server, false)); phase = 3; tick = 0; } }
+				case 3 -> { if (tick >= 5) { Create.LOGGER.info("[harness] done"); done = true; mc.stop(); } }
+				default -> {}
+			}
+		}
+
+		private static void placeChutes(MinecraftServer server, boolean place) {
+			ServerLevel level = server.overworld();
+			if (place && network == null) {
+				var stored = network = fullNetwork();
+				net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.registerFallback((world, pos, state, be, side) ->
+					pos.getY() == CHUTES.getY() && pos.getX() >= CHUTES.getX() && pos.getX() < CHUTES.getX() + CHUTE_COUNT
+						&& pos.getZ() == CHUTES.getZ() && state.is(Blocks.BEDROCK) ? stored : null);
+			}
+			for (int i = 0; i < CHUTE_COUNT; i++) {
+				BlockPos below = CHUTES.offset(i, 0, 0), chute = below.above();
+				level.setBlockAndUpdate(below, place ? Blocks.BEDROCK.defaultBlockState() : Blocks.AIR.defaultBlockState());
+				level.setBlockAndUpdate(chute, place ? AllBlocks.CHUTE.getDefaultState() : Blocks.AIR.defaultBlockState());
+				if (place && level.getBlockEntity(chute) instanceof com.simibubi.create.content.logistics.chute.ChuteBlockEntity be)
+					be.setItem(new ItemStack(net.minecraft.world.item.Items.DIAMOND));
+			}
+		}
+
+		private static net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedStorage<net.fabricmc.fabric.api.transfer.v1.item.ItemVariant,
+			net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage<net.fabricmc.fabric.api.transfer.v1.item.ItemVariant>> fullNetwork() {
+			List<net.fabricmc.fabric.api.transfer.v1.storage.SlottedStorage<net.fabricmc.fabric.api.transfer.v1.item.ItemVariant>> parts = new java.util.ArrayList<>();
+			for (int i = 0; i < 50; i++) {
+				net.minecraft.world.SimpleContainer container = new net.minecraft.world.SimpleContainer(54);
+				for (int slot = 0; slot < 54; slot++)
+					container.setItem(slot, new ItemStack(net.minecraft.world.item.Items.STONE, 64));
+				parts.add(net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage.of(container, null));
+			}
+			return new net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedStorage<>(parts);
+		}
+
+		private static void run() {
+			var combined = fullNetwork();
+			var parts = combined.parts;
+			var slotted = new net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedSlottedStorage<>(parts);
+			for (var entry : java.util.Map.of("combined", combined, "slotted", slotted).entrySet()) {
+				var storage = entry.getValue();
+				ItemStack diamond = new ItemStack(net.minecraft.world.item.Items.DIAMOND);
+				com.simibubi.create.foundation.transfer.item.IItemHandler handler =
+					com.simibubi.create.foundation.transfer.capability.bridge.StorageItemHandler.of(storage);
+				time(entry.getKey() + " insertItemStacked (full, chute output)", () ->
+					com.simibubi.create.foundation.transfer.item.ItemHandlerHelper.insertItemStacked(handler, diamond, true));
+				time(entry.getKey() + " extract diamond (absent, funnel/chute input)", () ->
+					com.simibubi.create.foundation.item.ItemHelper.extract(handler, s -> s.is(net.minecraft.world.item.Items.DIAMOND), 64, true));
+				time(entry.getKey() + " fresh handler + insertItemStacked", () ->
+					com.simibubi.create.foundation.transfer.item.ItemHandlerHelper.insertItemStacked(
+						com.simibubi.create.foundation.transfer.capability.bridge.StorageItemHandler.of(storage), diamond, true));
+			}
+		}
+
+		static void time(String what, Runnable op) {
+			op.run();
+			int runs = 0;
+			long start = System.nanoTime(), elapsed;
+			do {
+				op.run();
+				runs++;
+				elapsed = System.nanoTime() - start;
+			} while (elapsed < 1_000_000_000L && runs < 20_000);
+			Create.LOGGER.info("[harness] transfer {}: {} us/call ({} runs)", what, String.format("%.1f", elapsed / 1000.0 / runs), runs);
+		}
+	}
+
+	/**
+	 * {@code -Dcreate.harness=drawers} (needs Extended Drawers in run/mods): a chute holding a diamond over an Extended
+	 * Drawers access point whose network is a 35x20 wall of quad drawers (2800 slots), each slot holding stone, so the
+	 * diamond fits nowhere. Logs the insert call and the chute's own tick time (timed around an extra tick() per server
+	 * tick), as Observable showed on the live server.
+	 */
+	private static final class DrawerNetworkBenchmark {
+		private static final BlockPos ACCESS = BASE.offset(-60, 0, 40);
+		private static final int WIDTH = 35, HEIGHT = 20;
+		private static long chuteNanos;
+		private static int chuteTicks;
+		private static boolean timing;
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			tick++;
+			MinecraftServer server = mc.getSingleplayerServer();
+			switch (phase) {
+				case 0 -> { if (tick >= 40) { server.execute(() -> build(server)); phase = 1; tick = 0; } }
+				case 1 -> { if (tick >= 60) { server.execute(() -> fill(server)); phase = 2; tick = 0; } }
+				case 2 -> { if (tick >= 40) { server.execute(() -> measureInsert(server)); startTiming(server); phase = 3; tick = 0; } }
+				case 3 -> { if (tick >= 200) { timing = false; Create.LOGGER.info("[harness] drawers chute tick: {} us/tick avg over {} ticks",
+					String.format("%.1f", chuteNanos / 1000.0 / Math.max(1, chuteTicks)), chuteTicks); phase = 4; tick = 0; } }
+				case 4 -> { if (tick >= 5) { Create.LOGGER.info("[harness] done"); done = true; mc.stop(); } }
+				default -> {}
+			}
+		}
+
+		private static BlockState block(String id) {
+			return net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(net.minecraft.resources.ResourceLocation.parse(id)).defaultBlockState();
+		}
+
+		private static void build(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			level.setBlockAndUpdate(ACCESS, block("extended_drawers:access_point"));
+			BlockState drawer = block("extended_drawers:quad_drawer");
+			for (int x = 1; x <= WIDTH; x++)
+				for (int y = 0; y < HEIGHT; y++)
+					level.setBlockAndUpdate(ACCESS.offset(x, y, 0), drawer);
+			level.setBlockAndUpdate(ACCESS.above(), AllBlocks.CHUTE.getDefaultState());
+		}
+
+		private static void fill(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			int slots = 0;
+			try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+				for (int x = 1; x <= WIDTH; x++)
+					for (int y = 0; y < HEIGHT; y++) {
+						var storage = net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.find(level, ACCESS.offset(x, y, 0), Direction.SOUTH);
+						if (storage == null)
+							continue;
+						for (var view : storage)
+							if (view instanceof net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage<net.fabricmc.fabric.api.transfer.v1.item.ItemVariant> slot) {
+								slots++;
+								if (slot.isResourceBlank())
+									slot.insert(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(net.minecraft.world.item.Items.STONE), 1, tx);
+							}
+					}
+				tx.commit();
+			}
+			if (level.getBlockEntity(ACCESS.above()) instanceof com.simibubi.create.content.logistics.chute.ChuteBlockEntity chute)
+				chute.setItem(new ItemStack(net.minecraft.world.item.Items.DIAMOND));
+			Create.LOGGER.info("[harness] drawers filled {} drawer slots", slots);
+		}
+
+		private static void measureInsert(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			var raw = net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.find(level, ACCESS, Direction.UP);
+			var handler = com.simibubi.create.foundation.transfer.capability.Capabilities.ItemHandler.BLOCK.find(level, ACCESS, Direction.UP);
+			Create.LOGGER.info("[harness] drawers access point storage={} handler={} slots={}", raw == null ? null : raw.getClass().getName(),
+				handler == null ? null : handler.getClass().getSimpleName(), handler == null ? -1 : handler.getSlots());
+			if (handler == null)
+				return;
+			ItemStack diamond = new ItemStack(net.minecraft.world.item.Items.DIAMOND);
+			TransferBenchmark.time("drawers insertItemStacked (diamond, access point)", () ->
+				com.simibubi.create.foundation.transfer.item.ItemHandlerHelper.insertItemStacked(handler, diamond, true));
+		}
+
+		private static void startTiming(MinecraftServer server) {
+			timing = true;
+			net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_WORLD_TICK.register(level -> {
+				if (!timing || level != server.overworld())
+					return;
+				if (!(level.getBlockEntity(ACCESS.above()) instanceof com.simibubi.create.content.logistics.chute.ChuteBlockEntity chute))
+					return;
+				long start = System.nanoTime();
+				chute.tick();
+				chuteNanos += System.nanoTime() - start;
+				chuteTicks++;
+			});
+		}
+	}
+
+	/**
+	 * {@code -Dcreate.harness=crumble} (needs Extended Drawers in run/mods; the live crash also needs Sodium,
+	 * ImmediatelyFast and Better Block Entities): an Extended Drawers drawer holding an item right in front of the
+	 * player, with client-side block breaking progress cycling through every stage, as when mining it.
+	 */
+	private static final class CrumbleHarness {
+		private static final BlockPos DRAWER = BASE.offset(0, 0, -3);
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			if (tick == 30) {
+				MinecraftServer server = mc.getSingleplayerServer();
+				server.execute(() -> {
+					ServerLevel level = server.overworld();
+					ServerPlayer player = server.getPlayerList().getPlayer(mc.player.getUUID());
+					player.setGameMode(GameType.CREATIVE);
+					BlockState drawer = net.minecraft.core.registries.BuiltInRegistries.BLOCK
+						.get(net.minecraft.resources.ResourceLocation.parse("extended_drawers:quad_drawer")).defaultBlockState();
+					// face the player (south), so its item is drawn
+					for (var property : drawer.getProperties())
+						if (property.getName().equals("facing") && property.getPossibleValues().contains(Direction.SOUTH))
+							drawer = drawer.setValue((net.minecraft.world.level.block.state.properties.Property<Direction>) property, Direction.SOUTH);
+					level.removeBlock(DRAWER, false);
+					level.setBlockAndUpdate(DRAWER, drawer);
+					// one of each item rendering path: plain, enchanted (glint), block, block entity item (chest)
+					ItemStack sword = new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD);
+					sword.set(net.minecraft.core.component.DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+					ItemStack[] items = { new ItemStack(net.minecraft.world.item.Items.CHEST, 8), new ItemStack(net.minecraft.world.item.Items.DIAMOND, 32),
+						sword, new ItemStack(net.minecraft.world.item.Items.STONE, 32) };
+					var storage = net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.find(level, DRAWER, Direction.SOUTH);
+					if (storage != null)
+						try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+							int slot = 0;
+							for (var view : storage)
+								if (slot < items.length && view instanceof net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage<net.fabricmc.fabric.api.transfer.v1.item.ItemVariant> single) {
+									ItemStack stack = items[slot++];
+									single.insert(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(stack), stack.getCount(), tx);
+								}
+							tx.commit();
+						}
+					player.teleportTo(level, DRAWER.getX() + 0.5, DRAWER.getY(), DRAWER.getZ() + 2.0, 180, 25);
+				});
+			}
+			if (tick > 60 && tick < 260) {
+				int stage = (tick / 4) % 10;
+				mc.level.destroyBlockProgress(mc.player.getId(), DRAWER, stage);
+			}
+			if (tick == 150)
+				screenshot(mc, "crumble");
+			if (tick == 260) {
+				mc.level.destroyBlockProgress(mc.player.getId(), DRAWER, -1);
+				Create.LOGGER.info("[harness] crumble done without crashing");
+				Create.LOGGER.info("[harness] done");
+				done = true;
+				mc.stop();
+			}
+		}
+	}
+
+	/**
+	 * {@code -Dcreate.harness=machines}: items on Create machines as players see them: a running belt fed with items,
+	 * and a depot, a mechanical crafter and a deployer each given an item through their item handlers. Logs what the
+	 * client-side block entities hold and takes screenshots.
+	 */
+	private static final class MachineItemsHarness {
+		private static final BlockPos ORIGIN = BASE.offset(-30, 0, -20);
+		private static final BlockPos BELT_START = ORIGIN, BELT_END = ORIGIN.offset(0, 0, -6);
+		private static final BlockPos DEPOT = ORIGIN.offset(3, 0, -1), CRAFTER = ORIGIN.offset(3, 0, -3), DEPLOYER = ORIGIN.offset(3, 0, -5);
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			MinecraftServer server = mc.getSingleplayerServer();
+			if (tick == 30)
+				server.execute(() -> build(server));
+			if (tick > 60 && tick < 200 && tick % 10 == 0)
+				server.execute(() -> feed(server));
+			if (tick == 70)
+				server.execute(() -> fillMachines(server));
+			if (tick == 150) {
+				logClient(mc);
+				screenshot(mc, "machines");
+			}
+			if (tick == 210) {
+				Create.LOGGER.info("[harness] done");
+				done = true;
+				mc.stop();
+			}
+		}
+
+		private static void build(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			ServerPlayer player = server.getPlayerList().getPlayer(Minecraft.getInstance().player.getUUID());
+			player.setGameMode(GameType.CREATIVE);
+			for (int x = -2; x <= 5; x++)
+				for (int z = -8; z <= 2; z++) {
+					level.setBlockAndUpdate(ORIGIN.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
+					for (int y = 0; y <= 3; y++)
+						level.setBlockAndUpdate(ORIGIN.offset(x, y, z), Blocks.AIR.defaultBlockState());
+				}
+			BlockState shaft = AllBlocks.SHAFT.getDefaultState().setValue(BlockStateProperties.AXIS, Direction.Axis.X);
+			level.setBlockAndUpdate(BELT_START, shaft);
+			level.setBlockAndUpdate(BELT_END, shaft);
+			com.simibubi.create.content.kinetics.belt.item.BeltConnectorItem.createBelts(level, BELT_START, BELT_END);
+			level.setBlockAndUpdate(BELT_START.west(), AllBlocks.CREATIVE_MOTOR.getDefaultState().setValue(BlockStateProperties.FACING, Direction.EAST));
+			level.setBlockAndUpdate(DEPOT, AllBlocks.DEPOT.getDefaultState());
+			level.setBlockAndUpdate(CRAFTER, AllBlocks.MECHANICAL_CRAFTER.getDefaultState());
+			level.setBlockAndUpdate(DEPLOYER, AllBlocks.DEPLOYER.getDefaultState().setValue(BlockStateProperties.FACING, Direction.UP));
+			player.teleportTo(level, ORIGIN.getX() + 1.5, ORIGIN.getY() + 4, ORIGIN.getZ() + 1.5, 160, 50);
+		}
+
+		private static void feed(MinecraftServer server) {
+			var handler = Capabilities.ItemHandler.BLOCK.find(server.overworld(), BELT_START, Direction.UP);
+			if (handler != null)
+				handler.insertItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 4), false);
+		}
+
+		private static void fillMachines(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			for (BlockPos pos : new BlockPos[] { DEPOT, CRAFTER, DEPLOYER }) {
+				var handler = Capabilities.ItemHandler.BLOCK.find(level, pos, Direction.UP);
+				ItemStack rest = handler == null ? null : handler.insertItem(0, new ItemStack(net.minecraft.world.item.Items.GOLD_INGOT), false);
+				Create.LOGGER.info("[harness] machines insert into {}: handler={} rest={}", level.getBlockState(pos).getBlock(),
+					handler == null ? null : handler.getClass().getSimpleName(), rest);
+			}
+		}
+
+		private static void logClient(Minecraft mc) {
+			var level = mc.level;
+			int beltItems = 0;
+			for (int z = 0; z >= -6; z--)
+				if (level.getBlockEntity(BELT_START.offset(0, 0, z)) instanceof com.simibubi.create.content.kinetics.belt.BeltBlockEntity belt
+					&& belt.isController() && belt.getInventory() != null)
+					beltItems += belt.getInventory().getTransportedItems().size();
+			Create.LOGGER.info("[harness] machines client: belt transported items={}", beltItems);
+			for (BlockPos pos : new BlockPos[] { DEPOT, CRAFTER, DEPLOYER }) {
+				var be = level.getBlockEntity(pos);
+				var handler = be == null ? null : Capabilities.ItemHandler.BLOCK.find(level, pos, Direction.UP);
+				Create.LOGGER.info("[harness] machines client: {} slot0={}", be == null ? null : be.getClass().getSimpleName(),
+					handler == null ? null : handler.getStackInSlot(0));
+			}
+		}
+	}
+
+	/**
+	 * {@code CREATE_HARNESS=gantry}: a 16-block gantry shaft along Z driven by a creative motor, a carriage with a plank
+	 * tower on it. While the contraption moves, logs what the client knows about it (entity, bounds, bounding box,
+	 * render readiness, Flywheel backend) and takes screenshots, for "gantry contraptions invisible while moving".
+	 */
+	private static final class GantryRenderHarness {
+		private static final BlockPos ORIGIN = BASE.offset(-40, 0, 20);
+		private static final int LENGTH = 16;
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			MinecraftServer server = mc.getSingleplayerServer();
+			if (tick == 30)
+				server.execute(() -> build(server));
+			if (tick == 60)
+				server.execute(() -> server.overworld().setBlockAndUpdate(ORIGIN.north(), AllBlocks.CREATIVE_MOTOR.getDefaultState()
+					.setValue(BlockStateProperties.FACING, Direction.SOUTH)));
+			if (tick >= 60 && tick <= 400 && tick % 20 == 0) {
+				logClient(mc);
+				screenshot(mc, "gantry-" + tick);
+			}
+			if (tick == 410) {
+				Create.LOGGER.info("[harness] done");
+				done = true;
+				mc.stop();
+			}
+		}
+
+		private static void build(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			ServerPlayer player = server.getPlayerList().getPlayer(Minecraft.getInstance().player.getUUID());
+			player.setGameMode(GameType.CREATIVE);
+			player.getAbilities().flying = true;
+			player.onUpdateAbilities();
+			level.setDayTime(6000);
+			for (int x = -6; x <= 6; x++)
+				for (int z = -3; z <= LENGTH + 3; z++) {
+					level.setBlockAndUpdate(ORIGIN.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
+					for (int y = 0; y <= 6; y++)
+						level.setBlockAndUpdate(ORIGIN.offset(x, y, z), Blocks.AIR.defaultBlockState());
+				}
+			BlockState shaft = AllBlocks.GANTRY_SHAFT.getDefaultState().setValue(BlockStateProperties.FACING, Direction.SOUTH);
+			for (int z = 0; z < LENGTH; z++)
+				level.setBlockAndUpdate(ORIGIN.offset(0, 0, z), shaft);
+			for (int z = 0; z < LENGTH; z++) {
+				BlockPos pos = ORIGIN.offset(0, 0, z);
+				level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Block.updateFromNeighbourShapes(level.getBlockState(pos), level, pos));
+			}
+			level.setBlockAndUpdate(ORIGIN.offset(0, 1, LENGTH - 2), AllBlocks.GANTRY_CARRIAGE.getDefaultState()
+				.setValue(BlockStateProperties.FACING, Direction.UP)
+				.setValue(com.simibubi.create.content.kinetics.base.DirectionalAxisKineticBlock.AXIS_ALONG_FIRST_COORDINATE, true));
+			// a copycat on the contraption: its block entity asks for a re-mesh while the contraption's visual is set up
+			BlockPos copycat = ORIGIN.offset(0, 2, LENGTH - 2);
+			level.setBlockAndUpdate(copycat, AllBlocks.COPYCAT_STEP.getDefaultState());
+			if (level.getBlockEntity(copycat) instanceof CopycatBlockEntity cbe)
+				cbe.setMaterial(Blocks.OAK_PLANKS.defaultBlockState());
+			player.teleportTo(level, ORIGIN.getX() + 7.5, ORIGIN.getY() + 3, ORIGIN.getZ() + LENGTH / 2.0, 90, 10);
+		}
+
+		private static void logClient(Minecraft mc) {
+			int found = 0;
+			for (net.minecraft.world.entity.Entity e : mc.level.entitiesForRendering()) {
+				if (!(e instanceof com.simibubi.create.content.contraptions.AbstractContraptionEntity ce))
+					continue;
+				found++;
+				var c = ce.getContraption();
+				Create.LOGGER.info("[harness] gantry client t={}: {} id={} pos={} box={} bounds={} ready={} aliveOrStale={} shouldRender={} flywheel={} culled={}",
+					tick, ce.getClass().getSimpleName(), ce.getId(), ce.position(), ce.getBoundingBox(), c == null ? null : c.bounds,
+					ce.isReadyForRender(), ce.isAliveOrStale(), ce.shouldRender(mc.player.getX(), mc.player.getY(), mc.player.getZ()),
+					dev.engine_room.flywheel.api.backend.Backend.REGISTRY.getId(dev.engine_room.flywheel.api.backend.BackendManager.currentBackend()), culledState(ce));
+			}
+			BlockPos carriage = null;
+			for (int z = 0; z < LENGTH; z++)
+				if (AllBlocks.GANTRY_CARRIAGE.has(mc.level.getBlockState(ORIGIN.offset(0, 1, z))))
+					carriage = ORIGIN.offset(0, 1, z);
+			Create.LOGGER.info("[harness] gantry client t={}: {} contraption entities, carriage block at {}", tick, found, carriage);
+		}
+
+		private static String culledState(net.minecraft.world.entity.Entity e) {
+			try {
+				Class<?> cullable = Class.forName("dev.tr7zw.entityculling.versionless.access.Cullable");
+				if (!cullable.isInstance(e))
+					return "n/a";
+				return String.valueOf(cullable.getMethod("isCulled").invoke(e));
+			} catch (ReflectiveOperationException ex) {
+				return "no EntityCulling";
+			}
+		}
+	}
+
+	/**
+	 * {@code CREATE_HARNESS=usekey}: a listener cancels every use-key interaction event (as Create does for a click on
+	 * contraption controls) and counts them. A 2-tick click must fire once (it fired twice in one tick before
+	 * 6.0.11-fabric.9: train controls on, then straight off); holding the key repeats every 4 ticks, as in vanilla/NeoForge.
+	 */
+	private static final class UseKeyHarness {
+		private static final java.util.List<Integer> fired = new java.util.ArrayList<>();
+		private static boolean armed;
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			var key = mc.options.keyUse.getKey();
+			if (tick == 40) {
+				com.simibubi.create.foundation.event.bus.CreateEventBus.BUS.addListener(com.simibubi.create.foundation.event.bus.EventPriority.HIGHEST, false,
+					com.simibubi.create.foundation.event.client.InputEvent.InteractionKeyMappingTriggered.class, event -> {
+						if (armed && event.isUseItem()) {
+							fired.add(tick);
+							event.setCanceled(true);
+						}
+					});
+				armed = true;
+			}
+			if (tick == 60 || tick == 100) {
+				net.minecraft.client.KeyMapping.set(key, true);
+				net.minecraft.client.KeyMapping.click(key);
+			}
+			if (tick == 62 || tick == 113)
+				net.minecraft.client.KeyMapping.set(key, false);
+			if (tick == 90) {
+				Create.LOGGER.info("[harness] usekey: 2-tick click fired {} time(s) at ticks {}: {}", fired.size(), fired, fired.size() == 1 ? "PASS" : "FAIL");
+				fired.clear();
+			}
+			if (tick == 130) {
+				Create.LOGGER.info("[harness] usekey: 13-tick hold fired {} time(s) at ticks {} (vanilla repeat: every 4 ticks): {}", fired.size(), fired,
+					fired.size() == 4 ? "PASS" : "CHECK");
+				done = true;
+				mc.stop();
+			}
+		}
+	}
+
+	/**
+	 * {@code CREATE_HARNESS=emipotion} (run with -PwithEmi): once EMI has loaded, counts the recipes EMI lists for one
+	 * potion fluid (Swiftness) and for the Swiftness potion item, by output and by input, then opens the fluid's recipes.
+	 */
+	private static final class EmiPotionHarness {
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			if (tick < 100 || tick % 20 != 0)
+				return;
+			var manager = dev.emi.emi.api.EmiApi.getRecipeManager();
+			if (phase == 0) {
+				if (manager.getRecipes().isEmpty() && tick < 1200)
+					return;
+				var contents = new net.minecraft.world.item.alchemy.PotionContents(net.minecraft.world.item.alchemy.Potions.SWIFTNESS);
+				var fluid = com.simibubi.create.compat.emi.EmiLayout.toEmi(com.simibubi.create.content.fluids.potion.PotionFluid.of(1000, contents,
+					com.simibubi.create.content.fluids.potion.PotionFluid.BottleType.REGULAR));
+				ItemStack potionItem = new ItemStack(net.minecraft.world.item.Items.POTION);
+				potionItem.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, contents);
+				var item = dev.emi.emi.api.stack.EmiStack.of(potionItem);
+				Create.LOGGER.info("[harness] emipotion: {} recipes loaded; Swiftness fluid: {} recipes make it, {} use it; Swiftness potion: {} make it, {} use it",
+					manager.getRecipes().size(), manager.getRecipesByOutput(fluid).size(), manager.getRecipesByInput(fluid).size(),
+					manager.getRecipesByOutput(item).size(), manager.getRecipesByInput(item).size());
+				for (var r : manager.getRecipesByOutput(fluid))
+					Create.LOGGER.info("[harness] emipotion:   makes the fluid: {} ({})", r.getId(), r.getCategory().getId());
+				dev.emi.emi.api.EmiApi.displayRecipes(fluid);
+				phase = 1;
+				tick = 0;
+				return;
+			}
+			if (tick >= 40) {
+				screenshot(mc, "emipotion");
+				done = true;
+				mc.stop();
+			}
+		}
+	}
+
+	/**
+	 * {@code -Dcreate.harness=opac} (needs Open Parties and Claims in run/mods): checks which of OPAC's Create
+	 * protection mixins applied, claims a chunk for another (made-up) player, then 1) a powered mechanical drill outside
+	 * the claim faces a stone block inside it, 2) a contraption anchored outside the claim is put back into the world
+	 * with blocks over stone inside the claim (the "saved contraption disassembled into a claim" grief). Logs what is
+	 * left in the claim. Compare a run with {@code -Dcreate.opacCompat=false}.
+	 */
+	private static final class OpacHarness {
+		private static final String[] TARGETS = {
+			"com.simibubi.create.content.contraptions.AbstractContraptionEntity",
+			"com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer",
+			"com.simibubi.create.content.kinetics.mechanicalArm.ArmBlockEntity",
+			"com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint",
+			"com.simibubi.create.content.kinetics.base.BlockBreakingKineticBlockEntity",
+			"com.simibubi.create.content.kinetics.base.BlockBreakingMovementBehaviour",
+			"com.simibubi.create.content.contraptions.Contraption",
+			"com.simibubi.create.content.contraptions.ContraptionCollider",
+			"com.simibubi.create.content.contraptions.minecart.CouplingHandler",
+			"com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity",
+			"com.simibubi.create.content.kinetics.deployer.DeployerMovementBehaviour",
+			"com.simibubi.create.content.contraptions.actors.harvester.HarvesterMovementBehaviour",
+			"com.simibubi.create.content.kinetics.base.KineticBlockEntity",
+			"com.simibubi.create.content.contraptions.mounted.MinecartContraptionItem",
+			"com.simibubi.create.content.contraptions.actors.plough.PloughMovementBehaviour",
+			"com.simibubi.create.content.schematics.cannon.SchematicannonBlockEntity",
+			"com.simibubi.create.content.equipment.symmetryWand.SymmetryWandItem",
+			// this port's own redo of OPAC's NeoForge-only mixins (mixin/compat/opac)
+			"com.simibubi.create.foundation.networking.BlockEntityConfigurationPacket",
+			"com.simibubi.create.content.equipment.clipboard.ClipboardEditPacket",
+			"com.simibubi.create.content.contraptions.sync.ContraptionInteractionPacket",
+			"com.simibubi.create.content.contraptions.actors.trainControls.ControlsInputPacket",
+			"com.simibubi.create.content.contraptions.elevator.ElevatorTargetFloorPacket",
+			"com.simibubi.create.content.fluids.OpenEndedPipe",
+			"com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileEntity",
+			"com.simibubi.create.content.contraptions.wrench.RadialWrenchMenuSubmitPacket",
+			"com.simibubi.create.content.contraptions.glue.SuperGlueRemovalPacket",
+			"com.simibubi.create.content.contraptions.glue.SuperGlueSelectionPacket",
+			"com.simibubi.create.content.equipment.toolbox.ToolboxDisposeAllPacket",
+			"com.simibubi.create.content.equipment.toolbox.ToolboxEquipPacket",
+			"com.simibubi.create.content.trains.entity.TrainRelocationPacket" };
+		private static final java.util.UUID OTHER = java.util.UUID.fromString("00000000-0000-0000-0000-00000000beef");
+		private static BlockPos border;
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			MinecraftServer server = mc.getSingleplayerServer();
+			try {
+				if (tick == 20)
+					server.execute(OpacHarness::checkMixins);
+				if (tick == 30)
+					server.execute(() -> setup(server));
+				if (tick == 50)
+					server.execute(() -> disassembleIntoClaim(server));
+				if (tick == 60)
+					server.execute(() -> {
+						ServerPlayer player = server.getPlayerList().getPlayer(mc.player.getUUID());
+						player.teleportTo(server.overworld(), border.getX() - 1.5, border.getY(), border.getZ() + 5.5, -90, 0);
+					});
+				if (tick == 80)
+					server.execute(() -> {
+						ServerPlayer player = server.getPlayerList().getPlayer(mc.player.getUUID());
+						new com.simibubi.create.content.contraptions.wrench.RadialWrenchMenuSubmitPacket(border.offset(1, 0, 5),
+							AllBlocks.SHAFT.getDefaultState().setValue(BlockStateProperties.AXIS, Direction.Axis.Z)).handle(player);
+					});
+				if (tick == 160)
+					server.execute(() -> report(server));
+				if (tick == 170) {
+					Create.LOGGER.info("[harness] done");
+					done = true;
+					mc.stop();
+				}
+			} catch (Throwable t) {
+				Create.LOGGER.error("[harness] opac failed", t);
+				done = true;
+				mc.stop();
+			}
+		}
+
+		/** Counts, per target class, the members Mixin merged in from OPAC's mixins ({@code @MixinMerged}). */
+		private static void checkMixins() {
+			int applied = 0;
+			for (String target : TARGETS) {
+				try {
+					Class<?> type = Class.forName(target, false, OpacHarness.class.getClassLoader());
+					java.util.Set<String> opac = new java.util.TreeSet<>();
+					for (var method : type.getDeclaredMethods()) {
+						var merged = method.getAnnotation(org.spongepowered.asm.mixin.transformer.meta.MixinMerged.class);
+						if (merged != null && (merged.mixin().startsWith("xaero.pac") || merged.mixin().contains(".mixin.compat.opac.")))
+							opac.add(merged.mixin().substring(merged.mixin().lastIndexOf('.') + 1));
+					}
+					for (Class<?> itf : type.getInterfaces())
+						if (itf.getName().startsWith("xaero.pac"))
+							opac.add("implements " + itf.getSimpleName());
+					if (!opac.isEmpty())
+						applied++;
+					Create.LOGGER.info("[harness] opac mixins on {}: {}", target.substring(target.lastIndexOf('.') + 1), opac);
+				} catch (Throwable t) {
+					Create.LOGGER.error("[harness] opac mixins on {} FAILED", target, t);
+				}
+			}
+			Create.LOGGER.info("[harness] opac: {} of {} target classes carry OPAC mixins", applied, TARGETS.length);
+		}
+
+		private static void setup(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			// a chunk boundary near the test area: x = border.getX() is the first column of the claimed chunk
+			int chunkX = (BASE.getX() - 80) >> 4, chunkZ = (BASE.getZ() + 64) >> 4;
+			border = new BlockPos((chunkX + 1) << 4, BASE.getY(), (chunkZ << 4) + 4);
+			Object claim;
+			try {
+				Object api = Class.forName("xaero.pac.common.server.api.OpenPACServerAPI").getMethod("get", MinecraftServer.class).invoke(null, server);
+				Object claims = api.getClass().getMethod("getServerClaimsManager").invoke(api);
+				java.lang.reflect.Method claimMethod = null;
+				for (var m : claims.getClass().getMethods())
+					if (m.getName().equals("claim") && m.getParameterCount() == 6)
+						claimMethod = m;
+				claim = claimMethod.invoke(claims, level.dimension().location(), OTHER, 0, chunkX + 1, chunkZ, false);
+			} catch (ReflectiveOperationException e) {
+				throw new RuntimeException(e);
+			}
+			Create.LOGGER.info("[harness] opac: claimed chunk {},{} for {}: {}", chunkX + 1, chunkZ, OTHER, claim);
+			for (int dx = -6; dx <= 6; dx++)
+				for (int dz = -1; dz <= 5; dz++) {
+					level.setBlockAndUpdate(border.offset(dx, -1, dz), Blocks.SMOOTH_STONE.defaultBlockState());
+					for (int y = 0; y <= 2; y++)
+						level.setBlockAndUpdate(border.offset(dx, y, dz), Blocks.AIR.defaultBlockState());
+				}
+			// 1) drill outside the claim, facing a stone block just inside it
+			BlockPos drill = border.offset(-1, 0, 3);
+			level.setBlockAndUpdate(drill.west(), AllBlocks.CREATIVE_MOTOR.getDefaultState().setValue(BlockStateProperties.FACING, Direction.EAST));
+			level.setBlockAndUpdate(drill, AllBlocks.MECHANICAL_DRILL.getDefaultState().setValue(BlockStateProperties.FACING, Direction.EAST));
+			level.setBlockAndUpdate(border.offset(0, 0, 3), Blocks.STONE.defaultBlockState());
+			// 3) a shaft inside the claim, for the wrench menu packet
+			level.setBlockAndUpdate(border.offset(1, 0, 5), AllBlocks.SHAFT.getDefaultState().setValue(BlockStateProperties.AXIS, Direction.Axis.X));
+			// 2) stone inside the claim where the contraption will land
+			for (int dx = 0; dx < 4; dx++)
+				level.setBlockAndUpdate(border.offset(dx, 0, 0), Blocks.STONE.defaultBlockState());
+		}
+
+		private static void disassembleIntoClaim(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			var contraption = new com.simibubi.create.content.contraptions.bearing.BearingContraption(false, Direction.UP);
+			BlockPos anchor = border.offset(-3, 0, 0);
+			contraption.anchor = anchor;
+			contraption.getStorage().initialize();
+			for (int dx = 0; dx < 7; dx++) {
+				BlockPos local = new BlockPos(dx, 0, 0);
+				contraption.getBlocks().put(local, new net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo(
+					local, Blocks.OAK_PLANKS.defaultBlockState(), null));
+			}
+			contraption.addBlocksToWorld(level, new com.simibubi.create.content.contraptions.StructureTransform(anchor, Direction.Axis.Y,
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
+		}
+
+		private static void report(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			StringBuilder line = new StringBuilder();
+			for (int dx = -3; dx < 4; dx++)
+				line.append(dx < 0 ? " out:" : " IN:").append(level.getBlockState(border.offset(dx, 0, 0)).getBlock().getName().getString());
+			Create.LOGGER.info("[harness] opac contraption put back (x -3..3, claim from 0):{}", line);
+			Create.LOGGER.info("[harness] opac drill target inside the claim after 110 ticks: {} (drill speed {})",
+				level.getBlockState(border.offset(0, 0, 3)).getBlock().getName().getString(),
+				level.getBlockEntity(border.offset(-1, 0, 3)) instanceof com.simibubi.create.content.kinetics.base.KineticBlockEntity k ? k.getSpeed() : 0);
+			Create.LOGGER.info("[harness] opac wrench menu packet on a shaft inside the claim: axis now {} (was X)",
+				level.getBlockState(border.offset(1, 0, 5)).getOptionalValue(BlockStateProperties.AXIS).orElse(null));
+			Create.LOGGER.info("[harness] opac compat {}", "false".equals(System.getenv("CREATE_OPAC_COMPAT")) ? "OFF" : "on");
+		}
+	}
+
+	/**
+	 * {@code -Dcreate.harness=keys}: checks that Create's conflict-safe Shift/Ctrl/Alt modifiers don't take keys from
+	 * vanilla mappings. Runs sneak/sprint once swapped (sneak on Left Ctrl, sprint on Left Shift) and once at the
+	 * defaults, pressing keys through vanilla's key callback, and logs which mapping owns each key. Restores the bindings
+	 * before quitting (not saved to options.txt either way).
+	 */
+	private static final class KeyHarness {
+		private static final int CTRL = org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL, SHIFT = org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT,
+			ALT = org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_ALT, W = org.lwjgl.glfw.GLFW.GLFW_KEY_W;
+		private static net.minecraft.client.KeyMapping sneak, sprint;
+		private static com.mojang.blaze3d.platform.InputConstants.Key sneakKey, sprintKey;
+		private static int failures;
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			tick++;
+			try {
+				switch (phase) {
+					case 0 -> { if (tick >= 40) { setup(mc); phase = 1; tick = 0; } }
+					// swapped: sneak on Left Ctrl, sprint on Left Shift
+					case 1 -> { if (tick >= 20) { bind(mc, CTRL, SHIFT); logOwners(mc, "swapped"); press(mc, CTRL, true); phase = 2; tick = 0; } }
+					case 2 -> { if (tick >= 5) { check("swapped: sneak (Left Ctrl) isDown", sneak.isDown()); check("swapped: player crouching", mc.player.isShiftKeyDown()); press(mc, CTRL, false); press(mc, W, true); press(mc, SHIFT, true); phase = 3; tick = 0; } }
+					case 3 -> { if (tick >= 10) { check("swapped: sprint (Left Shift) isDown", sprint.isDown()); logPlayer(mc, "swapped"); check("swapped: player sprinting", mc.player.isSprinting()); press(mc, SHIFT, false); press(mc, W, false); controls(mc); phase = 4; tick = 0; } }
+					case 4 -> { if (tick >= 20) { screenshot(mc, "keys-controls-swapped"); mc.setScreen(null); phase = 5; tick = 0; } }
+					// defaults: sneak on Left Shift, sprint on Left Ctrl
+					case 5 -> { if (tick >= 20) { bind(mc, SHIFT, CTRL); logOwners(mc, "default"); press(mc, SHIFT, true); phase = 6; tick = 0; } }
+					case 6 -> { if (tick >= 5) { check("default: sneak (Left Shift) isDown", sneak.isDown()); check("default: player crouching", mc.player.isShiftKeyDown()); press(mc, SHIFT, false); press(mc, W, true); press(mc, CTRL, true); phase = 7; tick = 0; } }
+					case 7 -> { if (tick >= 10) { check("default: sprint (Left Ctrl) isDown", sprint.isDown()); logPlayer(mc, "default"); check("default: player sprinting", mc.player.isSprinting()); press(mc, CTRL, false); press(mc, W, false); controls(mc); phase = 8; tick = 0; } }
+					case 8 -> { if (tick >= 20) { screenshot(mc, "keys-controls-default"); mc.setScreen(null); finish(mc); } }
+					default -> {}
+				}
+			} catch (Throwable t) {
+				Create.LOGGER.error("[harness] failed", t);
+				finish(mc);
+			}
+		}
+
+		private static void setup(Minecraft mc) {
+			sneak = mc.options.keyShift;
+			sprint = mc.options.keySprint;
+			sneakKey = sneak.getKey();
+			sprintKey = sprint.getKey();
+			MinecraftServer server = mc.getSingleplayerServer();
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayer(mc.player.getUUID());
+				level.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				for (var entity : level.getAllEntities())
+					if (!(entity instanceof net.minecraft.world.entity.player.Player))
+						entity.discard();
+				player.setGameMode(GameType.SURVIVAL);
+				player.getFoodData().setFoodLevel(20);
+				level.setDayTime(6000);
+				for (int x = -3; x <= 3; x++)
+					for (int z = -12; z <= 3; z++) {
+						level.setBlockAndUpdate(BASE.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState());
+						for (int y = 0; y <= 2; y++)
+							level.setBlockAndUpdate(BASE.offset(x, y, z), Blocks.AIR.defaultBlockState());
+					}
+				player.teleportTo(level, 0.5, 150.0, 2.5, 180, 0);
+			});
+		}
+
+		private static void bind(Minecraft mc, int sneakGlfw, int sprintGlfw) {
+			sneak.setKey(com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM.getOrCreate(sneakGlfw));
+			sprint.setKey(com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM.getOrCreate(sprintGlfw));
+			net.minecraft.client.KeyMapping.resetMapping();
+			MinecraftServer server = mc.getSingleplayerServer();
+			server.execute(() -> server.getPlayerList().getPlayer(mc.player.getUUID())
+				.teleportTo(server.overworld(), 0.5, 150.0, 2.5, 180, 0));
+		}
+
+		private static void press(Minecraft mc, int glfwKey, boolean down) {
+			mc.keyboardHandler.keyPress(mc.getWindow().getWindow(), glfwKey, 0,
+				down ? org.lwjgl.glfw.GLFW.GLFW_PRESS : org.lwjgl.glfw.GLFW.GLFW_RELEASE, 0);
+		}
+
+		private static void controls(Minecraft mc) {
+			mc.setScreen(new net.minecraft.client.gui.screens.options.controls.KeyBindsScreen(null, mc.options));
+		}
+
+		@SuppressWarnings("unchecked")
+		private static void logOwners(Minecraft mc, String scenario) throws ReflectiveOperationException {
+			var field = net.minecraft.client.KeyMapping.class.getDeclaredField("MAP");
+			field.setAccessible(true);
+			var map = (java.util.Map<com.mojang.blaze3d.platform.InputConstants.Key, net.minecraft.client.KeyMapping>) field.get(null);
+			for (int glfw : new int[] { CTRL, SHIFT, ALT }) {
+				var key = com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM.getOrCreate(glfw);
+				var owner = map.get(key);
+				List<String> sharing = new java.util.ArrayList<>(), conflicts = new java.util.ArrayList<>();
+				for (var mapping : mc.options.keyMappings) {
+					if (!mapping.getKey().equals(key))
+						continue;
+					sharing.add(mapping.getName());
+					for (var other : mc.options.keyMappings)
+						if (other != mapping && mapping.same(other))
+							conflicts.add(mapping.getName() + "~" + other.getName());
+				}
+				Create.LOGGER.info("[harness] keys {}: {} owner={} bound={} shownConflicts={}", scenario, key.getName(),
+					owner == null ? null : owner.getName(), sharing, conflicts);
+			}
+			for (var mapping : mc.options.keyMappings)
+				if (mapping instanceof net.createmod.catnip.client.ConflictSafeKeyMapping && map.containsValue(mapping))
+					check(scenario + ": " + mapping.getName() + " kept out of MAP", false);
+			Create.LOGGER.info("[harness] keys {}: ctrlDown={} shiftDown={} altDown={} toolbelt={} (nothing physically held)", scenario,
+				com.simibubi.create.AllKeys.ctrlDown(), com.simibubi.create.AllKeys.shiftDown(), com.simibubi.create.AllKeys.altDown(),
+				com.simibubi.create.AllKeys.TOOLBELT.isPressed());
+		}
+
+		private static void logPlayer(Minecraft mc, String scenario) {
+			var p = mc.player;
+			Create.LOGGER.info("[harness] keys {}: forward={} impulse={} onGround={} food={} mode={} sprinting={} crouching={} pos={}",
+				scenario, mc.options.keyUp.isDown(), p.input.forwardImpulse, p.onGround(), p.getFoodData().getFoodLevel(),
+				mc.gameMode.getPlayerMode(), p.isSprinting(), p.isShiftKeyDown(), p.position());
+		}
+
+		private static void check(String what, boolean ok) {
+			if (!ok)
+				failures++;
+			Create.LOGGER.info("[harness] keys {} {}", ok ? "PASS" : "FAIL", what);
+		}
+
+		private static void finish(Minecraft mc) {
+			if (sneak != null) {
+				sneak.setKey(sneakKey);
+				sprint.setKey(sprintKey);
+				net.minecraft.client.KeyMapping.resetMapping();
+			}
+			Create.LOGGER.info("[harness] keys done, failures={}", failures);
+			Create.LOGGER.info("[harness] done");
+			done = true;
+			mc.stop();
 		}
 	}
 

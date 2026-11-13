@@ -258,7 +258,7 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 				.getOpposite()));
 		behaviours.add(invManipulation);
 
-		behaviours.add(invVersionTracker = new VersionedInventoryTrackerBehaviour(this));
+		behaviours.add(invVersionTracker = new VersionedInventoryTrackerBehaviour(this).backOffOnLargeStorages());
 
 		filtering = new FilteringBehaviour(this, new FunnelFilterSlotPositioning());
 		filtering.showCountWhen(this::supportsAmountOnFilter);

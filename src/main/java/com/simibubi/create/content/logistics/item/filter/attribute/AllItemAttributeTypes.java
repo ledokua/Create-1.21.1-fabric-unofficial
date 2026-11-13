@@ -54,13 +54,13 @@ public class AllItemAttributeTypes {
 			return type != EquipmentSlot.Type.HAND;
 		}),
 		FURNACE_FUEL = singleton("furnace_fuel", AbstractFurnaceBlockEntity::isFuel),
-		WASHABLE = singleton("washable", AllFanProcessingTypes.SPLASHING::canProcess),
-		HAUNTABLE = singleton("hauntable", AllFanProcessingTypes.HAUNTING::canProcess),
-		CRUSHABLE = singleton("crushable", (s, w) -> testRecipe(s, w, AllRecipeTypes.CRUSHING.getType())
+		WASHABLE = recipeSingleton("washable", AllFanProcessingTypes.SPLASHING::canProcess),
+		HAUNTABLE = recipeSingleton("hauntable", AllFanProcessingTypes.HAUNTING::canProcess),
+		CRUSHABLE = recipeSingleton("crushable", (s, w) -> testRecipe(s, w, AllRecipeTypes.CRUSHING.getType())
 			|| testRecipe(s, w, AllRecipeTypes.MILLING.getType())),
-		SMELTABLE = singleton("smeltable", (s, w) -> testRecipe(s, w, RecipeType.SMELTING)),
-		SMOKABLE = singleton("smokable", (s, w) -> testRecipe(s, w, RecipeType.SMOKING)),
-		BLASTABLE = singleton("blastable", (s, w) -> testRecipe(s, w, RecipeType.BLASTING)),
+		SMELTABLE = recipeSingleton("smeltable", (s, w) -> testRecipe(s, w, RecipeType.SMELTING)),
+		SMOKABLE = recipeSingleton("smokable", (s, w) -> testRecipe(s, w, RecipeType.SMOKING)),
+		BLASTABLE = recipeSingleton("blastable", (s, w) -> testRecipe(s, w, RecipeType.BLASTING)),
 		COMPOSTABLE = singleton("compostable", s -> ComposterBlock.COMPOSTABLES.getFloat(s.getItem()) > 0),
 
 	IN_TAG = register("in_tag", new InTagAttribute.Type()),
@@ -95,6 +95,11 @@ public class AllItemAttributeTypes {
 
 	private static ItemAttributeType singleton(String id, BiPredicate<ItemStack, Level> predicate) {
 		return register(id, new SingletonItemAttribute.Type(type -> new SingletonItemAttribute(type, predicate, id)));
+	}
+
+	// Fabric port: recipe lookups are cached per item (see RecipeAttributeCache)
+	private static ItemAttributeType recipeSingleton(String id, BiPredicate<ItemStack, Level> predicate) {
+		return singleton(id, new RecipeAttributeCache(predicate));
 	}
 
 	private static ItemAttributeType register(String id, ItemAttributeType type) {

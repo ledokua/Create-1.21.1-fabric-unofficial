@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.simibubi.create.AllTags.AllBlockTags;
 import com.simibubi.create.foundation.utility.BlockHelper;
+import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -16,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -133,7 +135,9 @@ public abstract class BlockBreakingKineticBlockEntity extends KineticBlockEntity
 	}
 
 	public static boolean isBreakable(BlockState stateToBreak, float blockHardness) {
-		return !(stateToBreak.liquid() || stateToBreak.getBlock() instanceof AirBlock || blockHardness == -1 || AllBlockTags.NON_BREAKABLE.matches(stateToBreak));
+		return !(stateToBreak.liquid() || stateToBreak.getBlock() instanceof AirBlock || blockHardness == -1 || AllBlockTags.NON_BREAKABLE.matches(stateToBreak)
+			// Fabric port: budding amethyst is kept unless the config allows breaking it
+			|| stateToBreak.is(Blocks.BUDDING_AMETHYST) && !AllConfigs.server().kinetics.drillsBreakBuddingAmethyst.get());
 	}
 
 	public void onBlockBroken(BlockState stateToBreak) {

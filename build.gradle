@@ -119,6 +119,7 @@ dependencies {
     // reaches Screen members through casts instead of importing xaero.lib.client.gui.ScreenBase.
     modCompileOnly("maven.modrinth:xaeros-world-map:${project.xaero_worldmap_version}") { transitive = false }
     modCompileOnly("maven.modrinth:journeymap:${project.journeymap_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:open-parties-and-claims:${project.opac_version}") { transitive = false } // claim checks (compat/opac, mixin/compat/opac)
     mapModJars("maven.modrinth:journeymap:${project.journeymap_version}") { transitive = false }
     compileOnly fileTree(dir: layout.buildDirectory.dir("nestedMapModApis"), include: "*.jar")
         .builtBy(tasks.named("extractJourneyMapApi")) // else remapSourcesJar sees an undeclared task output

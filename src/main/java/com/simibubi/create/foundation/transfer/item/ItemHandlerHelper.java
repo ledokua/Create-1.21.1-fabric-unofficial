@@ -2,6 +2,7 @@ package com.simibubi.create.foundation.transfer.item;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.simibubi.create.foundation.transfer.capability.bridge.StorageItemHandler;
 import com.simibubi.create.foundation.transfer.item.wrapper.PlayerMainInvWrapper;
 
 import net.minecraft.sounds.SoundEvents;
@@ -37,6 +38,9 @@ public final class ItemHandlerHelper {
 	public static ItemStack insertItemStacked(@Nullable IItemHandler inventory, ItemStack stack, boolean simulate) {
 		if (inventory == null || stack.isEmpty())
 			return stack;
+		// Fabric port: other mods' storages place the stack themselves in one call (see StorageItemHandler#insertAnywhere)
+		if (inventory instanceof StorageItemHandler storageHandler)
+			return storageHandler.insertAnywhere(stack, simulate);
 		if (!stack.isStackable())
 			return insertItem(inventory, stack, simulate);
 

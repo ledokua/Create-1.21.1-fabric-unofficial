@@ -78,6 +78,12 @@ public class CreateEmiPlugin implements EmiPlugin {
 			recipes += registerCategory(registry, category);
 		Create.LOGGER.info("EMI: registered {} categories with {} recipes", categories.size(), recipes);
 
+		// Potion fluids differ only by their components (potion, bottle type). EMI compares fluids by fluid alone unless
+		// told otherwise, so looking up one potion fluid listed every automatic brewing recipe. (JEI: PotionFluidSubtypeInterpreter)
+		com.simibubi.create.content.fluids.potion.PotionFluid potionFluid = com.simibubi.create.AllFluids.POTION.get();
+		registry.setDefaultComparison(potionFluid.getSource(), dev.emi.emi.api.stack.Comparison.compareComponents());
+		registry.setDefaultComparison(potionFluid.getFlowing(), dev.emi.emi.api.stack.Comparison.compareComponents());
+
 		// toolbox dyeing shows up as vanilla crafting
 		ToolboxColoringRecipeMaker.createRecipes().forEach(holder ->
 			registry.addRecipe(new dev.emi.emi.api.recipe.EmiCraftingRecipe(

@@ -41,9 +41,21 @@ public final class ClientHooks {
 		return components;
 	}
 
-	/** Re-mesh the chunk section containing pos (used for BlockEntity#requestModelDataUpdate). */
-	public static void markBlockForRerender(net.minecraft.core.BlockPos pos) {
+	/**
+	 * Re-mesh the chunk section containing pos (used for BlockEntity#requestModelDataUpdate). Only for the client's own
+	 * level: block entities in a contraption's or Ponder's virtual level are drawn by their own renderers, and those are
+	 * often set up on Flywheel worker threads, where Sodium throws on any world-renderer call. That exception used to
+	 * abort the contraption's visual, so contraptions with copycats, belts, tracks, ... stayed invisible until F3+A.
+	 */
+	public static void markBlockForRerender(net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+		if (level != mc.level)
+			return;
+		if (!mc.isSameThread()) {
+			net.minecraft.core.BlockPos immutable = pos.immutable();
+			mc.execute(() -> markBlockForRerender(level, immutable));
+			return;
+		}
 		if (mc.levelRenderer != null)
 			mc.levelRenderer.setBlocksDirty(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 	}

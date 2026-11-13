@@ -9,6 +9,7 @@ import com.simibubi.create.infrastructure.gametest.tests.TestMisc;
 import com.simibubi.create.infrastructure.gametest.tests.TestProcessing;
 import com.simibubi.create.infrastructure.gametest.tests.TestRegressions;
 import com.simibubi.create.infrastructure.gametest.tests.TestFabricBridge;
+import com.simibubi.create.infrastructure.gametest.tests.TestFabricPortFixes;
 
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.TestFunction;
@@ -26,7 +27,8 @@ public class CreateGameTests {
 			TestMisc.class,
 			TestProcessing.class,
 			TestRegressions.class,
-			TestFabricBridge.class
+			TestFabricBridge.class,
+			TestFabricPortFixes.class
 	};
 
 	@SubscribeEvent

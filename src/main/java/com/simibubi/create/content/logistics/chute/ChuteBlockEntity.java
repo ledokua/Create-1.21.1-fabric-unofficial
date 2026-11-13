@@ -114,7 +114,7 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 	@Override
 	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 		behaviours.add(new DirectBeltInputBehaviour(this).onlyInsertWhen((d) -> canDirectlyInsertCached()));
-		behaviours.add(invVersionTracker = new VersionedInventoryTrackerBehaviour(this));
+		behaviours.add(invVersionTracker = new VersionedInventoryTrackerBehaviour(this).backOffOnLargeStorages());
 		registerAwardables(behaviours, AllAdvancements.CHUTE);
 	}
 

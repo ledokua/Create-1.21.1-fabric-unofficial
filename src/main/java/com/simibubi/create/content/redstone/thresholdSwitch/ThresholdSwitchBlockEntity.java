@@ -36,6 +36,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.ticks.TickPriority;
 
 import com.simibubi.create.foundation.transfer.capability.Capabilities;
+import com.simibubi.create.foundation.transfer.capability.bridge.StorageItemHandler;
 import com.simibubi.create.foundation.transfer.fluid.FluidStack;
 import com.simibubi.create.foundation.transfer.fluid.IFluidHandler;
 import com.simibubi.create.foundation.transfer.item.IItemHandler;
@@ -166,7 +167,8 @@ public class ThresholdSwitchBlockEntity extends SmartBlockEntity implements Clea
 						ItemStack stackInSlot = inv.getStackInSlot(slot);
 
 						int finalSlot = slot;
-						long space = COMPAT
+						// Fabric port: Fabric storages report their real slot capacity (drawers hold far more than a stack)
+						long space = inv instanceof StorageItemHandler storageHandler ? storageHandler.getSlotCapacity(finalSlot) : COMPAT
 							.stream()
 							.filter(compat -> compat.isFromThisMod(targetBlockEntity))
 							.map(compat -> compat.getSpaceInSlot(inv, finalSlot))
@@ -177,9 +179,9 @@ public class ThresholdSwitchBlockEntity extends SmartBlockEntity implements Clea
 						if (space == 0)
 							continue;
 
-						currentMaxLevel += space;
+						currentMaxLevel = (int) Math.min(Integer.MAX_VALUE, (long) currentMaxLevel + space);
 						if (filtering.test(stackInSlot))
-							currentLevel += count;
+							currentLevel = (int) Math.min(Integer.MAX_VALUE, (long) currentLevel + count);
 					}
 				}
 			}

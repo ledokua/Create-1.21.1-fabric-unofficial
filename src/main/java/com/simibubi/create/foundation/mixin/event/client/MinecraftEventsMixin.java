@@ -36,6 +36,9 @@ public abstract class MinecraftEventsMixin {
 	@Shadow
 	public Options options;
 
+	@Shadow
+	private int rightClickDelay;
+
 	// ---- LevelEvent.Unload ----
 	@Inject(method = "setLevel", at = @At("HEAD"))
 	private void create$onSetLevel(ClientLevel newLevel, ReceivingLevelScreen.Reason reason, CallbackInfo ci) {
@@ -58,8 +61,12 @@ public abstract class MinecraftEventsMixin {
 
 	@Inject(method = "startUseItem", at = @At("HEAD"), cancellable = true)
 	private void create$onStartUseItem(CallbackInfo ci) {
-		if (create$fireInputEvent(1, options.keyUse, InteractionHand.MAIN_HAND))
+		if (create$fireInputEvent(1, options.keyUse, InteractionHand.MAIN_HAND)) {
+			// NeoForge fires this after startUseItem has set the 4-tick right-click delay. Without it, holding the use
+			// key re-fires a handled click every tick (e.g. train controls turned on and straight back off).
+			rightClickDelay = 4;
 			ci.cancel();
+		}
 	}
 
 	@Inject(method = "pickBlock", at = @At("HEAD"), cancellable = true)

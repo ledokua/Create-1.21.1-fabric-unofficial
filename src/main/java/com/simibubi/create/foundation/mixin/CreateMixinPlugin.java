@@ -28,6 +28,8 @@ public class CreateMixinPlugin implements IMixinConfigPlugin {
 			return Mods.JOURNEYMAP.isLoaded();
 		if (mixinClassName.startsWith("com.simibubi.create.foundation.mixin.compat.ftbchunks"))
 			return Mods.FTBCHUNKS.isLoaded();
+		if (mixinClassName.startsWith("com.simibubi.create.foundation.mixin.compat.opac"))
+			return com.simibubi.create.compat.opac.OpacCreateSupport.enabled();
 		return true;
 	}
 

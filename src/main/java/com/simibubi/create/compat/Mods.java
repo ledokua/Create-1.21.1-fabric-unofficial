@@ -42,6 +42,7 @@ public enum Mods {
 	SODIUM,
 	TRINKETS,
 	INVENTORYSORTER,
+	OPENPARTIESANDCLAIMS,
 	FARMERSDELIGHT;
 
 	private final String id;
