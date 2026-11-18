@@ -2,7 +2,6 @@ package com.simibubi.create.content.equipment.toolbox;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
@@ -256,18 +255,28 @@ public class ToolboxInventory extends ItemStackHandler {
 
 	@Override
 	public final boolean equals(Object o) {
-		if (!(o instanceof ToolboxInventory that)) return false;
-
-		return settling == that.settling && limitedMode == that.limitedMode && filters.equals(that.filters)
-			&& Objects.equals(blockEntity, that.blockEntity);
+		// [Fabric port] value equality over what the codecs save (items and filters). Upstream compared the filters
+		// as List<ItemStack> (identity), the owning block entity and transient flags, so a toolbox item never equalled
+		// its own network or disk copy (stock ticker orders for toolboxes never packed), and ignored the contents.
+		if (this == o)
+			return true;
+		if (!(o instanceof ToolboxInventory that))
+			return false;
+		if (getSlots() != that.getSlots() || !ItemStack.listMatches(filters, that.filters))
+			return false;
+		for (int slot = 0; slot < getSlots(); slot++)
+			if (!ItemStack.matches(getStackInSlot(slot), that.getStackInSlot(slot)))
+				return false;
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = filters.hashCode();
-		result = 31 * result + Boolean.hashCode(settling);
-		result = 31 * result + Objects.hashCode(blockEntity);
-		result = 31 * result + Boolean.hashCode(limitedMode);
+		int result = ItemStack.hashStackList(filters);
+		for (int slot = 0; slot < getSlots(); slot++) {
+			ItemStack stack = getStackInSlot(slot);
+			result = 31 * result + ItemStack.hashItemAndComponents(stack) * 31 + stack.getCount();
+		}
 		return result;
 	}
 }

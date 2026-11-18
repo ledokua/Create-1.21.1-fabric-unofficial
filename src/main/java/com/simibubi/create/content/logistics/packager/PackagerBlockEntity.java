@@ -1,5 +1,6 @@
 package com.simibubi.create.content.logistics.packager;
 
+import com.simibubi.create.content.logistics.LogisticsItemMatching;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -440,7 +441,8 @@ public class PackagerBlockEntity extends SmartBlockEntity implements Clearable {
 					ItemStack extracted = targetInv.extractItem(slot, initialCount, true);
 					if (extracted.isEmpty())
 						continue;
-					if (requestQueue && !ItemStack.isSameItemSameComponents(extracted, nextRequest.item()))
+					// [Fabric port] tolerant of component values without value equality (see LogisticsItemMatching)
+					if (requestQueue && !LogisticsItemMatching.matches(extracted, nextRequest.item()))
 						continue;
 
 					boolean bulky = !extracted.getItem()

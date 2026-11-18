@@ -687,6 +687,9 @@ public class ContraptionCollider {
 			MovementBehaviour movementBehaviour = MovementBehaviour.REGISTRY.get(blockInfo.state());
 			if (movementBehaviour != null) {
 				if (movementBehaviour instanceof BlockBreakingMovementBehaviour behaviour) {
+					// Fabric port: protected amethyst buds are passed over, not broken and not a wall
+					if (com.simibubi.create.content.kinetics.base.BlockBreakingKineticBlockEntity.isProtectedAmethystBud(collidedState))
+						continue;
 					if (!behaviour.canBreak(world, colliderPos, collidedState) && !emptyCollider)
 						return true;
 					continue;

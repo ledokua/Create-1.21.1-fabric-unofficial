@@ -27,7 +27,12 @@ public abstract class EntityMixin {
 
 	@ModifyReturnValue(method = "fireImmune()Z", at = @At("RETURN"))
 	private boolean create$onFireImmune(boolean original) {
-		return ((Entity) (Object) this).getPersistentData().getBoolean(NetheriteDivingHandler.FIRE_IMMUNE_KEY) || original;
+		if (original)
+			return true;
+		// [Fabric port] don't create persistent data for every entity that is asked whether it's fire immune
+		net.minecraft.nbt.CompoundTag data = ((com.simibubi.create.foundation.extension.EntityExtension.PersistentDataHolder) this)
+			.create$persistentDataIfPresent();
+		return data != null && data.getBoolean(NetheriteDivingHandler.FIRE_IMMUNE_KEY);
 	}
 
 	@ModifyExpressionValue(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getOnPosLegacy()Lnet/minecraft/core/BlockPos;"))

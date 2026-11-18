@@ -139,6 +139,9 @@ public class Train {
 	public boolean derailed;
 
 	public int fuelTicks;
+	// [Fabric port] ticks until burnFuel scans the carriages again after a scan found no fuel
+	public int fuelScanCooldown;
+	private long fuelScanCargoVersion = -1;
 	public int honkTicks;
 
 	public Boolean lowHonk;
@@ -1108,11 +1111,26 @@ public class Train {
 		return Penalties.ANY_TRAIN;
 	}
 
+	public static final int FUEL_SCAN_INTERVAL = 20;
+
 	public void burnFuel() {
 		if (fuelTicks > 0) {
 			fuelTicks--;
 			return;
 		}
+
+		// [Fabric port] Fabric's FuelRegistry lookup is expensive; a train without fuel scanned every slot of
+		// every carriage on every tick while driven. Trains run without fuel, so recheck only once a second.
+		// Cargo moved by stations, funnels etc. bumps the cargo version and triggers a rescan right away.
+		long cargoVersion = 0;
+		for (Carriage carriage : carriages)
+			cargoVersion += carriage.storage.getVersion();
+		if (fuelScanCooldown > 0 && cargoVersion == fuelScanCargoVersion) {
+			fuelScanCooldown--;
+			return;
+		}
+		fuelScanCooldown = FUEL_SCAN_INTERVAL;
+		fuelScanCargoVersion = cargoVersion;
 
 		boolean iterateFromBack = speed < 0;
 		int carriageCount = carriages.size();
@@ -1126,12 +1144,15 @@ public class Train {
 
 			for (int slot = 0; slot < fuelItems.getSlots(); slot++) {
 				ItemStack stack = fuelItems.extractItem(slot, 1, true);
+				if (stack.isEmpty())
+					continue;
 				int burnTime = stack.getBurnTime(null);
 				if (burnTime <= 0)
 					continue;
 
 				stack = fuelItems.extractItem(slot, 1, false);
 				fuelTicks += burnTime * stack.getCount();
+				fuelScanCooldown = 0;
 				ItemStack containerItem = stack.getCraftingRemainingItem();
 				if (!containerItem.isEmpty())
 					ItemHandlerHelper.insertItemStacked(fuelItems, containerItem, false);

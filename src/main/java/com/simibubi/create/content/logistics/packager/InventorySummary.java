@@ -125,6 +125,23 @@ public class InventorySummary {
 		return 0;
 	}
 
+	/**
+	 * [Fabric port] Like {@link #getCountOf}, but also matches component values that only equal by their saved form
+	 * (see {@link com.simibubi.create.content.logistics.LogisticsItemMatching}). For order requests.
+	 */
+	public int getCountOfMatching(ItemStack stack) {
+		int exact = getCountOf(stack);
+		if (exact != 0)
+			return exact;
+		List<BigItemStack> list = items.get(stack.getItem());
+		if (list == null)
+			return 0;
+		for (BigItemStack entry : list)
+			if (com.simibubi.create.content.logistics.LogisticsItemMatching.matches(entry.stack, stack))
+				return entry.count;
+		return 0;
+	}
+
 	public int getTotalOfMatching(Predicate<ItemStack> filter) {
 		MutableInt sum = new MutableInt();
 		items.forEach(($, list) -> {

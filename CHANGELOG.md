@@ -1,5 +1,63 @@
 # Changelog
 
+## 6.0.11-fabric.16
+
+**Performance** (live spark profile, ~15 players)
+- Belts re-applied their 10-tick Slowness II to every mob on them every tick (0.086 ms/tick on the live server, where
+  another mod hooks `addEffect`). It's now refreshed only when missing, weaker or about to run out; mobs stay locked.
+- The diving boots check ran for every living entity every tick, reading its feet slot and removing a marker from its
+  persistent data (0.14 ms/tick). Mobs out of water are skipped (the marker is only used for the local player), and the
+  marker is only removed where it exists.
+- Asking any entity whether it's fire immune created persistent data for it (netherite diving check). It now only
+  reads existing data.
+
+## 6.0.11-fabric.15
+
+**Fixed**
+- Stock ticker orders for toolboxes (and other mods' items whose item data has no value equality, e.g. bundle-like
+  pouches) were listed but never packed. The order holds the client's copy of the item, and the packager only packed
+  exact `isSameItemSameComponents` matches. Order matching (stock count, packager extraction, request promises) now
+  also accepts the same item whose differing component values save identically.
+- The toolbox item's inventory component compared its filters by identity, its owning block entity and transient
+  flags, and ignored the contents: a toolbox never equalled its own network or disk copy, and different toolboxes
+  were merged in stock lists. It now compares items and filters by value.
+
+## 6.0.11-fabric.14
+
+**Fixed**
+- Server crash "Ticking block entity" (ConcurrentModificationException in `ToolboxBlockEntity.tickPlayers`) when two
+  or more players were linked to the same toolbox compartment and one of them had that toolbox's screen open while
+  their hotbar stack needed refilling or emptying. The toolbox unequipped that player in the middle of walking its
+  player list. It now walks a copy. Same fix for removing a toolbox with several linked players. Upstream has the same
+  code.
+
+## 6.0.11-fabric.13
+
+**Performance**
+- A driven train with no fuel scanned every fuel slot of every carriage on every tick, and each slot asked Fabric's
+  fuel registry for the burn time, which rebuilds vanilla's whole fuel map per call: 4-10 ms per tick on a live
+  server while someone drove a train. A scan that finds no fuel now waits 20 ticks before the next one, unless the
+  train's cargo changed (stations, funnels, ...), and empty slots are skipped. Trains run without fuel anyway; fuel put
+  into a mounted container by hand is picked up within a second.
+
+## 6.0.11-fabric.12
+
+**Performance**
+- Redstone link transmitters updated their neighbours on every tick of theirs, even when nothing had changed. Those
+  updates schedule the tick of an adjacent link, so transmitters side by side (or next to wires, repeaters or
+  comparators) kept each other ticking forever: 3.6-8.5 ms per tick on a live server while one base was loaded. A
+  transmitter now updates its neighbours only when its powered state or transmitted signal changed. Side effect: a
+  block-update detector next to a transmitter (e.g. a quasi-connected piston) no longer fires from the link's idle
+  updates.
+
+## 6.0.11-fabric.11
+
+**Changed**
+- Drills and saws leave small, medium and large Amethyst Buds alone, so they only harvest grown Amethyst Clusters.
+  Moving drills (pistons, gantries, pulleys) pass over a bud in their path instead of stopping at it or breaking it.
+  Server config `kinetics.drillsBreakAmethystBuds` (default false) restores breaking them. Budding Amethyst stays
+  protected as in fabric.9 (`drillsBreakBuddingAmethyst`).
+
 ## 6.0.11-fabric.10
 
 **Fixed**

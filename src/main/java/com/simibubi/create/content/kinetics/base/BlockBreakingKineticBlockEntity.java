@@ -137,7 +137,17 @@ public abstract class BlockBreakingKineticBlockEntity extends KineticBlockEntity
 	public static boolean isBreakable(BlockState stateToBreak, float blockHardness) {
 		return !(stateToBreak.liquid() || stateToBreak.getBlock() instanceof AirBlock || blockHardness == -1 || AllBlockTags.NON_BREAKABLE.matches(stateToBreak)
 			// Fabric port: budding amethyst is kept unless the config allows breaking it
-			|| stateToBreak.is(Blocks.BUDDING_AMETHYST) && !AllConfigs.server().kinetics.drillsBreakBuddingAmethyst.get());
+			|| stateToBreak.is(Blocks.BUDDING_AMETHYST) && !AllConfigs.server().kinetics.drillsBreakBuddingAmethyst.get()
+			|| isProtectedAmethystBud(stateToBreak));
+	}
+
+	/**
+	 * Fabric port: small, medium and large amethyst buds are left to grow into clusters unless the config allows breaking
+	 * them. Moving drills pass over them (see ContraptionCollider), so only grown clusters get harvested.
+	 */
+	public static boolean isProtectedAmethystBud(BlockState state) {
+		return (state.is(Blocks.SMALL_AMETHYST_BUD) || state.is(Blocks.MEDIUM_AMETHYST_BUD) || state.is(Blocks.LARGE_AMETHYST_BUD))
+			&& !AllConfigs.server().kinetics.drillsBreakAmethystBuds.get();
 	}
 
 	public void onBlockBroken(BlockState stateToBreak) {

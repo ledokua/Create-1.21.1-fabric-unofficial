@@ -117,6 +117,11 @@ public final class DevScreenshotHarness {
 			ClientTickEvents.END_CLIENT_TICK.register(EmiPotionHarness::tick);
 			return;
 		}
+		if ("wheels".equals(mode)) {
+			Create.LOGGER.info("[harness] water wheel render harness armed");
+			ClientTickEvents.END_CLIENT_TICK.register(WaterWheelHarness::tick);
+			return;
+		}
 		if ("keys".equals(mode)) {
 			Create.LOGGER.info("[harness] key mapping harness armed");
 			ClientTickEvents.END_CLIENT_TICK.register(KeyHarness::tick);
@@ -1594,5 +1599,81 @@ public final class DevScreenshotHarness {
 			player.teleportTo(level, 12.5, 153.0, -8.5, 0, 25);
 			Create.LOGGER.info("[harness] showcase built");
 		});
+	}
+
+	/**
+	 * {@code CREATE_HARNESS=wheels}: a row of large water wheels in falling water on one shaft line with a creative motor.
+	 * Logs FPS with the motor off (water drives them), at 256 RPM with and against the water, then off again.
+	 */
+	private static final class WaterWheelHarness {
+		private static final BlockPos ORIGIN = BASE.offset(-80, 0, 40);
+		private static final int COUNT = Integer.getInteger("create.harness.wheels", 24);
+		private static final int[] SPEEDS = {0, 256, -256, 0};
+
+		static void tick(Minecraft mc) {
+			if (done || mc.level == null || mc.player == null || mc.getSingleplayerServer() == null)
+				return;
+			mc.options.pauseOnLostFocus = false;
+			mc.options.framerateLimit().set(260);
+			mc.options.enableVsync().set(false);
+			tick++;
+			MinecraftServer server = mc.getSingleplayerServer();
+			if (tick == 30)
+				server.execute(() -> build(server));
+			int phaseLen = 400;
+			int start = 100;
+			if (tick >= start && (tick - start) % phaseLen == 0) {
+				int p = (tick - start) / phaseLen;
+				if (p >= SPEEDS.length) {
+					Create.LOGGER.info("[harness] done");
+					done = true;
+					mc.stop();
+					return;
+				}
+				int speed = SPEEDS[p];
+				server.execute(() -> {
+					if (server.overworld().getBlockEntity(ORIGIN.offset(-1, 0, 0)) instanceof com.simibubi.create.content.kinetics.motor.CreativeMotorBlockEntity m)
+						m.generatedSpeed.setValue(speed);
+				});
+				Create.LOGGER.info("[harness] wheels: motor -> {} RPM, backend {}", speed,
+					dev.engine_room.flywheel.api.backend.Backend.REGISTRY.getId(dev.engine_room.flywheel.api.backend.BackendManager.currentBackend()));
+			}
+			if (tick > start && tick % 20 == 0) {
+				var be = mc.level.getBlockEntity(ORIGIN.offset(COUNT / 2, 0, 0));
+				Create.LOGGER.info("[harness] wheels t={} fps={} midWheelSpeed={}", tick, mc.getFps(),
+					be instanceof com.simibubi.create.content.kinetics.base.KineticBlockEntity k ? k.getSpeed() : null);
+				if ((tick - start) % 400 == 200)
+					screenshot(mc, "wheels-" + tick);
+			}
+		}
+
+		private static void build(MinecraftServer server) {
+			ServerLevel level = server.overworld();
+			ServerPlayer player = server.getPlayerList().getPlayer(Minecraft.getInstance().player.getUUID());
+			player.setGameMode(GameType.CREATIVE);
+			player.getAbilities().flying = true;
+			player.onUpdateAbilities();
+			level.setDayTime(6000);
+			level.setWeatherParameters(6000, 0, false, false);
+			level.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_DAYLIGHT).set(false, server);
+			for (int x = -3; x <= COUNT + 2; x++)
+				for (int z = -4; z <= 4; z++) {
+					level.setBlockAndUpdate(ORIGIN.offset(x, -3, z), Blocks.SMOOTH_STONE.defaultBlockState());
+					for (int y = -2; y <= 5; y++)
+						level.setBlockAndUpdate(ORIGIN.offset(x, y, z), Blocks.AIR.defaultBlockState());
+				}
+			level.setBlockAndUpdate(ORIGIN.offset(-1, 0, 0), AllBlocks.CREATIVE_MOTOR.getDefaultState().setValue(BlockStateProperties.FACING, Direction.EAST));
+			if (level.getBlockEntity(ORIGIN.offset(-1, 0, 0)) instanceof com.simibubi.create.content.kinetics.motor.CreativeMotorBlockEntity m)
+				m.generatedSpeed.setValue(0);
+			for (int x = 0; x < COUNT; x++) {
+				BlockPos pos = ORIGIN.offset(x, 0, 0);
+				BlockState state = AllBlocks.LARGE_WATER_WHEEL.getDefaultState().setValue(BlockStateProperties.AXIS, Direction.Axis.X);
+				level.setBlockAndUpdate(pos, state);
+				level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Block.updateFromNeighbourShapes(level.getBlockState(pos), level, pos));
+			}
+			for (int x = 0; x < COUNT; x++)
+				level.setBlockAndUpdate(ORIGIN.offset(x, 3, 2), Blocks.WATER.defaultBlockState());
+			player.teleportTo(level, ORIGIN.getX() + COUNT / 2.0, ORIGIN.getY() + 4, ORIGIN.getZ() + 14, 180, 15);
+		}
 	}
 }

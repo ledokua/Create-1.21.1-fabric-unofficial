@@ -34,6 +34,11 @@ public class EntityPersistentDataMixin implements EntityExtension, com.simibubi.
 		return create$persistentData;
 	}
 
+	@Override
+	public CompoundTag create$persistentDataIfPresent() {
+		return create$persistentData;
+	}
+
 	@Unique
 	private java.util.Collection<net.minecraft.world.entity.item.ItemEntity> create$capturedDrops;
 

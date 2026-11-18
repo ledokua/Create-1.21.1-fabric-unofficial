@@ -8,6 +8,10 @@ public interface EntityExtension {
 	/** Storage duck implemented by EntityPersistentDataMixin (uniquely named to avoid mixin method clashes with other mods). */
 	interface PersistentDataHolder {
 		CompoundTag create$persistentData();
+
+		/** The persistent data if this entity has any yet, without creating it. */
+		@org.jetbrains.annotations.Nullable
+		CompoundTag create$persistentDataIfPresent();
 	}
 
 	/** Mod-private NBT that persists with the entity (NeoForge's {@code Entity#getPersistentData()}). */

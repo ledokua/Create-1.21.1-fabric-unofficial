@@ -3,7 +3,6 @@ package com.simibubi.create.content.equipment.toolbox;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -122,22 +121,24 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 	private void tickPlayers() {
 		boolean update = false;
 
-		for (Iterator<Entry<Integer, WeakHashMap<Player, Integer>>> toolboxSlots = connectedPlayers.entrySet()
-			.iterator(); toolboxSlots.hasNext(); ) {
+		// [Fabric port] iterate over snapshots: ToolboxHandler.unequip below calls back into unequip(...), which removes
+		// the player from the same map. With two players on one compartment that threw a
+		// ConcurrentModificationException and crashed the server ("Ticking block entity"). Upstream has the same code.
+		for (Entry<Integer, WeakHashMap<Player, Integer>> toolboxSlotEntry : new ArrayList<>(connectedPlayers.entrySet())) {
 
-			Entry<Integer, WeakHashMap<Player, Integer>> toolboxSlotEntry = toolboxSlots.next();
 			WeakHashMap<Player, Integer> set = toolboxSlotEntry.getValue();
 			int slot = toolboxSlotEntry.getKey();
 
 			ItemStack referenceItem = inventory.filters.get(slot);
 			boolean clear = referenceItem.isEmpty();
 
-			for (Iterator<Entry<Player, Integer>> playerEntries = set.entrySet()
-				.iterator(); playerEntries.hasNext(); ) {
-				Entry<Player, Integer> playerEntry = playerEntries.next();
-
+			for (Entry<Player, Integer> playerEntry : new ArrayList<>(set.entrySet())) {
 				Player player = playerEntry.getKey();
-				int hotbarSlot = playerEntry.getValue();
+				Integer currentHotbarSlot = player == null ? null : set.get(player);
+				// gone (garbage-collected) or unequipped earlier in this loop
+				if (currentHotbarSlot == null || currentHotbarSlot != playerEntry.getValue().intValue())
+					continue;
+				int hotbarSlot = currentHotbarSlot;
 
 				if (!clear && !ToolboxHandler.withinRange(player, this))
 					continue;
@@ -150,7 +151,7 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 					player.getPersistentData()
 						.getCompound("CreateToolboxData")
 						.remove(String.valueOf(hotbarSlot));
-					playerEntries.remove();
+					set.remove(player);
 					if (player instanceof ServerPlayer)
 						ToolboxHandler.syncData(player);
 					continue;
@@ -205,7 +206,7 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 			}
 
 			if (clear)
-				toolboxSlots.remove();
+				connectedPlayers.remove(slot, set);
 		}
 
 		if (update)
@@ -225,12 +226,15 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 
 		Set<ServerPlayer> affected = new HashSet<>();
 
-		for (Entry<Integer, WeakHashMap<Player, Integer>> toolboxSlotEntry : connectedPlayers.entrySet()) {
+		// [Fabric port] snapshots: ToolboxHandler.unequip removes the player from these maps (see tickPlayers)
+		for (Entry<Integer, WeakHashMap<Player, Integer>> toolboxSlotEntry : new ArrayList<>(connectedPlayers.entrySet())) {
 
 			WeakHashMap<Player, Integer> set = toolboxSlotEntry.getValue();
 
-			for (Entry<Player, Integer> playerEntry : set.entrySet()) {
+			for (Entry<Player, Integer> playerEntry : new ArrayList<>(set.entrySet())) {
 				Player player = playerEntry.getKey();
+				if (player == null)
+					continue;
 				int hotbarSlot = playerEntry.getValue();
 
 				ToolboxHandler.unequip(player, hotbarSlot, false);

@@ -68,6 +68,17 @@ public class BeltMovementHandler {
 		return true;
 	}
 
+	/**
+	 * [Fabric port] The belt re-applied its 10-tick Slowness II to every mob on it every tick; addEffect is costly here
+	 * (other mods hook it). Refresh it only when missing, weaker, or about to run out: mobs stay locked the same way.
+	 */
+	public static boolean needsBeltLock(LivingEntity entity) {
+		MobEffectInstance current = entity.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+		return current == null || current.getAmplifier() < 1 || current.getDuration() <= BELT_LOCK_REFRESH;
+	}
+
+	public static final int BELT_LOCK_REFRESH = 5;
+
 	public static void transportEntity(BeltBlockEntity beltBE, Entity entityIn, TransportedEntityInfo info) {
 		BlockPos pos = info.lastCollidedPos;
 		Level world = beltBE.getLevel();
@@ -98,7 +109,7 @@ public class BeltMovementHandler {
 
 		// Lock entities in place
 		boolean isPlayer = entityIn instanceof Player;
-		if (entityIn instanceof LivingEntity livingEntity && !isPlayer)
+		if (entityIn instanceof LivingEntity livingEntity && !isPlayer && needsBeltLock(livingEntity))
 			livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 1, false, false));
 
 		final Direction beltFacing = blockState.getValue(BlockStateProperties.HORIZONTAL_FACING);

@@ -86,7 +86,8 @@ public class PackagerLinkBlockEntity extends LinkWithBulbBlockEntity {
 			return null;
 
 		InventorySummary summary = packager.getAvailableItems();
-		int availableCount = summary.getCountOf(stack);
+		// [Fabric port] tolerant match: the requested stack is the client's decoded copy
+		int availableCount = summary.getCountOfMatching(stack);
 		if (availableCount == 0)
 			return null;
 		int toWithdraw = Math.min(amount, availableCount);

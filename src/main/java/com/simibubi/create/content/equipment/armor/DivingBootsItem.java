@@ -69,9 +69,15 @@ public class DivingBootsItem extends BaseArmorItem {
 	}
 
 	protected static boolean affects(LivingEntity entity) {
+		// [Fabric port] this runs for every living entity every tick (live profile: 0.14 ms/tick). The HeavyBoots
+		// marker is only read for the local player, so other entities are only checked while in water, and the marker
+		// is only removed where it exists (no persistent data is created for entities that never had any).
+		if (!(entity instanceof Player) && !entity.isInWater()) {
+			clearHeavyBootsMarker(entity);
+			return false;
+		}
 		if (!isWornBy(entity)) {
-			entity.getPersistentData()
-				.remove("HeavyBoots");
+			clearHeavyBootsMarker(entity);
 			return false;
 		}
 
@@ -85,6 +91,13 @@ public class DivingBootsItem extends BaseArmorItem {
 				return false;
 		}
 		return true;
+	}
+
+	private static void clearHeavyBootsMarker(LivingEntity entity) {
+		net.minecraft.nbt.CompoundTag data = ((com.simibubi.create.foundation.extension.EntityExtension.PersistentDataHolder) entity)
+			.create$persistentDataIfPresent();
+		if (data != null && data.contains("HeavyBoots"))
+			data.remove("HeavyBoots");
 	}
 
 	public static Vec3 getMovementMultiplier(LivingEntity entity) {

@@ -60,9 +60,20 @@ public class RedstoneLinkBlock extends WrenchableDirectionalBlock implements IBE
 
 	@Override
 	public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource r) {
+		// Fabric port: remember the transmitter's signal so an idle tick can skip the neighbour updates below
+		Integer signalBefore = state.getValue(RECEIVER) ? null
+			: getBlockEntityOptional(level, pos).map(RedstoneLinkBlockEntity::getSignal).orElse(null);
+
 		updateTransmittedSignal(state, level, pos);
 
 		if (state.getValue(RECEIVER))
+			return;
+
+		// Fabric port: when neither the block (POWERED) nor the transmitted signal changed, don't update the neighbours.
+		// Those updates call neighborChanged on adjacent links, which schedules their tick, so transmitters side by
+		// side (or next to wires, repeaters, comparators) kept each other ticking forever (3.6-8.5 ms/tick on live).
+		if (signalBefore != null && level.getBlockState(pos) == state
+			&& getBlockEntityOptional(level, pos).map(be -> be.getSignal() == signalBefore).orElse(false))
 			return;
 		Direction attachedFace = state.getValue(RedstoneLinkBlock.FACING)
 			.getOpposite();

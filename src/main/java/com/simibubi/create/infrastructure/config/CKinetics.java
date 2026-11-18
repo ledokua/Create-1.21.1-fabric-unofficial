@@ -43,6 +43,8 @@ public class CKinetics extends ConfigBase {
 		e(ContraptionMovementSetting.NO_PICKUP, "amethystMovement", Comments.amethystMovement);
 	public final ConfigBool drillsBreakBuddingAmethyst =
 		b(false, "drillsBreakBuddingAmethyst", Comments.drillsBreakBuddingAmethyst);
+	public final ConfigBool drillsBreakAmethystBuds =
+		b(false, "drillsBreakAmethystBuds", Comments.drillsBreakAmethystBuds);
 	public final ConfigEnum<ContraptionMovementSetting> obsidianMovement =
 		e(ContraptionMovementSetting.UNMOVABLE, "movableObsidian", Comments.obsidianMovement);
 	public final ConfigEnum<ContraptionMovementSetting> reinforcedDeepslateMovement =
@@ -121,6 +123,7 @@ public class CKinetics extends ConfigBase {
 		static String spawnerMovement = "Configure how Spawner blocks can be moved by contraptions.";
 		static String amethystMovement = "Configure how Budding Amethyst can be moved by contraptions.";
 		static String drillsBreakBuddingAmethyst = "[Fabric port] Whether drills, saws and other breakers destroy Budding Amethyst. When off, they leave it alone (moving ones stop at it), so they can harvest the clusters around it.";
+		static String drillsBreakAmethystBuds = "[Fabric port] Whether drills, saws and other breakers destroy small, medium and large Amethyst Buds. When off, they leave them to grow (moving ones pass over them) and only harvest Amethyst Clusters.";
 		static String obsidianMovement = "Configure how Obsidian blocks can be moved by contraptions.";
 		static String reinforcedDeepslateMovement = "Configure how Reinforced Deepslate blocks can be moved by contraptions.";
 		static String minecartContraptionInContainers = "Whether minecart contraptions can be placed into container items.";

@@ -1,5 +1,6 @@
 package com.simibubi.create.content.logistics.packagerLink;
 
+import com.simibubi.create.content.logistics.LogisticsItemMatching;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -42,7 +43,7 @@ public class RequestPromiseQueue {
 
 		for (Iterator<RequestPromise> iterator = list.iterator(); iterator.hasNext();) {
 			RequestPromise promise = iterator.next();
-			if (!ItemStack.isSameItemSameComponents(promise.promisedStack.stack, stack))
+			if (!LogisticsItemMatching.matches(promise.promisedStack.stack, stack))
 				continue;
 			if (expiryTime != -1 && promise.ticksExisted >= expiryTime) {
 				iterator.remove();
@@ -62,7 +63,7 @@ public class RequestPromiseQueue {
 
 		for (Iterator<RequestPromise> iterator = list.iterator(); iterator.hasNext();) {
 			RequestPromise promise = iterator.next();
-			if (!ItemStack.isSameItemSameComponents(promise.promisedStack.stack, stack))
+			if (!LogisticsItemMatching.matches(promise.promisedStack.stack, stack))
 				continue;
 			iterator.remove();
 			onChanged.run();
@@ -79,7 +80,7 @@ public class RequestPromiseQueue {
 
 		for (Iterator<RequestPromise> iterator = list.iterator(); iterator.hasNext();) {
 			RequestPromise requestPromise = iterator.next();
-			if (!ItemStack.isSameItemSameComponents(requestPromise.promisedStack.stack, stack))
+			if (!LogisticsItemMatching.matches(requestPromise.promisedStack.stack, stack))
 				continue;
 
 			int toSubtract = Math.min(amount, requestPromise.promisedStack.count);
