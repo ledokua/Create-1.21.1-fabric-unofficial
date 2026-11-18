@@ -97,6 +97,9 @@ public class MechanicalCrafterBlockEntity extends KineticBlockEntity implements 
 	protected int countDown;
 	protected boolean covered;
 	protected boolean wasPoweredBefore;
+	// [Fabric port] cached hasNeighborSignal on the server, refreshed on neighbour updates (see isPowered)
+	private boolean poweredCache;
+	private boolean poweredCacheDirty = true;
 
 	protected GroupedItems groupedItemsBeforeCraft; // for rendering on client
 	private InvManipulationBehaviour inserting;
@@ -251,6 +254,26 @@ public class MechanicalCrafterBlockEntity extends KineticBlockEntity implements 
 		return Mth.clamp((int) Math.abs(getSpeed()), 4, 250);
 	}
 
+	/**
+	 * [Fabric port] Every crafter not in the ACCEPTING phase (including idle, empty ones) asked
+	 * {@link Level#hasNeighborSignal} every tick: up to 36 block state lookups, through C2ME's chunk access on the
+	 * server. Redstone changes always reach the crafter as a neighbour update (vanilla dispensers rely on the same), so
+	 * the server reads the signal once per update instead. The client and virtual (ponder) levels still poll.
+	 */
+	public boolean isPowered() {
+		if (level.isClientSide || isVirtual())
+			return level.hasNeighborSignal(worldPosition);
+		if (poweredCacheDirty) {
+			poweredCache = level.hasNeighborSignal(worldPosition);
+			poweredCacheDirty = false;
+		}
+		return poweredCache;
+	}
+
+	public void onNeighborChanged() {
+		poweredCacheDirty = true;
+	}
+
 	@Override
 	public void tick() {
 		super.tick();
@@ -261,8 +284,9 @@ public class MechanicalCrafterBlockEntity extends KineticBlockEntity implements 
 		boolean onClient = level.isClientSide;
 		boolean runLogic = !onClient || isVirtual();
 
-		if (wasPoweredBefore != level.hasNeighborSignal(worldPosition)) {
-			wasPoweredBefore = level.hasNeighborSignal(worldPosition);
+		boolean powered = isPowered();
+		if (wasPoweredBefore != powered) {
+			wasPoweredBefore = powered;
 			if (wasPoweredBefore) {
 				if (!runLogic)
 					return;

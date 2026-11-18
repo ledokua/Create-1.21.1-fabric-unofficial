@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.BiPredicate;
 
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
 import com.google.common.collect.ImmutableMap;
@@ -422,6 +423,42 @@ public class TestFabricPortFixes {
 		}
 		helper.runAfterDelay(42, () -> {
 			helper.assertTrue(applied[0] <= 10, "slowness applied " + applied[0] + " times in 40 ticks");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * The server caches a crafter's redstone signal and refreshes it on neighbour updates: it must still follow a
+	 * redstone block next to it and a lever powering an adjacent solid block.
+	 */
+	@GameTest(template = "empty", timeoutTicks = 40)
+	public static void crafterSeesRedstoneChanges(CreateGameTestHelper helper) {
+		BlockPos crafterPos = new BlockPos(3, 1, 3);
+		BlockPos side = new BlockPos(4, 1, 3);
+		BlockPos stone = new BlockPos(2, 1, 3);
+		BlockPos lever = new BlockPos(1, 1, 3);
+		helper.setBlock(crafterPos, AllBlocks.MECHANICAL_CRAFTER.getDefaultState());
+		helper.setBlock(stone, Blocks.STONE);
+		helper.setBlock(lever, Blocks.LEVER.defaultBlockState()
+			.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL)
+			.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST));
+		java.util.function.Supplier<com.simibubi.create.content.kinetics.crafter.MechanicalCrafterBlockEntity> crafter =
+			() -> helper.getBlockEntity(AllBlockEntityTypes.MECHANICAL_CRAFTER.get(), crafterPos);
+		java.util.function.BiConsumer<Boolean, String> expect = (powered, what) -> {
+			helper.assertTrue(helper.getLevel().hasNeighborSignal(helper.absolutePos(crafterPos)) == powered,
+				"world signal not " + powered + " " + what);
+			helper.assertTrue(crafter.get().isPowered() == powered, "crafter sees " + !powered + " " + what);
+		};
+		helper.runAfterDelay(2, () -> expect.accept(false, "at start"));
+		helper.runAfterDelay(4, () -> helper.setBlock(side, Blocks.REDSTONE_BLOCK));
+		helper.runAfterDelay(6, () -> expect.accept(true, "with a redstone block"));
+		helper.runAfterDelay(8, () -> helper.setBlock(side, Blocks.AIR));
+		helper.runAfterDelay(10, () -> expect.accept(false, "after removing it"));
+		helper.runAfterDelay(12, () -> helper.pullLever(lever));
+		helper.runAfterDelay(14, () -> expect.accept(true, "with the lever on"));
+		helper.runAfterDelay(16, () -> helper.pullLever(lever));
+		helper.runAfterDelay(18, () -> {
+			expect.accept(false, "with the lever off");
 			helper.succeed();
 		});
 	}

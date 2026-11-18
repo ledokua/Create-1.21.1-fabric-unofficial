@@ -1,5 +1,14 @@
 # Changelog
 
+## 6.0.11-fabric.17
+
+**Performance** (live spark profile `dxtvV9yPnc`, 2026-11-18)
+- Every mechanical crafter not mid-insert (idle ones included) checked its redstone signal every tick: up to 36 block
+  lookups each (0.11 ms/tick of the crafters' 0.14 on the live server). The server now reads the signal once per
+  neighbour update and caches it; redstone still triggers crafting the same way.
+- Server start and datapack reloads log recipes whose ingredients contain an empty item, which would disconnect every
+  joining player during recipe sync (`RecipeSyncValidator`).
+
 ## 6.0.11-fabric.16
 
 **Performance** (live spark profile, ~15 players)

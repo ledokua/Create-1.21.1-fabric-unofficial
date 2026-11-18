@@ -235,6 +235,8 @@ public class MechanicalCrafterBlock extends HorizontalKineticBlock
 		InvManipulationBehaviour behaviour = BlockEntityBehaviour.get(worldIn, pos, InvManipulationBehaviour.TYPE);
 		if (behaviour != null)
 			behaviour.onNeighborChanged(fromPos);
+		if (worldIn.getBlockEntity(pos) instanceof MechanicalCrafterBlockEntity crafter)
+			crafter.onNeighborChanged();
 	}
 
 	@Override
